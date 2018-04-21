@@ -1,0 +1,1 @@
+..\..\darknet\build\darknet\x64\darknet.exe detector train obj.data yolo-obj.cfg

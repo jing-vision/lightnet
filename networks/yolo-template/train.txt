@@ -1,0 +1,10 @@
+d:\__svn_pool\yolo-studio\trai\\img/air1.jpg
+d:\__svn_pool\yolo-studio\trai\\img/air2.jpg
+d:\__svn_pool\yolo-studio\trai\\img/air3.jpg
+d:\__svn_pool\yolo-studio\trai\\img/air4.jpg
+d:\__svn_pool\yolo-studio\trai\\img/air5.jpg
+d:\__svn_pool\yolo-studio\trai\\img/air6.jpg
+d:\__svn_pool\yolo-studio\trai\\img/bird1.jpg
+d:\__svn_pool\yolo-studio\trai\\img/bird2.jpg
+d:\__svn_pool\yolo-studio\trai\\img/bird3.jpg
+d:\__svn_pool\yolo-studio\trai\\img/bird4.jpg
