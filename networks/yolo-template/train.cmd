@@ -1,1 +1,1 @@
-..\..\darknet\build\darknet\x64\darknet.exe detector train obj.data yolo-obj.cfg
+..\..\darknet\build\darknet\x64\darknet.exe detector train obj.data yolo-obj.cfg ..\..\assets\darknet19_448.conv.23
