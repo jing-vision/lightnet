@@ -1,1 +1,4 @@
-..\..\darknet\build\darknet\x64\darknet.exe detector demo combine9k.data yolo9000.cfg yolo9000.weights
+set CWD=%~dp0
+cd ..\..\bin
+call darknet.exe detector demo cfg\combine9k.data cfg\yolo9000.cfg %CWD%\yolo9000.weights
+cd %CWD%

@@ -1,0 +1,1 @@
+"C:\Program Files\Git\bin\wget.exe" http://pjreddie.com/media/files/yolov3.weights --no-check-certificate
