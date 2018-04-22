@@ -1,1 +1,0 @@
-..\..\bin\darknet.exe detector demo obj.data yolo-obj.cfg weights\yolo-obj_800.weights
