@@ -56,28 +56,22 @@ Or build the componets from Visual Studio
 # How to inference
 
 ## Pre-trained models for different cfg-files can be downloaded from (smaller -> faster & lower quality):
-- `yolo.cfg` (256 MB COCO-model) - require 4 GB GPU-RAM: http://pjreddie.com/media/files/yolo.weights
-- `yolo-voc.cfg` (256 MB VOC-model) - require 4 GB GPU-RAM: http://pjreddie.com/media/files/yolo-voc.weights
-- `tiny-yolo.cfg` (60 MB COCO-model) - require 1 GB GPU-RAM: http://pjreddie.com/media/files/tiny-yolo.weights
-- `tiny-yolo-voc.cfg` (60 MB VOC-model) - require 1 GB GPU-RAM: http://pjreddie.com/media/files/tiny-yolo-voc.weights
-- `yolo9000.cfg` (186 MB Yolo9000-model) - require 4 GB GPU-RAM: http://pjreddie.com/media/files/yolo9000.weights
 
-network|data|cfg|weights
--------|----|---|-------
-YOLO on COCO|data/coco.data|cfg/yolo.cfg|weights/yolo.weights
-YOLO on VOC|data/voc.data|cfg/yolo-voc.cfg|weights/yolo-voc.weights
-Tiny-YOLO on COCO|data/coco.data|cfg/tiny-yolo.cfg|weights/tiny-yolo.weights
-Tiny-YOLO on VOC|data/voc.data|cfg/tiny-yolo-voc.cfg|weights/tiny-yolo-voc.weights
-YOLO9000 on COCO|data/combine9k.data|cfg/yolo9000.cfg|weights/yolo9000.weights
+cfg|weights
+---|-------
+cfg/yolov2.cfg|https://pjreddie.com/media/files/yolov2.weights
+cfg/yolov2-tiny.cfg|https://pjreddie.com/media/files/yolov2-tiny.weights
+cfg/yolo9000.cfg|http://pjreddie.com/media/files/yolo9000.weights
+cfg/yolov3.cfg|https://pjreddie.com/media/files/yolov3.weights
 
 ## Run Darknet
 
 ### General
 
 ```
-darknet.exe detector demo <data> <cfg> <weights> -i gpu_idx -c <camera_idx>
-darknet.exe detector test <data> <cfg> <weights> -i gpu_idx <img_filename>
-darknet.exe detector demo <data> <cfg> <weights> -i gpu_idx <video_filename>
+darknet.exe detector demo <data> <cfg> <weights> -c <camera_idx>
+darknet.exe detector demo <data> <cfg> <weights> <video_filename>
+darknet.exe detector test <data> <cfg> <weights> <img_filename>
 ```
 
 Default launch device combination is `-i 0 -c 0`.
