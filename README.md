@@ -45,8 +45,9 @@ Or build the componets from Visual Studio
 
 3. To training for your custom objects, you should change 2 lines in file `yolo-obj.cfg`:
 
- - set number of classes (objects): https://github.com/AlexeyAB/Yolo_mark/blob/master/yolo-obj.cfg#L230
- - set `filter`-value equal to `(classes + 5)*5`: https://github.com/AlexeyAB/Yolo_mark/blob/master/yolo-obj.cfg#L224
+ - change `classes` in obj.data#L1
+ - set number of classes (objects) in yolo-obj.cfg#L230
+ - set `filter`-value equal to `(classes + 5)*5` in yolo-obj.cfg#L224
 
 
 4. Download pre-trained weights for the convolutional layers (76 MB): http://pjreddie.com/media/files/darknet19_448.conv.23 to `assets/darknet19_448.conv.23`
