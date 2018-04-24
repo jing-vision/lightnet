@@ -7,3 +7,6 @@
 [submodule "yolo2_light"]
 	path = yolo2_light
 	url = https://github.com/AlexeyAB/yolo2_light.git
+[submodule "Augmentor"]
+	path = Augmentor
+	url = https://github.com/mdbloice/Augmentor.git

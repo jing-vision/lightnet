@@ -1,8 +1,9 @@
 # yolo-studio
 A turnkey solution to train and deploy your own object detection network, contains:
 
-- darknet - the main engine for training & inferencing.
+- Augmentor - image augmentation library in Python.
 - Yolo_mark - the toolkit to prepare training data.
+- darknet - the main engine for training & inferencing.
 - yolo2_light - lightweighted inferencing engine, optional.
 
 # How to build
