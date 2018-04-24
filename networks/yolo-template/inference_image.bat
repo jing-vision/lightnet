@@ -1,1 +1,1 @@
-..\..\bin\darknet.exe detector test obj.data yolo-obj.cfg weights\yolo-obj_100.weights
+..\..\bin\darknet.exe detector test obj.data yolo-obj.cfg weights\yolo-obj_100.weights %*
