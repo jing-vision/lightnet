@@ -1,1 +1,1 @@
-..\..\bin\darknet.exe detector train obj.data yolo-obj.cfg ..\..\assets\darknet19_448.conv.23
+..\..\bin\darknet.exe detector train obj.data yolo-obj.cfg ..\..\bin\darknet19_448.conv.23
