@@ -51,7 +51,7 @@ Or build the componets from Visual Studio
  - set `filter`-value equal to `(classes + 5)*5` in yolo-obj.cfg#L224
 
 
-4. Download pre-trained weights for the convolutional layers (76 MB): http://pjreddie.com/media/files/darknet19_448.conv.23 to `assets/darknet19_448.conv.23`
+4. Download pre-trained weights for the convolutional layers (76 MB): http://pjreddie.com/media/files/darknet19_448.conv.23 to `bin/darknet19_448.conv.23`
  
 5. Run `my-yolo-net/train.cmd` or `my-yolo-net/train_cpu.cmd`
 
@@ -78,11 +78,10 @@ darknet.exe detector test <data> <cfg> <weights> <img_filename>
 
 Default launch device combination is `-i 0 -c 0`.
 
-## Run from assets/ folder
+## Run from networks/ folder
 
 ### train_voc
 ```
-Download pre-trained weights for the convolutional layers (76 MB): http://pjreddie.com/media/files/darknet19_448.conv.23
 ..\bin\darknet.exe detector train data/voc.data cfg/yolo-voc.cfg weights/darknet19_448.conv.2
 ```
 
