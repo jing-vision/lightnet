@@ -1,0 +1,1 @@
+python video2image.py --source 0 --w 1024 --h 768 --shotdir img --prefix wtf
