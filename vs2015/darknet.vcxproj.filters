@@ -189,9 +189,6 @@
     <ClCompile Include="..\darknet\src\go.c">
       <Filter>examples</Filter>
     </ClCompile>
-    <ClCompile Include="..\darknet\src\demo.c">
-      <Filter>examples</Filter>
-    </ClCompile>
     <ClCompile Include="..\darknet\src\darknet.c">
       <Filter>examples</Filter>
     </ClCompile>
@@ -233,6 +230,9 @@
     </ClCompile>
     <ClCompile Include="..\darknet\src\upsample_layer.c">
       <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\darknet\src\demo.c">
+      <Filter>examples</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

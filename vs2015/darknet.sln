@@ -19,8 +19,8 @@ Global
 		{4CF5694F-12A5-4012-8D94-9A0915E9FEB5}.Debug-CPU|x64.Build.0 = Debug-CPU|x64
 		{4CF5694F-12A5-4012-8D94-9A0915E9FEB5}.Release|x64.ActiveCfg = Release|x64
 		{4CF5694F-12A5-4012-8D94-9A0915E9FEB5}.Release|x64.Build.0 = Release|x64
-		{4CF5694F-12A5-4012-8D94-9A0915E9FEB5}.Release-CPU|x64.ActiveCfg = Release|x64
-		{4CF5694F-12A5-4012-8D94-9A0915E9FEB5}.Release-CPU|x64.Build.0 = Release|x64
+		{4CF5694F-12A5-4012-8D94-9A0915E9FEB5}.Release-CPU|x64.ActiveCfg = Release-CPU|x64
+		{4CF5694F-12A5-4012-8D94-9A0915E9FEB5}.Release-CPU|x64.Build.0 = Release-CPU|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

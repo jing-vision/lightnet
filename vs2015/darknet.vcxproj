@@ -177,7 +177,7 @@
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <DisableSpecificWarnings>4819;4244;4305</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4819;4244;4305;4267</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -265,7 +265,12 @@
     <ClCompile Include="..\darknet\src\darknet.c" />
     <ClCompile Include="..\darknet\src\data.c" />
     <ClCompile Include="..\darknet\src\deconvolutional_layer.c" />
-    <ClCompile Include="..\darknet\src\demo.c" />
+    <ClCompile Include="..\darknet\src\demo.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-CPU|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-CPU|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\darknet\src\detection_layer.c" />
     <ClCompile Include="..\darknet\src\detector.c" />
     <ClCompile Include="..\darknet\src\dice.c" />
@@ -277,7 +282,12 @@
     <ClCompile Include="..\darknet\src\gru_layer.c" />
     <ClCompile Include="..\darknet\src\http_stream.cpp" />
     <ClCompile Include="..\darknet\src\im2col.c" />
-    <ClCompile Include="..\darknet\src\image.c" />
+    <ClCompile Include="..\darknet\src\image.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-CPU|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-CPU|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\darknet\src\layer.c" />
     <ClCompile Include="..\darknet\src\list.c" />
     <ClCompile Include="..\darknet\src\local_layer.c" />
