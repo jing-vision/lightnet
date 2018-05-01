@@ -1,6 +1,9 @@
 from ctypes import *
 import math
 import random
+import os
+
+DIR = os.path.dirname(__file__)
 
 def sample(probs):
     s = sum(probs)
@@ -46,7 +49,8 @@ class METADATA(Structure):
 
 #lib = CDLL("/home/pjreddie/documents/darknet/libdarknet.so", RTLD_GLOBAL)
 #lib = CDLL("darknet.so", RTLD_GLOBAL)
-lib = CDLL("yolo_cpp_dll.dll", RTLD_GLOBAL)
+print(os.path.join(DIR, "yolo_cpp_dll.dll"))
+lib = CDLL(os.path.join(DIR, "yolo_cpp_dll.dll"), RTLD_GLOBAL)
 lib.network_width.argtypes = [c_void_p]
 lib.network_width.restype = c_int
 lib.network_height.argtypes = [c_void_p]
