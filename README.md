@@ -32,28 +32,61 @@ Or build the componets from Visual Studio
 - Yolo_mark: `Yolo_mark\yolo_mark.sln`, x64|Release -> `Yolo_mark\x64\Release\yolo_mark.exe`
 - yolo2_light: `yolo2_light\yolo_gpu.sln`, Release -> `yolo2_light\bin\yolo_gpu.exe`
 
-# How to train `my-yolo-net`
+## How to mark labelled images
 
-1. Build `yolo_mark.exe` from `Yolo_mark/yolo_mark.sln`
-
-2. To use for labeling your custom images:
-
- - Clone `yolo-template` directory to `my-yolo-net`
  - delete all files from directory `my-yolo-net/img` and put your `.jpg`-images in
  - change numer of classes (objects for detection) in file `my-yolo-net/obj.data`: https://github.com/jing-vision/yolo-studio/blob/master/networks/yolo-template/obj.data#L1
  - put names of objects, one for each line in file `my-yolo-net/obj.names`: https://github.com/jing-vision/yolo-studio/blob/master/networks/yolo-template/obj.names
  - Run file: `my-yolo-net/yolo_mark.cmd`
 
-3. To training for your custom objects, you should change 2 lines in file `yolo-obj.cfg`:
+## Train yolo v2
+
+0. Fork `networks/yolov2-template` to `networks/my-yolo-net`
+
+1. Download pre-trained weights for the convolutional layers: http://pjreddie.com/media/files/darknet19_448.conv.23 to `bin/darknet19_448.conv.23`
+
+2. To training for your custom objects, you should change 2 lines in file `yolo-obj.cfg`:
 
  - change `classes` in obj.data#L1
  - set number of classes (objects) in yolo-obj.cfg#L230
  - set `filter`-value equal to `(classes + 5)*5` in yolo-obj.cfg#L224
 
+3. Run `my-yolo-net/train.cmd`
 
-4. Download pre-trained weights for the convolutional layers (76 MB): http://pjreddie.com/media/files/darknet19_448.conv.23 to `bin/darknet19_448.conv.23`
- 
-5. Run `my-yolo-net/train.cmd` or `my-yolo-net/train_cpu.cmd`
+## Train yolo v3
+
+0. Fork `networks/yolov3-template` to `networks/my-yolo-net`
+
+1. Download pre-trained weights for the convolutional layers: http://pjreddie.com/media/files/darknet53.conv.74 to `bin/darknet53.conv.74`
+
+2. Create file `yolo-obj.cfg` with the same content as in `yolov3.cfg` (or copy `yolov3.cfg` to `yolo-obj.cfg)` and:
+
+  * change line batch to [`batch=64`](yolo-obj.cfg#L3)
+  * change line subdivisions to [`subdivisions=8`](yolo-obj.cfg#L4)
+  * change line `classes=80` to your number of objects in each of 3 `[yolo]`-layers:
+      * yolo-obj.cfg#L610
+      * yolo-obj.cfg#L696
+      * yolo-obj.cfg#L783
+  * change [`filters=255`] to filters=(classes + 5)x3 in the 3 `[convolutional]` before each `[yolo]` layer
+      * yolo-obj.cfg#L603
+      * yolo-obj.cfg#L689
+      * yolo-obj.cfg#L776
+
+  So if `classes=1` then should be `filters=18`. If `classes=2` then write `filters=21`.
+  
+  **(Do not write in the cfg-file: filters=(classes + 5)x3)**
+  
+  (Generally `filters` depends on the `classes`, `coords` and number of `mask`s, i.e. filters=`(classes + coords + 1)*<number of mask>`, where `mask` is indices of anchors. If `mask` is absence, then filters=`(classes + coords + 1)*num`)
+
+  So for example, for 2 objects, your file `yolo-obj.cfg` should differ from `yolov3.cfg` in such lines in each of **3** [yolo]-layers:
+
+  ```
+  [convolutional]
+  filters=21
+
+  [region]
+  classes=2
+  ```
 
 # How to inference
 

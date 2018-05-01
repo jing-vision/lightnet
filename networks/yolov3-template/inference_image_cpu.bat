@@ -1,0 +1,1 @@
+..\..\bin\darknet_no_gpu.exe detector test obj.data yolo-obj.cfg weights\yolo-obj_100.weights %*
