@@ -17,9 +17,6 @@ Keys:
 # Python 2/3 compatibility
 from __future__ import print_function
 
-import numpy as np
-from numpy import pi, sin, cos
-
 import cv2 as cv
 
 # built-in modules
@@ -39,8 +36,7 @@ if __name__ == '__main__':
     import os
 
     parser = argparse.ArgumentParser(
-        description='Evaluate MobileNet-SSD model using both TensorFlow and OpenCV. '
-                    'COCO evaluation framework is required: http://cocodataset.org')
+        description='Dump image from camera device')
     parser.add_argument(
         '--source', type=int, default=0, help='Path to image or video. Skip to capture frames from camera')
     parser.add_argument('--w', type=int, default=1024)
