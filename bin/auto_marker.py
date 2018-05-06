@@ -55,7 +55,8 @@ if CANNY_MODE:
     cv.createTrackbar('thrs1', 'marker', 2000, 5000, update_threshold)
     cv.createTrackbar('thrs2', 'marker', 4000, 5000, update_threshold)
 
-def update_image(image_id, image_filenames = [], enable_vis=True, enable_marker_dump=False):
+
+def update_image(image_id, category_id = 0, image_filenames=[], enable_vis=True, enable_marker_dump=False):
     try:
         global contours, hierarchy, img, gray, g_image_filenames
         if len(image_filenames) > 0:
@@ -85,13 +86,14 @@ def update_image(image_id, image_filenames = [], enable_vis=True, enable_marker_
 
         if enable_vis:
             cv.imshow('image', img)
-        update_contour(image_id, enable_vis, enable_marker_dump)
+        update_contour(category_id, image_id, enable_vis, enable_marker_dump)
     except Exception:
         import traceback
         traceback.print_exc()
         raise
 
-def update_contour(image_id, enable_vis, enable_marker_dump):
+
+def update_contour(category_id, image_id, enable_vis, enable_marker_dump):
     h, w = img.shape[:2]
     vis = np.zeros((h, w, 3), np.uint8)
     bboxes = [cv.boundingRect(cnt) for cnt in contours]
@@ -127,7 +129,8 @@ def update_contour(image_id, enable_vis, enable_marker_dump):
     if enable_marker_dump:
         txt_filename = g_image_filenames[image_id].replace('.jpg', '.txt')
         with open(txt_filename, 'w') as fp:
-            fp.write("%d %f %f %f %f\n" % (image_id, (left + right) / 2 / w, (top + bottom) / 2 / h, (right - left) / w, (bottom - top) / h))
+            fp.write("%d %f %f %f %f\n" % (category_id, (left + right) / 2 / w,
+                                           (top + bottom) / 2 / h, (right - left) / w, (bottom - top) / h))
     
 def main():
     print(__doc__)
@@ -143,14 +146,15 @@ def main():
     from functools import partial
 
     with Pool(4) as pool:
-        for category in category_folders:
+        for category_id in xrange(len(category_folders)):
+            category = category_folders[category_id]
             image_filenames = glob.glob(category + '/*.jpg')
 
             for image_filename in image_filenames:
                 train_txt_fp.write(os.path.abspath(image_filename))
                 train_txt_fp.write('\n')
 
-            pool.map(partial(update_image, image_filenames=image_filenames, enable_vis=False,
+            pool.map(partial(update_image, category_id=category_id,image_filenames=image_filenames, enable_vis=False,
                             enable_marker_dump=True), xrange(len(image_filenames)))
 
 if __name__ == '__main__':
