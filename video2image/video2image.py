@@ -18,6 +18,7 @@ Keys:
 from __future__ import print_function
 
 import cv2 as cv
+import datetime
 
 # built-in modules
 from time import clock
@@ -49,18 +50,18 @@ if __name__ == '__main__':
         os.mkdir(args.shotdir)
 
     cap = create_capture(args)
-    shot_idx = 0
-    frame_count = 0
+    prev_datetime = datetime.datetime.now()
     while True:
         ret, img = cap.read()
         cv.imshow('capture', img)
         ch = cv.waitKey(1)
         if ch == 27:
             break
-        if ch == ord(' ') or frame_count % 30 == 0:
-            fn = '%s/%s_%03d.jpg' % (args.shotdir, args.prefix, shot_idx)
+        now = datetime.datetime.now()
+        if (now - prev_datetime).microseconds > 200000:
+            now_string = now.strftime("%Y-%h-%d-%H-%M-%S-%f")
+            prev_datetime = now
+            fn = '%s/%s_%s.jpg' % (args.shotdir, args.prefix, now_string)
             cv.imwrite(fn, img)
             print(fn, 'saved')
-            shot_idx += 1
-        frame_count = frame_count + 1
     cv.destroyAllWindows()
