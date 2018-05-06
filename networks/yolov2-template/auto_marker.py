@@ -12,7 +12,7 @@ A trackbar is put up which controls the contour level from -3 to 3
 # Python 2/3 compatibility
 from __future__ import print_function
 import glob
-
+import os
 import sys
 PY3 = sys.version_info[0] == 3
 
@@ -127,7 +127,7 @@ def update_contour(image_id, enable_vis, enable_marker_dump):
     if enable_marker_dump:
         txt_filename = g_image_filenames[image_id].replace('.jpg', '.txt')
         with open(txt_filename, 'w') as fp:
-            fp.write("%d %f %f %f %f\n" % (0, (left + right) / 2 / w, (top + bottom) / 2 / h, (right - left) / w, (bottom - top) / h))
+            fp.write("%d %f %f %f %f\n" % (image_id, (left + right) / 2 / w, (top + bottom) / 2 / h, (right - left) / w, (bottom - top) / h))
     
 def main():
     print(__doc__)
@@ -147,7 +147,7 @@ def main():
             image_filenames = glob.glob(category + '/*.jpg')
 
             for image_filename in image_filenames:
-                train_txt_fp.write(image_filename)
+                train_txt_fp.write(os.path.abspath(image_filename))
                 train_txt_fp.write('\n')
 
             pool.map(partial(update_image, image_filenames=image_filenames, enable_vis=False,
