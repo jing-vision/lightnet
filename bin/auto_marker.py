@@ -26,7 +26,8 @@ import cv2 as cv
 category_folders = glob.glob('img/*')
 g_image_filenames = []
 train_txt = 'train.txt'
-obj_names_txt = 'obj.names'
+obj_data = 'obj.data'
+obj_names = 'obj.names'
 
 # runtime config
 contours = None
@@ -139,7 +140,15 @@ def main():
 
     cv.waitKey()
 
+    with open(obj_data, 'w') as obj_data_fp:
+        obj_data_fp.write('classes=%d\n' % len(category_folders))
+        obj_data_fp.write('train  = ./train.txt\n')
+        obj_data_fp.write('valid  = ./train.txt\n')
+        obj_data_fp.write('names = ./obj.names\n')
+        obj_data_fp.write('backup = weights/\n')
+
     train_txt_fp = open(train_txt, 'w')
+    obj_names_fp = open(obj_names, 'w')
 
     from multiprocessing import Pool
     from itertools import repeat
@@ -148,6 +157,8 @@ def main():
     with Pool(4) as pool:
         for category_id in xrange(len(category_folders)):
             category = category_folders[category_id]
+            obj_names_fp.write(category)
+            obj_names_fp.write('\n')
             image_filenames = glob.glob(category + '/*.jpg')
 
             for image_filename in image_filenames:
