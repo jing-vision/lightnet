@@ -167,6 +167,7 @@ def main():
 
             pool.map(partial(update_image, category_id=category_id,image_filenames=image_filenames, enable_vis=False,
                             enable_marker_dump=True), xrange(len(image_filenames)))
+        cv.waitKey(1) # to activate UI events
 
 if __name__ == '__main__':
     main()

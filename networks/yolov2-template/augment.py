@@ -1,5 +1,6 @@
 import Augmentor
 p = Augmentor.Pipeline("img")
+# p = Augmentor.Pipeline("img_raw", output_directory="../img")
 # p.ground_truth("org_img")
 p.rotate(probability=1, max_left_rotation=5, max_right_rotation=5)
 p.flip_left_right(probability=0.5)
