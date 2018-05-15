@@ -128,7 +128,8 @@ def update_contour(category_id, image_id, enable_vis, enable_marker_dump):
         cv.imshow('marker', vis)
 
     if enable_marker_dump:
-        txt_filename = g_image_filenames[image_id].replace('.jpg', '.txt')
+        base = os.path.splitext(g_image_filenames[image_id])[0]
+        txt_filename = base + '.txt'
         with open(txt_filename, 'w') as fp:
             fp.write("%d %f %f %f %f\n" % (category_id, (left + right) / 2 / w,
                                            (top + bottom) / 2 / h, (right - left) / w, (bottom - top) / h))
@@ -154,6 +155,7 @@ def main():
     from itertools import repeat
     from functools import partial
 
+    total_counter = 0
     with Pool(4) as pool:
         for category_id in xrange(len(category_folders)):
             category = category_folders[category_id]
@@ -167,7 +169,11 @@ def main():
 
             pool.map(partial(update_image, category_id=category_id,image_filenames=image_filenames, enable_vis=False,
                             enable_marker_dump=True), xrange(len(image_filenames)))
-        cv.waitKey(1) # to activate UI events
+
+            total_counter += 1
+            if total_counter % 100 == 0:
+                cv.waitKey(1)  # to activate UI events
+                print('Processed images: %s\n' % (total_counter))
 
 if __name__ == '__main__':
     main()
