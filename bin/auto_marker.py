@@ -24,6 +24,7 @@ import cv2 as cv
 
 # file names config
 category_folders = glob.glob('img/*')
+g_category_id = None
 g_image_filenames = []
 train_txt = 'train.txt'
 obj_data = 'obj.data'
@@ -38,7 +39,8 @@ gray = None
 cv.namedWindow('marker')
 
 def update_category(category_id):
-    global g_image_filenames
+    global g_image_filenames, g_category_id
+    g_category_id = category_id
     g_image_filenames = glob.glob(category_folders[category_id] + '/*.jpg')
     cv.createTrackbar("image", 'marker', 0,
                       len(g_image_filenames) - 1, update_image)
@@ -63,7 +65,7 @@ def update_image(image_id, category_id = 0, image_filenames=[], enable_vis=True,
         if len(image_filenames) > 0:
             g_image_filenames=image_filenames
         img=cv.imread(g_image_filenames[image_id])
-
+        # print(g_image_filenames[image_id])
         cv.setTrackbarPos('image', 'marker', image_id)
 
         gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
@@ -139,7 +141,11 @@ def main():
 
     update_category(0)
 
-    cv.waitKey()
+    key = cv.waitKey()
+    single_category_mode = False
+    if key == ord('f'):
+        single_category_mode = True
+
     cwd = os.getcwd()
 
     with open(obj_data, 'w') as obj_data_fp:
@@ -159,6 +165,9 @@ def main():
     total_counter = 0
     with Pool(4) as pool:
         for category_id in xrange(len(category_folders)):
+            if single_category_mode and category_id != g_category_id:
+                continue
+
             category = category_folders[category_id]
             obj_names_fp.write(category)
             obj_names_fp.write('\n')
@@ -171,10 +180,8 @@ def main():
             pool.map(partial(update_image, category_id=category_id,image_filenames=image_filenames, enable_vis=False,
                             enable_marker_dump=True), xrange(len(image_filenames)))
 
-            total_counter += 1
-            if total_counter % 100 == 0:
-                cv.waitKey(1)  # to activate UI events
-                print('Processed images: %s\n' % (total_counter))
+            cv.waitKey(1)  # to activate UI events
+            print('Processed images: %d\n' % (category_id))
 
 if __name__ == '__main__':
     main()

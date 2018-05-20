@@ -47,7 +47,8 @@
 *.weights
 /bin/
 !/bin/auto_marker.py
-/networks/
+
+# /networks/
 !/networks/yolo9000/
 !/networks/yolov2-template/
 !/networks/yolov3/
