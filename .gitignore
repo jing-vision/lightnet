@@ -31,8 +31,14 @@
 *.out
 *.app
 
-/vs2015/x64/
+/proj_exe/x64/
+/proj_dll/x64/
 /video2image/img/
+
+*.suo
+*.user
+*.pdb
+*.db
 
 # network related
 *.weights
