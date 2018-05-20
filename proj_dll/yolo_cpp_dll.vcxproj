@@ -68,21 +68,21 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\bin\</OutDir>
+    <OutDir>bin\</OutDir>
     <IntDir>$(Platform)\DLL_$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)-d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-CPU|x64'">
-    <OutDir>..\bin\</OutDir>
+    <OutDir>bin\</OutDir>
     <IntDir>$(Platform)\DLL_$(Configuration)\</IntDir>
     <TargetName>yolo_cpp_dll_nogpu-d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\bin\</OutDir>
+    <OutDir>bin\</OutDir>
     <IntDir>$(Platform)\DLL_$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-CPU|x64'">
-    <OutDir>..\bin\</OutDir>
+    <OutDir>bin\</OutDir>
     <IntDir>$(Platform)\DLL_$(Configuration)\</IntDir>
     <TargetName>yolo_cpp_dll_nogpu</TargetName>
   </PropertyGroup>

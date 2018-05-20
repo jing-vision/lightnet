@@ -42,9 +42,10 @@ def load_name_list(metaPath):
     return []
 
 
+USING_DARKNET_IMAGE_IO = True
 def detect_from_file(net, meta, image_path, thresh=.5, hier_thresh=.5, nms=.45, debug=False):
     #pylint: disable= C0321
-    if False:
+    if USING_DARKNET_IMAGE_IO:
         im = darknet.load_image(to_str(image_path, True), 0, 0)
     else:
         import cv2
@@ -53,7 +54,7 @@ def detect_from_file(net, meta, image_path, thresh=.5, hier_thresh=.5, nms=.45, 
     if debug:
         print("Loaded image")
     det = detect_from_memory(net, meta, im, thresh, hier_thresh, nms, debug)
-    if False:
+    if USING_DARKNET_IMAGE_IO:
         darknet.free_image(im)
         if debug:
             print("freed image")

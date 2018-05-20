@@ -11,9 +11,8 @@ msbuild yolo2_light\yolo_gpu.sln /p:Configuration=Release /p:Platform=x64 /v:min
 
 REM Deploy to bin/
 
-REM robocopy darknet\build\darknet\x64\ bin\ darknet.exe
-REM robocopy darknet\build\darknet\x64\ bin\ darknet_no_gpu.exe
-REM robocopy darknet\build\darknet\x64\ bin\ yolo_cpp_dll.dll
+robocopy proj_exe\bin\ bin\ *.exe
+robocopy proj_dll\bin\ bin\ *.dll
 
 robocopy darknet\build\darknet\x64\ bin\ pthreadVC2.dll
 robocopy darknet\ bin\ darknet.py
