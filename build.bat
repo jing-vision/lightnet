@@ -10,6 +10,7 @@ REM robocopy darknet\build\darknet\x64\ bin\ darknet.exe
 REM robocopy darknet\build\darknet\x64\ bin\ darknet_no_gpu.exe
 robocopy darknet\build\darknet\x64\ bin\ yolo_cpp_dll.dll
 robocopy darknet\build\darknet\x64\ bin\ pthreadVC2.dll
+robocopy darknet\darknet.py bin darknet.py
 robocopy darknet\cfg bin\cfg /E
 robocopy darknet\data bin\data /E
 robocopy Yolo_mark\x64\Release\ bin\ yolo_mark.exe
