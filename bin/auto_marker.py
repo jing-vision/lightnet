@@ -140,13 +140,14 @@ def main():
     update_category(0)
 
     cv.waitKey()
+    cwd = os.getcwd()
 
     with open(obj_data, 'w') as obj_data_fp:
         obj_data_fp.write('classes=%d\n' % len(category_folders))
-        obj_data_fp.write('train  = ./train.txt\n')
-        obj_data_fp.write('valid  = ./train.txt\n')
-        obj_data_fp.write('names = ./obj.names\n')
-        obj_data_fp.write('backup = weights/\n')
+        obj_data_fp.write('train  =%s/train.txt\n' % (cwd))
+        obj_data_fp.write('valid  =%s/train.txt\n' % (cwd))
+        obj_data_fp.write('names =%s/obj.names\n' % (cwd))
+        obj_data_fp.write('backup =%s/weights/\n' % (cwd))
 
     train_txt_fp = open(train_txt, 'w')
     obj_names_fp = open(obj_names, 'w')
