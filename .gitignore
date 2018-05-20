@@ -33,7 +33,9 @@
 
 /vs2015/x64/
 /proj_exe/x64/
+/proj_exe/bin/
 /proj_dll/x64/
+/proj_dll/bin/
 /video2image/img/
 
 *.suo
