@@ -69,6 +69,9 @@ def update_image(image_id, category_id = 0, image_filenames=[], enable_vis=True,
         cv.setTrackbarPos('image', 'marker', image_id)
 
         gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+        gray[np.where(gray <= [3])] = [187]
+        gray = cv.medianBlur(gray, 11)
+
         if enable_vis:
             cv.imshow('gray', gray)
 
