@@ -1,0 +1,1 @@
+..\..\bin\darknet.exe detector map obj.data yolo-obj.cfg weights\yolo-obj_700.weights
