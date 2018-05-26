@@ -32,6 +32,7 @@ Or build the componets from Visual Studio
 - Yolo_mark: `Yolo_mark\yolo_mark.sln`, x64|Release -> `Yolo_mark\x64\Release\yolo_mark.exe`
 - yolo2_light: `yolo2_light\yolo_gpu.sln`, Release -> `yolo2_light\bin\yolo_gpu.exe`
 
+# Object Detection - yolo
 ## How to mark labelled images
 
  - delete all files from directory `my-yolo-net/img` and put your `.jpg`-images in
@@ -88,7 +89,7 @@ Or build the componets from Visual Studio
   classes=2
   ```
 
-# How to inference
+## How to inference
 
 ## Pre-trained models for different cfg-files can be downloaded from (smaller -> faster & lower quality):
 
@@ -98,6 +99,7 @@ cfg/yolov2.cfg|https://pjreddie.com/media/files/yolov2.weights
 cfg/yolov2-tiny.cfg|https://pjreddie.com/media/files/yolov2-tiny.weights
 cfg/yolo9000.cfg|http://pjreddie.com/media/files/yolo9000.weights
 cfg/yolov3.cfg|https://pjreddie.com/media/files/yolov3.weights
+cfg/yolov3-tiny.cfg|https://pjreddie.com/media/files/yolov3-tiny.weights
 
 ## Run Darknet
 
@@ -132,3 +134,18 @@ Default launch device combination is `-i 0 -c 0`.
 ```
 ..\bin\darknet-cpu.exe detector demo data/combine9k.data cfg/yolo9000.cfg weights/yolo9000.weights
 ```
+
+# Image Classification
+## Download weights
+
+cfg|weights
+---|-------
+cfg/alexnet.cfg|https://pjreddie.com/media/files/alexnet.weights
+cfg/vgg-16.cfg|https://pjreddie.com/media/files/vgg-16.weights
+cfg/extraction.cfg|https://pjreddie.com/media/files/extraction.weights
+cfg/darknet.cfg|https://pjreddie.com/media/files/darknet.weights
+cfg/darknet19.cfg|https://pjreddie.com/media/files/darknet19.weights
+cfg/darknet19_448.cfg|https://pjreddie.com/media/files/darknet19_448.weights
+cfg/resnet50.cfg|https://pjreddie.com/media/files/resnet50.weights
+cfg/resnet152.cfg|https://pjreddie.com/media/files/resnet152.weights
+cfg/densenet201.cfg|https://pjreddie.com/media/files/densenet201.weights
