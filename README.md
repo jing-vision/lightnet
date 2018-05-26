@@ -32,6 +32,12 @@ Or build the componets from Visual Studio
 - Yolo_mark: `Yolo_mark\yolo_mark.sln`, x64|Release -> `Yolo_mark\x64\Release\yolo_mark.exe`
 - yolo2_light: `yolo2_light\yolo_gpu.sln`, Release -> `yolo2_light\bin\yolo_gpu.exe`
 
+# Fine tune a existing network
+
+https://github.com/pjreddie/darknet/wiki/YOLO:-Real-Time-Object-Detection
+
+darknet.exe partial cfg/darknet19_448.cfg darknet19_448.weights darknet19_448.conv.23 23
+
 # Object Detection - yolo
 ## How to mark labelled images
 
@@ -113,30 +119,27 @@ darknet.exe detector test <data> <cfg> <weights> <img_filename>
 
 Default launch device combination is `-i 0 -c 0`.
 
-## Run from networks/ folder
+## Run from bin/ folder
 
-### train_voc
+### yolov3
 ```
-..\bin\darknet.exe detector train data/voc.data cfg/yolo-voc.cfg weights/darknet19_448.conv.2
-```
-
-### test_voc
-```
-..\bin\darknet.exe detector test data/voc.data cfg/yolo-voc.cfg weights/yolo-voc.weights -thresh 0.2
+darknet.exe detector demo cfg/coco.data cfg/yolov3.cfg yolov3.weights
 ```
 
 ### yolo9000 on camera #0
 ```
-..\bin\darknet.exe detector demo data/combine9k.data cfg/yolo9000.cfg weights/yolo9000.weights
+darknet.exe detector demo cfg/combine9k.data cfg/yolo9000.cfg yolo9000.weights
 ```
 
 ### yolo9000 CPU on camera #0
 ```
-..\bin\darknet-cpu.exe detector demo data/combine9k.data cfg/yolo9000.cfg weights/yolo9000.weights
+darknet_no_gpu.exe detector demo cfg/combine9k.data cfg/yolo9000.cfg yolo9000.weights
 ```
 
 # Image Classification
 ## Download weights
+
+https://pjreddie.com/darknet/imagenet/
 
 cfg|weights
 ---|-------
