@@ -93,6 +93,7 @@
       </UndefinePreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4819;4244;4305</DisableSpecificWarnings>
+      <ForcedIncludeFiles>stdlib.h;crtdbg.h</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -117,6 +118,7 @@
       </UndefinePreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4819;4244;4305</DisableSpecificWarnings>
+      <ForcedIncludeFiles>stdlib.h;crtdbg.h</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
