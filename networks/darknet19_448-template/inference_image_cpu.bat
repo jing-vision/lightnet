@@ -1,0 +1,1 @@
+..\..\bin\darknet_no_gpu.exe classifier predict obj.data obj.cfg weights\obj_100.weights %*

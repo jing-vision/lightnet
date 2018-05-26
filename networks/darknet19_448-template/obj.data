@@ -1,0 +1,7 @@
+classes=2
+train  = train.txt
+valid  = train.txt
+backup = weights/
+labels  = obj.names
+names  = obj.names
+top=5
