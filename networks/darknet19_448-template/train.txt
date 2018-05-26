@@ -1,8 +1,0 @@
-d:\__svn_pool\yolo-studio\networks\darknet19_448-template\img\air1.jpg
-d:\__svn_pool\yolo-studio\networks\darknet19_448-template\img\air2.jpg
-d:\__svn_pool\yolo-studio\networks\darknet19_448-template\img\air3.jpg
-d:\__svn_pool\yolo-studio\networks\darknet19_448-template\img\air4.jpg
-d:\__svn_pool\yolo-studio\networks\darknet19_448-template\img\air5.jpg
-d:\__svn_pool\yolo-studio\networks\darknet19_448-template\img\bird1.jpg
-d:\__svn_pool\yolo-studio\networks\darknet19_448-template\img\bird2.jpg
-d:\__svn_pool\yolo-studio\networks\darknet19_448-template\img\bird3.jpg
