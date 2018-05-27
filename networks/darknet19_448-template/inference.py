@@ -15,6 +15,7 @@ if __name__ == "__main__":
 
     net, meta = lightnet.load_network_meta(
         "obj.cfg", "weights/obj_200.weights", "obj.data")
+        # "../../bin/cfg/darknet19_448.cfg", "../../bin/darknet19_448.weights", "../../bin/cfg/imagenet1k.data")
 
     if IMAGE_MODE:
         if True:
