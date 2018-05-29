@@ -45,8 +45,10 @@
 
 # network related
 *.weights
-/bin/
+/bin/*
 !/bin/auto_marker.py
 
-/networks/
-!/networks/*template/
+/networks/*
+!/networks/darknet19_448-template/
+!/networks/yolov2-template/
+!/networks/yolov3-template/
