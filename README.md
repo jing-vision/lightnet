@@ -52,11 +52,11 @@ darknet.exe partial cfg/darknet19_448.cfg darknet19_448.weights darknet19_448.co
 
 1. Download pre-trained weights for the convolutional layers: http://pjreddie.com/media/files/darknet19_448.conv.23 to `bin/darknet19_448.conv.23`
 
-2. To training for your custom objects, you should change 2 lines in file `yolo-obj.cfg`:
+2. To training for your custom objects, you should change 2 lines in file `obj.cfg`:
 
  - change `classes` in obj.data#L1
- - set number of classes (objects) in yolo-obj.cfg#L230
- - set `filter`-value equal to `(classes + 5)*5` in yolo-obj.cfg#L224
+ - set number of classes (objects) in obj.cfg#L230
+ - set `filter`-value equal to `(classes + 5)*5` in obj.cfg#L224
 
 3. Run `my-yolo-net/train.cmd`
 
@@ -66,18 +66,18 @@ darknet.exe partial cfg/darknet19_448.cfg darknet19_448.weights darknet19_448.co
 
 1. Download pre-trained weights for the convolutional layers: http://pjreddie.com/media/files/darknet53.conv.74 to `bin/darknet53.conv.74`
 
-2. Create file `yolo-obj.cfg` with the same content as in `yolov3.cfg` (or copy `yolov3.cfg` to `yolo-obj.cfg)` and:
+2. Create file `obj.cfg` with the same content as in `yolov3.cfg` (or copy `yolov3.cfg` to `obj.cfg)` and:
 
-  * change line batch to [`batch=64`](yolo-obj.cfg#L3)
-  * change line subdivisions to [`subdivisions=8`](yolo-obj.cfg#L4)
+  * change line batch to [`batch=64`](obj.cfg#L3)
+  * change line subdivisions to [`subdivisions=8`](obj.cfg#L4)
   * change line `classes=80` to your number of objects in each of 3 `[yolo]`-layers:
-      * yolo-obj.cfg#L610
-      * yolo-obj.cfg#L696
-      * yolo-obj.cfg#L783
+      * obj.cfg#L610
+      * obj.cfg#L696
+      * obj.cfg#L783
   * change [`filters=255`] to filters=(classes + 5)x3 in the 3 `[convolutional]` before each `[yolo]` layer
-      * yolo-obj.cfg#L603
-      * yolo-obj.cfg#L689
-      * yolo-obj.cfg#L776
+      * obj.cfg#L603
+      * obj.cfg#L689
+      * obj.cfg#L776
 
   So if `classes=1` then should be `filters=18`. If `classes=2` then write `filters=21`.
   
@@ -85,7 +85,7 @@ darknet.exe partial cfg/darknet19_448.cfg darknet19_448.weights darknet19_448.co
   
   (Generally `filters` depends on the `classes`, `coords` and number of `mask`s, i.e. filters=`(classes + coords + 1)*<number of mask>`, where `mask` is indices of anchors. If `mask` is absence, then filters=`(classes + coords + 1)*num`)
 
-  So for example, for 2 objects, your file `yolo-obj.cfg` should differ from `yolov3.cfg` in such lines in each of **3** [yolo]-layers:
+  So for example, for 2 objects, your file `obj.cfg` should differ from `yolov3.cfg` in such lines in each of **3** [yolo]-layers:
 
   ```
   [convolutional]
@@ -152,3 +152,15 @@ cfg/darknet19_448.cfg|https://pjreddie.com/media/files/darknet19_448.weights
 cfg/resnet50.cfg|https://pjreddie.com/media/files/resnet50.weights
 cfg/resnet152.cfg|https://pjreddie.com/media/files/resnet152.weights
 cfg/densenet201.cfg|https://pjreddie.com/media/files/densenet201.weights
+
+## Train custom darknet19_448 network
+
+0. Fork `networks/darknet19-template` to `networks/my-darknet19-net`
+
+1. Download pre-trained weights for the convolutional layers: http://pjreddie.com/media/files/darknet19_448.conv.23 to `bin/darknet19_448.conv.23`
+
+2. Create file `obj.cfg` with the same content as in `darknet19_448.cfg` (or copy `darknet19_448.cfg` to `obj.cfg)` and:
+
+  * set `batch` to `128` or `64` or `32` depends on your GPU memory in darknet19-classify.cfg#L4
+  * change line to [`subdivisions=4`](darknet19-classify.cfg#L5)
+  * set `filter`-value equal to `classes` in darknet19-classify.cfg#L189

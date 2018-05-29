@@ -1,1 +1,0 @@
-"C:\Program Files\Git\bin\wget.exe" http://pjreddie.com/media/files/yolo9000.weights --no-check-certificate
