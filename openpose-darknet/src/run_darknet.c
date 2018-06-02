@@ -17,6 +17,11 @@ void init_net
     *inh = net->h;
     *outw = net->layers[net->n - 2].out_w;
     *outh = net->layers[net->n - 2].out_h;
+
+    for (int i = 0; i < net->n; i++) {
+        layer lay = net->layers[i];
+        printf("#%d %d %d %d -> %d %d\n", i, lay.type, lay.w, lay.h, lay.out_w, lay.out_h);
+    }
 }
 
 float *run_net
