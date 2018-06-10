@@ -15,11 +15,11 @@ https://github.com/pjreddie/darknet
 <b>[Weight file] (darknet version openpose.weight)</b><p>
 https://drive.google.com/open?id=1BfY0Hx2d2nm3I4JFh0W1cK2aHD1FSGea
   
-<b>[Usage]</b><p>
+<b>[Usage] in bin/ folder</b><p>
 ```Bash
-./openpose [image file] [cfg file] [weight file]
+openpose.exe [image file] [cfg file] [weight file]
 #example
-./openpose person.jpg openpose.cfg openpose.weight
+openpose.exe openpose.cfg openpose.weight data/person.jpg
 ```
 
 <b>[note]</b><p>

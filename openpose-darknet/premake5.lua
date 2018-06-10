@@ -54,7 +54,7 @@ solution "openpose"
         configuration "Debug"
             links {
                 "opencv_world340d.lib",
-                "yolo_cpp_dll-d.lib",
+                "yolo_cpp_dll.lib",
             }
         configuration "Release"
             links {

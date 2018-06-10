@@ -4,19 +4,19 @@
 extern "C"
 {
 
-void init_net
+    void init_net
     (
-    char *cfgfile,
-    char *weightfile,
-    int *inw,
-    int *inh,
-    int *outw,
-    int *outh
+        const char *cfgfile,
+        const char *weightfile,
+        int *inw,
+        int *inh,
+        int *outw,
+        int *outh
     );
 
-float *run_net
+    float *run_net
     (
-    float *indata
+        float *indata
     );
 
 }
