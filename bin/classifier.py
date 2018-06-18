@@ -17,7 +17,8 @@ if __name__ == "__main__":
     parser.add_argument('--video')
     parser.add_argument('--camera', type=int, default=0)
     parser.add_argument('--top_k', type=int, default=3)
-    parser.add_argument('--min_confidence', type=float, default=0.95)
+    parser.add_argument('--gold_confidence', type=float, default=0.95)
+    parser.add_argument('--display_confidence', type=float, default=0.5)
     args = parser.parse_args()
 
     net, meta = lightnet.load_network_meta(
@@ -47,22 +48,22 @@ if __name__ == "__main__":
 
             im, arr = darknet.array_to_image(frame)
             darknet.rgbgr_image(im)
-            r = darknet.classify(net, meta, im)
+            results = darknet.classify(net, meta, im)
             # print(r[0])
 
             for rank in range(0, args.top_k):
                 left = 10
                 top = 20 + rank * 20
-                (label, score) = r[rank]
+                (label, score) = results[rank]
 
-                if score > args.min_confidence:
+                if results[0][1] > args.display_confidence:
                     label = '%s %.2f%%' % (label[4:], score * 100)
                 else:
                     label = '%s' % (label[4:])
                 labelSize, baseLine = cv.getTextSize(
                     label, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
                 back_clr = (222, 222, 222)
-                if score > args.min_confidence:
+                if score > args.gold_confidence:
                     back_clr = (122, 122, 255)
                 cv.rectangle(frame, (left, top - labelSize[1]), (left + labelSize[
                     0], top + baseLine), back_clr, cv.FILLED)
