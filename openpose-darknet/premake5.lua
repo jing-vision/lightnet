@@ -55,6 +55,7 @@ solution "openpose"
             "../darknet/src",
             "src",
             "minitrace",
+            path.join("$(CUDA_PATH)", "include"),
             path.join(OPENCV_PATH, "include")
         }
         files { 

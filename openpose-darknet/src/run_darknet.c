@@ -1,3 +1,4 @@
+#define GPU
 #include <network.h>
 
 static network *net;
