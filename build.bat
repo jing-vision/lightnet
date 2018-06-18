@@ -22,4 +22,5 @@ robocopy darknet\cfg bin\cfg /E
 robocopy darknet\data bin\data /E
 robocopy Yolo_mark\x64\Release\ bin\ yolo_mark.exe
 robocopy yolo2_light\bin\ bin\ yolo_gpu.exe
-robocopy C:\opencv_3.0\opencv\build\x64\vc14\bin\ bin\ opencv_world340.dll
+robocopy D:\opencv\build\x64\vc14\bin\ bin\ opencv_world340.dll
+robocopy D:\opencv\build\x64\vc14\bin\ bin\ opencv_ffmpeg340_64.dll

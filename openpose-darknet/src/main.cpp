@@ -22,11 +22,11 @@ inline T fastMin(const T a, const T b)
 }
 
 const char* params
-=   "{ help           | false           | print usage          }"
+=   "{ h help         | false           | print usage          }"
     "{ proto          |openpose.cfg| model configuration }"
     "{ model          |openpose.weight| model weights }"
     "{ camera         | 0     | camera device number }"
-    "{ video          |         | video or image for detection }"
+    "{ image video    |         | video or image for detection }"
     "{ min_confidence | 0.5     | min confidence       }";
 
 void render_pose_keypoints
@@ -559,7 +559,10 @@ int main(int argc, char **argv)
         if (cap.isOpened())
         {
             cap >> frame; // get a new frame from camera/video or read image
-            flip(frame, frame, 1);
+            if (video.empty())
+            {
+                flip(frame, frame, 1);
+            }
         }
 
         if (frame.empty())
