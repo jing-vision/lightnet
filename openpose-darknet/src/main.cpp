@@ -763,7 +763,7 @@ int main(int argc, char **argv)
 
                 {
                     MTR_SCOPE(__FILE__, "waitkey");
-                    if (waitKey(1) != -1) break;
+                    if (waitKey(1) == 27) break;
                 }
             }
         }
