@@ -6,6 +6,8 @@ using namespace std;
 using namespace cv;
 #include "run_darknet.h"
 
+#include "minitrace.h"
+
 #define POSE_MAX_PEOPLE 96
 #define NET_OUT_CHANNELS 57 // 38 for pafs, 19 for parts
 
@@ -40,19 +42,21 @@ void render_pose_keypoints
     float scale
 )
 {
+    MTR_SCOPE_FUNC();
+
     const int num_keypoints = keyshape[1];
-    unsigned int pairs[] =
+    static unsigned int pairs[] =
     {
-    1, 2, 1, 5, 2, 3, 3, 4, 5, 6, 6, 7, 1, 8, 8, 9, 9, 10,
-    1, 11, 11, 12, 12, 13, 1, 0, 0, 14, 14, 16, 0, 15, 15, 17
+        1, 2, 1, 5, 2, 3, 3, 4, 5, 6, 6, 7, 1, 8, 8, 9, 9, 10,
+        1, 11, 11, 12, 12, 13, 1, 0, 0, 14, 14, 16, 0, 15, 15, 17
     };
-    float colors[] =
+    static float colors[] =
     {
-    255.f, 0.f, 85.f, 255.f, 0.f, 0.f, 255.f, 85.f, 0.f, 255.f, 170.f, 0.f,
-    255.f, 255.f, 0.f, 170.f, 255.f, 0.f, 85.f, 255.f, 0.f, 0.f, 255.f, 0.f,
-    0.f, 255.f, 85.f, 0.f, 255.f, 170.f, 0.f, 255.f, 255.f, 0.f, 170.f, 255.f,
-    0.f, 85.f, 255.f, 0.f, 0.f, 255.f, 255.f, 0.f, 170.f, 170.f, 0.f, 255.f,
-    255.f, 0.f, 255.f, 85.f, 0.f, 255.f
+        255.f, 0.f, 85.f, 255.f, 0.f, 0.f, 255.f, 85.f, 0.f, 255.f, 170.f, 0.f,
+        255.f, 255.f, 0.f, 170.f, 255.f, 0.f, 85.f, 255.f, 0.f, 0.f, 255.f, 0.f,
+        0.f, 255.f, 85.f, 0.f, 255.f, 170.f, 0.f, 255.f, 255.f, 0.f, 170.f, 255.f,
+        0.f, 85.f, 255.f, 0.f, 0.f, 255.f, 255.f, 0.f, 170.f, 170.f, 0.f, 255.f,
+        255.f, 0.f, 255.f, 85.f, 0.f, 255.f
     };
     const int pairs_size = sizeof(pairs) / sizeof(unsigned int);
     const int number_colors = sizeof(colors) / sizeof(float);
@@ -106,6 +110,8 @@ void connect_bodyparts
     vector<int>& keypoint_shape
 )
 {
+    MTR_SCOPE_FUNC();
+
     keypoint_shape.resize(3);
     const int body_part_pairs[] =
     {
@@ -410,6 +416,8 @@ void find_heatmap_peaks
     const float TH
 )
 {
+    MTR_SCOPE_FUNC();
+
     // find peaks (8-connected neighbor), weights with 7 by 7 area to get sub-pixel location and response
     const int SRC_PLANE_OFFSET = SRCW * SRCH;
     // add 1 for saving total people count, 3 for x, y, score
@@ -489,6 +497,8 @@ Mat create_netsize_im
     float *scale
 )
 {
+    MTR_SCOPE_FUNC();
+
     // for tall image
     int newh = neth;
     float s = newh / (float)im.rows;
@@ -508,8 +518,29 @@ Mat create_netsize_im
     return dst;
 }
 
+
+// using MTR_SCOPE("GFX", "RasterizeTriangle")
+struct MiniTraceHelper
+{
+    MiniTraceHelper()
+    {
+        mtr_init("trace.json");
+        mtr_register_sigint_handler();
+        MTR_META_PROCESS_NAME("main process");
+        MTR_META_THREAD_NAME("main thread");
+    }
+
+    ~MiniTraceHelper()
+    {
+        mtr_flush();
+        mtr_shutdown();
+    }
+
+};
 int main(int argc, char **argv)
 {
+    MiniTraceHelper mr_hepler;
+
     CommandLineParser parser(argc, argv, params);
     if (parser.get<bool>("help"))
     {
@@ -527,16 +558,18 @@ int main(int argc, char **argv)
     String video = parser.get<String>("video");
     if (video.empty())
     {
-        int cameraDevice = parser.get<int>("camera");
-        cap = VideoCapture(cameraDevice);
+        MTR_SCOPE(__FILE__, "cap.open(camera)");
+        int camera = parser.get<int>("camera");
+        cap.open(camera);
         if (!cap.isOpened())
         {
-            cout << "Couldn't find camera: " << cameraDevice << endl;
+            cout << "Couldn't find camera: " << camera << endl;
             return -1;
         }
     }
     else
     {
+        MTR_SCOPE(__FILE__, "cap.open(video)");
         cap.open(video);
         if (!cap.isOpened())
         {
@@ -574,16 +607,24 @@ int main(int argc, char **argv)
     int net_inh = 0;
     int net_outw = 0;
     int net_outh = 0;
-    init_net(cfg_path.c_str(), weight_path.c_str(), &net_inw, &net_inh, &net_outw, &net_outh);
+    {
+        MTR_SCOPE(__FILE__, "init_net");
+        init_net(cfg_path.c_str(), weight_path.c_str(), &net_inw, &net_inh, &net_outw, &net_outh);
+    }
 
     float *netin_data = new float[net_inw * net_inh * 3];
     float *heatmap_peaks = new float[3 * (POSE_MAX_PEOPLE + 1) * (NET_OUT_CHANNELS - 1)];
     float *heatmap = new float[net_inw * net_inh * NET_OUT_CHANNELS];
 
+    int frame_count = 0;
     for (;;)
     {
+        MTR_SCOPE_FUNC_I("frame", frame_count);
+        frame_count++;
+
         if (cap.isOpened())
         {
+            MTR_SCOPE(__FILE__, "cap >> frame");
             cap >> frame; // get a new frame from camera/video or read image
             if (video.empty())
             {
@@ -597,53 +638,78 @@ int main(int argc, char **argv)
             break;
         }
 
-        // 3. resize to net input size, put scaled image on the top left
         float scale = 0.0f;
-        Mat netim = create_netsize_im(frame, net_inw, net_inh, &scale);
-
-        // 4. normalized to float type
-        netim.convertTo(netim, CV_32F, 1 / 256.f, -0.5);
-
-        // 5. split channels
-        float *netin_data_ptr = netin_data;
-        vector<Mat> input_channels;
-        for (int i = 0; i < 3; ++i)
         {
-            Mat channel(net_inh, net_inw, CV_32FC1, netin_data_ptr);
-            input_channels.emplace_back(channel);
-            netin_data_ptr += (net_inw * net_inh);
+            MTR_SCOPE(__FILE__, "pre process");
+
+            // 3. resize to net input size, put scaled image on the top left
+            Mat netim = create_netsize_im(frame, net_inw, net_inh, &scale);
+
+            // 4. normalized to float type
+            netim.convertTo(netim, CV_32F, 1 / 256.f, -0.5);
+
+            // 5. split channels
+            float *netin_data_ptr = netin_data;
+            vector<Mat> input_channels;
+            for (int i = 0; i < 3; ++i)
+            {
+                Mat channel(net_inh, net_inw, CV_32FC1, netin_data_ptr);
+                input_channels.emplace_back(channel);
+                netin_data_ptr += (net_inw * net_inh);
+            }
+            split(netim, input_channels);
         }
-        split(netim, input_channels);
 
         // 6. feed forward
-        double time_begin = getTickCount();
-        float *netoutdata = run_net(netin_data);
-        double fee_time = (getTickCount() - time_begin) / getTickFrequency() * 1000;
-        cout << "forward fee: " << fee_time << "ms" << endl;
-
-        // 7. resize net output back to input size to get heatmap
-        for (int i = 0; i < NET_OUT_CHANNELS; ++i)
+        float *netoutdata = NULL;
         {
-            Mat netout(net_outh, net_outw, CV_32F, (netoutdata + net_outh*net_outw*i));
-            Mat nmsin(net_inh, net_inw, CV_32F, heatmap + net_inh*net_inw*i);
-            resize(netout, nmsin, Size(net_inw, net_inh), 0, 0, CV_INTER_CUBIC);
+            MTR_SCOPE(__FILE__, "run_net");
+            double time_begin = getTickCount();
+            netoutdata = run_net(netin_data);
+            double fee_time = (getTickCount() - time_begin) / getTickFrequency() * 1000;
+            cout << "forward fee: " << fee_time << "ms" << endl;
         }
 
-        // 8. get heatmap peaks
-        find_heatmap_peaks(heatmap, heatmap_peaks, net_inw, net_inh, NET_OUT_CHANNELS, 0.05);
-
-        // 9. link parts
         vector<float> keypoints;
         vector<int> shape;
-        connect_bodyparts(keypoints, heatmap, heatmap_peaks, net_inw, net_inh, 9, 0.05, 6, 0.4, shape);
+        {
+            MTR_SCOPE(__FILE__, "post process");
 
-        // 10. draw result
-        render_pose_keypoints(frame, keypoints, shape, 0.05, scale);
+            // 7. resize net output back to input size to get heatmap
+            {
+                for (int i = 0; i < NET_OUT_CHANNELS; ++i)
+                {
+                    MTR_SCOPE(__FILE__, "resize");
+                    Mat netout(net_outh, net_outw, CV_32F, (netoutdata + net_outh*net_outw*i));
+                    Mat nmsin(net_inh, net_inw, CV_32F, heatmap + net_inh*net_inw*i);
+                    resize(netout, nmsin, Size(net_inw, net_inh), 0, 0, CV_INTER_CUBIC);
+                }
+            }
 
-        // 11. show and save result
-        cout << "people: " << shape[0] << endl;
-        imshow("demo", frame);
-        if (waitKey(1) != -1) break;
+            // 8. get heatmap peaks
+            find_heatmap_peaks(heatmap, heatmap_peaks, net_inw, net_inh, NET_OUT_CHANNELS, 0.05);
+
+            // 9. link parts
+            connect_bodyparts(keypoints, heatmap, heatmap_peaks, net_inw, net_inh, 9, 0.05, 6, 0.4, shape);
+        }
+
+        {
+            MTR_SCOPE(__FILE__, "viz");
+            // 10. draw result
+            render_pose_keypoints(frame, keypoints, shape, 0.05, scale);
+
+            // 11. show and save result
+            {
+                MTR_SCOPE(__FILE__, "imshow");
+                cout << "people: " << shape[0] << endl;
+                imshow("demo", frame);
+            }
+
+            {
+                MTR_SCOPE(__FILE__, "waitkey");
+                if (waitKey(1) != -1) break;
+            }
+        }
     }
     delete[] netin_data;
     delete[] heatmap_peaks;

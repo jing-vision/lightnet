@@ -6,7 +6,7 @@ local OPENCV_PATH   = "d:/opencv/build"
 
 solution "openpose"
     location (action)
-    configurations { "Debug", "Release" }
+    configurations { "Debug", "Profile", "Release" }
     platforms {"x64"}
     language "C"
     kind "StaticLib"
@@ -32,6 +32,14 @@ solution "openpose"
         symbols "On"
         targetsuffix "-d"
 
+    configuration "Profile"
+        defines { "NDEBUG", "MTR_ENABLED" }
+        flags { "No64BitChecks" }
+        editandcontinue "Off"
+        optimize "Speed"
+        optimize "On"
+        editandcontinue "Off"
+
     configuration "Release"
         defines { "NDEBUG" }
         flags { "No64BitChecks" }
@@ -46,14 +54,21 @@ solution "openpose"
             "../darknet/3rdparty/include",
             "../darknet/src",
             "src",
+            "minitrace",
             path.join(OPENCV_PATH, "include")
         }
         files { 
             "src/**",
+            "minitrace/**",
         }
         configuration "Debug"
             links {
                 "opencv_world340d.lib",
+                "yolo_cpp_dll.lib",
+            }
+        configuration "Profile"
+            links {
+                "opencv_world340.lib",
                 "yolo_cpp_dll.lib",
             }
         configuration "Release"
