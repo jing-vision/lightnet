@@ -31,7 +31,7 @@ if __name__ == "__main__":
             darknet.rgbgr_image(im)
         else:
             im = darknet.load_image(lightnet.to_str(
-                'test.jpg').encode("ascii"), 0, 0)
+                'test.jpg', True), 0, 0)
 
         r = darknet.classify(net, meta, im)
         print(r)
