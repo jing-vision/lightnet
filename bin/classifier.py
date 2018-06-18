@@ -51,25 +51,23 @@ if __name__ == "__main__":
             results = darknet.classify(net, meta, im)
             # print(r[0])
 
-            for rank in range(0, args.top_k):
-                left = 10
-                top = 20 + rank * 20
-                (label, score) = results[rank]
+            if results[0][1] > args.display_confidence:
+                for rank in range(0, args.top_k):
+                    left = 10
+                    top = 20 + rank * 20
+                    (label, score) = results[rank]
 
-                if results[0][1] > args.display_confidence:
                     label = '%s %.2f%%' % (label[4:], score * 100)
-                else:
-                    label = '%s' % (label[4:])
-                labelSize, baseLine = cv.getTextSize(
-                    label, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
-                back_clr = (222, 222, 222)
-                if score > args.gold_confidence:
-                    back_clr = (122, 122, 255)
-                cv.rectangle(frame, (left, top - labelSize[1]), (left + labelSize[
-                    0], top + baseLine), back_clr, cv.FILLED)
+                    labelSize, baseLine = cv.getTextSize(
+                        label, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+                    back_clr = (222, 222, 222)
+                    if score > args.gold_confidence:
+                        back_clr = (122, 122, 255)
+                    cv.rectangle(frame, (left, top - labelSize[1]), (left + labelSize[
+                        0], top + baseLine), back_clr, cv.FILLED)
 
-                cv.putText(frame, label, (left, top),
-                           cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
+                    cv.putText(frame, label, (left, top),
+                            cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
 
             cv.imshow("output", frame)
             if cv.waitKey(1) != -1:
