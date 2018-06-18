@@ -1,11 +1,11 @@
 REM Build
 
 msbuild proj_exe\darknet.sln /p:Configuration=Release /p:Platform=x64 /v:minimal /m
-msbuild proj_exe\darknet.sln /p:Configuration=Release-CPU /p:Platform=x64 /v:minimal /m
+REM msbuild proj_exe\darknet.sln /p:Configuration=Release-CPU /p:Platform=x64 /v:minimal /m
 
 msbuild proj_dll\yolo_cpp_dll.sln /p:Configuration=Release /p:Platform=x64 /v:minimal /m
 REM msbuild proj_dll\yolo_cpp_dll.sln /p:Configuration=Debug /p:Platform=x64 /v:minimal /m
-msbuild proj_dll\yolo_cpp_dll.sln /p:Configuration=Release-CPU /p:Platform=x64 /v:minimal /m
+REM msbuild proj_dll\yolo_cpp_dll.sln /p:Configuration=Release-CPU /p:Platform=x64 /v:minimal /m
 
 msbuild Yolo_mark\yolo_mark.sln /p:Configuration=Release /p:Platform=x64 /v:minimal /m
 msbuild yolo2_light\yolo_gpu.sln /p:Configuration=Release /p:Platform=x64 /v:minimal /m
