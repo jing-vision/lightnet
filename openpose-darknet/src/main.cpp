@@ -1,12 +1,19 @@
 #include <iostream>
-using namespace std;
+#include <thread>
+
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+
+using namespace std;
 using namespace cv;
+
 #include "run_darknet.h"
 
 #include "minitrace.h"
+#include "../readerwriterqueue/readerwriterqueue.h"
+
+using namespace moodycamel;
 
 #define POSE_MAX_PEOPLE 96
 #define NET_OUT_CHANNELS 57 // 38 for pafs, 19 for parts
@@ -518,8 +525,10 @@ Mat create_netsize_im
     return dst;
 }
 
-
-// using MTR_SCOPE("GFX", "RasterizeTriangle")
+// Recommended macros:
+//      MTR_SCOPE(__FILE__, "post processing");
+//      MTR_SCOPE_FUNC();
+//      MTR_META_THREAD_NAME("reader");
 struct MiniTraceHelper
 {
     MiniTraceHelper()
@@ -527,7 +536,7 @@ struct MiniTraceHelper
         mtr_init("trace.json");
         mtr_register_sigint_handler();
         MTR_META_PROCESS_NAME("main process");
-        MTR_META_THREAD_NAME("main thread");
+        MTR_META_THREAD_NAME("0) main thread");
     }
 
     ~MiniTraceHelper()
@@ -535,8 +544,19 @@ struct MiniTraceHelper
         mtr_flush();
         mtr_shutdown();
     }
-
 };
+
+#define CONCURRENT_PKT_COUNT 1
+
+struct NetOutpus
+{
+    vector<float> net_outputs;
+    Mat frame;
+    int idx;
+};
+
+ReaderWriterQueue<NetOutpus> q_output(CONCURRENT_PKT_COUNT);
+
 int main(int argc, char **argv)
 {
     MiniTraceHelper mr_hepler;
@@ -602,6 +622,8 @@ int main(int argc, char **argv)
         }
     }
 
+    bool is_running = true;
+
     // 2. initialize net
     int net_inw = 0;
     int net_inh = 0;
@@ -611,109 +633,145 @@ int main(int argc, char **argv)
         MTR_SCOPE(__FILE__, "init_net");
         init_net(cfg_path.c_str(), weight_path.c_str(), &net_inw, &net_inh, &net_outw, &net_outh);
     }
+    
+    float scale = 0.0f;
 
-    float *netin_data = new float[net_inw * net_inh * 3];
-    float *heatmap_peaks = new float[3 * (POSE_MAX_PEOPLE + 1) * (NET_OUT_CHANNELS - 1)];
-    float *heatmap = new float[net_inw * net_inh * NET_OUT_CHANNELS];
+    vector<float> net_inputs(net_inw * net_inh * 3);
 
-    int frame_count = 0;
-    for (;;)
-    {
-        MTR_SCOPE_FUNC_I("frame", frame_count);
-        frame_count++;
-
-        if (cap.isOpened())
+    std::thread CUDA([&] {
+        MTR_META_THREAD_NAME("2) CUDA");
+        int frame_count = 0;
+        while (is_running)
         {
-            MTR_SCOPE(__FILE__, "cap >> frame");
-            cap >> frame; // get a new frame from camera/video or read image
-            if (video.empty())
+            if (cap.isOpened())
             {
-                flip(frame, frame, 1);
-            }
-        }
-
-        if (frame.empty())
-        {
-            waitKey();
-            break;
-        }
-
-        float scale = 0.0f;
-        {
-            MTR_SCOPE(__FILE__, "pre process");
-
-            // 3. resize to net input size, put scaled image on the top left
-            Mat netim = create_netsize_im(frame, net_inw, net_inh, &scale);
-
-            // 4. normalized to float type
-            netim.convertTo(netim, CV_32F, 1 / 256.f, -0.5);
-
-            // 5. split channels
-            float *netin_data_ptr = netin_data;
-            vector<Mat> input_channels;
-            for (int i = 0; i < 3; ++i)
-            {
-                Mat channel(net_inh, net_inw, CV_32FC1, netin_data_ptr);
-                input_channels.emplace_back(channel);
-                netin_data_ptr += (net_inw * net_inh);
-            }
-            split(netim, input_channels);
-        }
-
-        // 6. feed forward
-        float *netoutdata = NULL;
-        {
-            MTR_SCOPE(__FILE__, "run_net");
-            double time_begin = getTickCount();
-            netoutdata = run_net(netin_data);
-            double fee_time = (getTickCount() - time_begin) / getTickFrequency() * 1000;
-            cout << "forward fee: " << fee_time << "ms" << endl;
-        }
-
-        vector<float> keypoints;
-        vector<int> shape;
-        {
-            MTR_SCOPE(__FILE__, "post process");
-
-            // 7. resize net output back to input size to get heatmap
-            {
-                for (int i = 0; i < NET_OUT_CHANNELS; ++i)
+                MTR_SCOPE(__FILE__, "cap >> frame");
+                cap >> frame; // get a new frame from camera/video or read image
+                if (video.empty())
                 {
-                    MTR_SCOPE(__FILE__, "resize");
-                    Mat netout(net_outh, net_outw, CV_32F, (netoutdata + net_outh*net_outw*i));
-                    Mat nmsin(net_inh, net_inw, CV_32F, heatmap + net_inh*net_inw*i);
-                    resize(netout, nmsin, Size(net_inw, net_inh), 0, 0, CV_INTER_CUBIC);
+                    MTR_SCOPE(__FILE__, "flip");
+                    flip(frame, frame, 1);
                 }
             }
 
-            // 8. get heatmap peaks
-            find_heatmap_peaks(heatmap, heatmap_peaks, net_inw, net_inh, NET_OUT_CHANNELS, 0.05);
+            if (frame.empty())
+            {
+                waitKey();
+                break;
+            }
 
-            // 9. link parts
-            connect_bodyparts(keypoints, heatmap, heatmap_peaks, net_inw, net_inh, 9, 0.05, 6, 0.4, shape);
+            MTR_SCOPE_FUNC_I("frame", frame_count);
+
+            {
+                MTR_SCOPE(__FILE__, "pre process");
+
+                // 3. resize to net input size, put scaled image on the top left
+                Mat netim = create_netsize_im(frame, net_inw, net_inh, &scale);
+
+                // 4. normalized to float type
+                netim.convertTo(netim, CV_32F, 1 / 256.f, -0.5);
+
+                {
+                    // 5. split channels
+                    MTR_SCOPE(__FILE__, "split");
+                    float *netin_data_ptr = net_inputs.data();
+                    vector<Mat> input_channels;
+                    for (int i = 0; i < 3; ++i)
+                    {
+                        Mat channel(net_inh, net_inw, CV_32FC1, netin_data_ptr);
+                        input_channels.emplace_back(channel);
+                        netin_data_ptr += (net_inw * net_inh);
+                    }
+                    split(netim, input_channels);
+                }
+            }
+
+            // 6. feed forward
+            float *netoutdata = NULL;
+            {
+                MTR_SCOPE(__FILE__, "run_net");
+                double time_begin = getTickCount();
+                netoutdata = run_net(net_inputs.data());
+                double fee_time = (getTickCount() - time_begin) / getTickFrequency() * 1000;
+                cout << "forward fee: " << fee_time << "ms" << endl;
+            }
+
+            NetOutpus pkt;
+            pkt.net_outputs = { netoutdata, netoutdata + net_outh*net_outw*NET_OUT_CHANNELS };
+            pkt.idx = frame_count;
+            pkt.frame = frame;
+            q_output.try_emplace(pkt);
+
+            frame_count++;
         }
 
+        is_running = false;
+    });
+
+    std::thread postCUDA([&]() {
+        int frame_count = 0;
+        MTR_META_THREAD_NAME("3) post CUDA");
+
+        vector<float> heatmap_peaks(3 * (POSE_MAX_PEOPLE + 1) * (NET_OUT_CHANNELS - 1));
+        vector<float> heatmap(net_inw * net_inh * NET_OUT_CHANNELS);
+
+        while (is_running)
         {
-            MTR_SCOPE(__FILE__, "viz");
-            // 10. draw result
-            render_pose_keypoints(frame, keypoints, shape, 0.05, scale);
+            NetOutpus pkt;
+            if (!q_output.try_dequeue(pkt))
+                continue;
 
-            // 11. show and save result
+            MTR_SCOPE_FUNC_I("frame", pkt.idx);
+            frame_count++;
+
+            float* netoutdata = pkt.net_outputs.data();
+
+            vector<float> keypoints;
+            vector<int> shape;
             {
-                MTR_SCOPE(__FILE__, "imshow");
-                cout << "people: " << shape[0] << endl;
-                imshow("demo", frame);
+                MTR_SCOPE(__FILE__, "post process");
+
+                // 7. resize net output back to input size to get heatmap
+                {
+                    for (int i = 0; i < NET_OUT_CHANNELS; ++i)
+                    {
+                        MTR_SCOPE(__FILE__, "resize");
+                        Mat netout(net_outh, net_outw, CV_32F, (netoutdata + net_outh*net_outw*i));
+                        Mat nmsin(net_inh, net_inw, CV_32F, heatmap.data() + net_inh*net_inw*i);
+                        resize(netout, nmsin, Size(net_inw, net_inh), 0, 0, CV_INTER_CUBIC);
+                    }
+                }
+
+                // 8. get heatmap peaks
+                find_heatmap_peaks(heatmap.data(), heatmap_peaks.data(), net_inw, net_inh, NET_OUT_CHANNELS, 0.05);
+
+                // 9. link parts
+                connect_bodyparts(keypoints, heatmap.data(), heatmap_peaks.data(), net_inw, net_inh, 9, 0.05, 6, 0.4, shape);
             }
 
             {
-                MTR_SCOPE(__FILE__, "waitkey");
-                if (waitKey(1) != -1) break;
+                MTR_SCOPE(__FILE__, "viz");
+                // 10. draw result
+                render_pose_keypoints(pkt.frame, keypoints, shape, 0.05, scale);
+
+                // 11. show and save result
+                {
+                    MTR_SCOPE(__FILE__, "imshow");
+                    cout << "people: " << shape[0] << endl;
+                    imshow("demo", pkt.frame);
+                }
+
+                {
+                    MTR_SCOPE(__FILE__, "waitkey");
+                    if (waitKey(1) != -1) break;
+                }
             }
         }
-    }
-    delete[] netin_data;
-    delete[] heatmap_peaks;
-    delete[] heatmap;
+        is_running = false;
+    });
+
+    CUDA.join();
+    postCUDA.join();
 
     return 0;
 }

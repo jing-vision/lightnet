@@ -63,7 +63,7 @@ solution "openpose"
         }
         configuration "Debug"
             links {
-                "opencv_world340d.lib",
+                "opencv_world340.lib",
                 "yolo_cpp_dll.lib",
             }
         configuration "Profile"
