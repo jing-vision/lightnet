@@ -4,7 +4,7 @@ msbuild proj_exe\darknet.sln /p:Configuration=Release /p:Platform=x64 /v:minimal
 REM msbuild proj_exe\darknet.sln /p:Configuration=Release-CPU /p:Platform=x64 /v:minimal /m
 
 msbuild proj_dll\yolo_cpp_dll.sln /p:Configuration=Release /p:Platform=x64 /v:minimal /m
-REM msbuild proj_dll\yolo_cpp_dll.sln /p:Configuration=Debug /p:Platform=x64 /v:minimal /m
+msbuild proj_dll\yolo_cpp_dll.sln /p:Configuration=Debug /p:Platform=x64 /v:minimal /m
 REM msbuild proj_dll\yolo_cpp_dll.sln /p:Configuration=Release-CPU /p:Platform=x64 /v:minimal /m
 
 msbuild modules\Yolo_mark\yolo_mark.sln /p:Configuration=Release /p:Platform=x64 /v:minimal /m
@@ -22,5 +22,4 @@ robocopy darknet\cfg bin\cfg /E
 robocopy darknet\data bin\data /E
 robocopy modules\Yolo_mark\x64\Release\ bin\ yolo_mark.exe
 robocopy modules\yolo2_light\bin\ bin\ yolo_gpu.exe
-robocopy D:\opencv\build\x64\vc14\bin\ bin\ opencv_world340.dll
-robocopy D:\opencv\build\x64\vc14\bin\ bin\ opencv_ffmpeg340_64.dll
+robocopy D:\opencv\build\x64\vc14\bin\ bin\ *.dll

@@ -10,8 +10,8 @@ using namespace cv;
 
 #include "run_darknet.h"
 
-#include "minitrace.h"
-#include "../readerwriterqueue/readerwriterqueue.h"
+#include "minitrace/minitrace.h"
+#include "readerwriterqueue/readerwriterqueue.h"
 
 using namespace moodycamel;
 

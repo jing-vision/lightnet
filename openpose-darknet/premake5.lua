@@ -17,7 +17,8 @@ solution "openpose"
             "WIN32",
             "_TIMESPEC_DEFINED",
             "OPENCV",
-            "CV_IGNORE_DEBUG_BUILD_GUARD",
+            "GPU",
+            -- "CV_IGNORE_DEBUG_BUILD_GUARD",
         }
 
     configuration "x64"
@@ -51,21 +52,21 @@ solution "openpose"
     project "openpose"
         kind "ConsoleApp"
         includedirs {
+            "../modules",
             "../darknet/3rdparty/include",
             "../darknet/src",
             "src",
-            "minitrace",
             path.join("$(CUDA_PATH)", "include"),
             path.join(OPENCV_PATH, "include")
         }
         files { 
             "src/**",
-            "minitrace/**",
+            "../modules/minitrace/**",
         }
         configuration "Debug"
             links {
-                "opencv_world340.lib",
-                "yolo_cpp_dll.lib",
+                "opencv_world340d.lib",
+                "yolo_cpp_dll-d.lib",
             }
         configuration "Profile"
             links {
