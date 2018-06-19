@@ -4,3 +4,12 @@
 [submodule "modules/cvui"]
 	path = modules/cvui
 	url = https://github.com/jing-vision/cvui.git
+[submodule "modules/Yolo_mark"]
+	path = modules/Yolo_mark
+	url = https://github.com/jing-vision/Yolo_mark.git
+[submodule "modules/yolo2_light"]
+	path = modules/yolo2_light
+	url = https://github.com/AlexeyAB/yolo2_light.git
+[submodule "modules/Augmentor"]
+	path = modules/Augmentor
+	url = https://github.com/mdbloice/Augmentor.git
