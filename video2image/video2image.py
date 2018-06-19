@@ -61,7 +61,7 @@ if __name__ == '__main__':
         if (now - prev_datetime).microseconds > 200000:
             now_string = now.strftime("%Y-%h-%d-%H-%M-%S-%f")
             prev_datetime = now
-            fn = '%s/%s_%s.jpg' % (args.shotdir, args.prefix, now_string)
+            fn = '%s/cam%d_%s_%s.jpg' % (args.shotdir, args.source, args.prefix, now_string)
             cv.imwrite(fn, img)
             print(fn, 'saved')
     cv.destroyAllWindows()

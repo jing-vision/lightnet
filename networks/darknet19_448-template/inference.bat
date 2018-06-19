@@ -1,1 +1,1 @@
-..\..\bin\darknet.exe classifier demo obj.data obj.cfg weights\obj_100.weights  -c 0  %*
+python ..\..\bin\classifier.py --camera=0 --weights=weights\obj_300.weights
