@@ -10,3 +10,6 @@
 [submodule "modules/Augmentor"]
 	path = modules/Augmentor
 	url = https://github.com/jing-vision/Augmentor.git
+[submodule "modules/darknet"]
+	path = modules/darknet
+	url = https://github.com/jing-vision/darknet.git

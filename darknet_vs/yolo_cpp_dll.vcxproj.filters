@@ -1,159 +1,159 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <CudaCompile Include="..\darknet\src\activation_kernels.cu">
+    <CudaCompile Include="..\modules\darknet\src\activation_kernels.cu">
       <Filter>cuda</Filter>
     </CudaCompile>
-    <CudaCompile Include="..\darknet\src\avgpool_layer_kernels.cu">
+    <CudaCompile Include="..\modules\darknet\src\avgpool_layer_kernels.cu">
       <Filter>cuda</Filter>
     </CudaCompile>
-    <CudaCompile Include="..\darknet\src\blas_kernels.cu">
+    <CudaCompile Include="..\modules\darknet\src\blas_kernels.cu">
       <Filter>cuda</Filter>
     </CudaCompile>
-    <CudaCompile Include="..\darknet\src\col2im_kernels.cu">
+    <CudaCompile Include="..\modules\darknet\src\col2im_kernels.cu">
       <Filter>cuda</Filter>
     </CudaCompile>
-    <CudaCompile Include="..\darknet\src\convolutional_kernels.cu">
+    <CudaCompile Include="..\modules\darknet\src\convolutional_kernels.cu">
       <Filter>cuda</Filter>
     </CudaCompile>
-    <CudaCompile Include="..\darknet\src\crop_layer_kernels.cu">
+    <CudaCompile Include="..\modules\darknet\src\crop_layer_kernels.cu">
       <Filter>cuda</Filter>
     </CudaCompile>
-    <CudaCompile Include="..\darknet\src\deconvolutional_kernels.cu">
+    <CudaCompile Include="..\modules\darknet\src\deconvolutional_kernels.cu">
       <Filter>cuda</Filter>
     </CudaCompile>
-    <CudaCompile Include="..\darknet\src\dropout_layer_kernels.cu">
+    <CudaCompile Include="..\modules\darknet\src\dropout_layer_kernels.cu">
       <Filter>cuda</Filter>
     </CudaCompile>
-    <CudaCompile Include="..\darknet\src\im2col_kernels.cu">
+    <CudaCompile Include="..\modules\darknet\src\im2col_kernels.cu">
       <Filter>cuda</Filter>
     </CudaCompile>
-    <CudaCompile Include="..\darknet\src\maxpool_layer_kernels.cu">
+    <CudaCompile Include="..\modules\darknet\src\maxpool_layer_kernels.cu">
       <Filter>cuda</Filter>
     </CudaCompile>
-    <CudaCompile Include="..\darknet\src\network_kernels.cu">
+    <CudaCompile Include="..\modules\darknet\src\network_kernels.cu">
       <Filter>cuda</Filter>
     </CudaCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\darknet\src\activations.c" />
-    <ClCompile Include="..\darknet\src\activation_layer.c" />
-    <ClCompile Include="..\darknet\src\art.c" />
-    <ClCompile Include="..\darknet\src\avgpool_layer.c" />
-    <ClCompile Include="..\darknet\src\batchnorm_layer.c" />
-    <ClCompile Include="..\darknet\src\blas.c" />
-    <ClCompile Include="..\darknet\src\box.c" />
-    <ClCompile Include="..\darknet\src\captcha.c" />
-    <ClCompile Include="..\darknet\src\cifar.c" />
-    <ClCompile Include="..\darknet\src\classifier.c" />
-    <ClCompile Include="..\darknet\src\coco.c" />
-    <ClCompile Include="..\darknet\src\col2im.c" />
-    <ClCompile Include="..\darknet\src\compare.c" />
-    <ClCompile Include="..\darknet\src\connected_layer.c" />
-    <ClCompile Include="..\darknet\src\convolutional_layer.c" />
-    <ClCompile Include="..\darknet\src\cost_layer.c" />
-    <ClCompile Include="..\darknet\src\cpu_gemm.c" />
-    <ClCompile Include="..\darknet\src\crnn_layer.c" />
-    <ClCompile Include="..\darknet\src\crop_layer.c" />
-    <ClCompile Include="..\darknet\src\cuda.c" />
-    <ClCompile Include="..\darknet\src\darknet.c" />
-    <ClCompile Include="..\darknet\src\data.c" />
-    <ClCompile Include="..\darknet\src\deconvolutional_layer.c" />
-    <ClCompile Include="..\darknet\src\demo.c" />
-    <ClCompile Include="..\darknet\src\detection_layer.c" />
-    <ClCompile Include="..\darknet\src\detector.c" />
-    <ClCompile Include="..\darknet\src\dice.c" />
-    <ClCompile Include="..\darknet\src\dropout_layer.c" />
-    <ClCompile Include="..\darknet\src\gemm.c" />
-    <ClCompile Include="..\darknet\src\getopt.c" />
-    <ClCompile Include="..\darknet\src\gettimeofday.c" />
-    <ClCompile Include="..\darknet\src\go.c" />
-    <ClCompile Include="..\darknet\src\gru_layer.c" />
-    <ClCompile Include="..\darknet\src\http_stream.cpp" />
-    <ClCompile Include="..\darknet\src\im2col.c" />
-    <ClCompile Include="..\darknet\src\image.c" />
-    <ClCompile Include="..\darknet\src\layer.c" />
-    <ClCompile Include="..\darknet\src\list.c" />
-    <ClCompile Include="..\darknet\src\local_layer.c" />
-    <ClCompile Include="..\darknet\src\matrix.c" />
-    <ClCompile Include="..\darknet\src\maxpool_layer.c" />
-    <ClCompile Include="..\darknet\src\network.c" />
-    <ClCompile Include="..\darknet\src\nightmare.c" />
-    <ClCompile Include="..\darknet\src\normalization_layer.c" />
-    <ClCompile Include="..\darknet\src\option_list.c" />
-    <ClCompile Include="..\darknet\src\parser.c" />
-    <ClCompile Include="..\darknet\src\region_layer.c" />
-    <ClCompile Include="..\darknet\src\reorg_layer.c" />
-    <ClCompile Include="..\darknet\src\reorg_old_layer.c" />
-    <ClCompile Include="..\darknet\src\rnn.c" />
-    <ClCompile Include="..\darknet\src\rnn_layer.c" />
-    <ClCompile Include="..\darknet\src\rnn_vid.c" />
-    <ClCompile Include="..\darknet\src\route_layer.c" />
-    <ClCompile Include="..\darknet\src\shortcut_layer.c" />
-    <ClCompile Include="..\darknet\src\softmax_layer.c" />
-    <ClCompile Include="..\darknet\src\super.c" />
-    <ClCompile Include="..\darknet\src\swag.c" />
-    <ClCompile Include="..\darknet\src\tag.c" />
-    <ClCompile Include="..\darknet\src\tree.c" />
-    <ClCompile Include="..\darknet\src\upsample_layer.c" />
-    <ClCompile Include="..\darknet\src\utils.c" />
-    <ClCompile Include="..\darknet\src\voxel.c" />
-    <ClCompile Include="..\darknet\src\writing.c" />
-    <ClCompile Include="..\darknet\src\yolo.c" />
-    <ClCompile Include="..\darknet\src\yolo_layer.c" />
-    <ClCompile Include="..\darknet\src\yolo_v2_class.cpp" />
-    <ClCompile Include="..\darknet\src\yolo_v2_class.hpp" />
+    <ClCompile Include="..\modules\darknet\src\activations.c" />
+    <ClCompile Include="..\modules\darknet\src\activation_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\art.c" />
+    <ClCompile Include="..\modules\darknet\src\avgpool_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\batchnorm_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\blas.c" />
+    <ClCompile Include="..\modules\darknet\src\box.c" />
+    <ClCompile Include="..\modules\darknet\src\captcha.c" />
+    <ClCompile Include="..\modules\darknet\src\cifar.c" />
+    <ClCompile Include="..\modules\darknet\src\classifier.c" />
+    <ClCompile Include="..\modules\darknet\src\coco.c" />
+    <ClCompile Include="..\modules\darknet\src\col2im.c" />
+    <ClCompile Include="..\modules\darknet\src\compare.c" />
+    <ClCompile Include="..\modules\darknet\src\connected_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\convolutional_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\cost_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\cpu_gemm.c" />
+    <ClCompile Include="..\modules\darknet\src\crnn_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\crop_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\cuda.c" />
+    <ClCompile Include="..\modules\darknet\src\darknet.c" />
+    <ClCompile Include="..\modules\darknet\src\data.c" />
+    <ClCompile Include="..\modules\darknet\src\deconvolutional_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\demo.c" />
+    <ClCompile Include="..\modules\darknet\src\detection_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\detector.c" />
+    <ClCompile Include="..\modules\darknet\src\dice.c" />
+    <ClCompile Include="..\modules\darknet\src\dropout_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\gemm.c" />
+    <ClCompile Include="..\modules\darknet\src\getopt.c" />
+    <ClCompile Include="..\modules\darknet\src\gettimeofday.c" />
+    <ClCompile Include="..\modules\darknet\src\go.c" />
+    <ClCompile Include="..\modules\darknet\src\gru_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\http_stream.cpp" />
+    <ClCompile Include="..\modules\darknet\src\im2col.c" />
+    <ClCompile Include="..\modules\darknet\src\image.c" />
+    <ClCompile Include="..\modules\darknet\src\layer.c" />
+    <ClCompile Include="..\modules\darknet\src\list.c" />
+    <ClCompile Include="..\modules\darknet\src\local_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\matrix.c" />
+    <ClCompile Include="..\modules\darknet\src\maxpool_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\network.c" />
+    <ClCompile Include="..\modules\darknet\src\nightmare.c" />
+    <ClCompile Include="..\modules\darknet\src\normalization_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\option_list.c" />
+    <ClCompile Include="..\modules\darknet\src\parser.c" />
+    <ClCompile Include="..\modules\darknet\src\region_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\reorg_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\reorg_old_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\rnn.c" />
+    <ClCompile Include="..\modules\darknet\src\rnn_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\rnn_vid.c" />
+    <ClCompile Include="..\modules\darknet\src\route_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\shortcut_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\softmax_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\super.c" />
+    <ClCompile Include="..\modules\darknet\src\swag.c" />
+    <ClCompile Include="..\modules\darknet\src\tag.c" />
+    <ClCompile Include="..\modules\darknet\src\tree.c" />
+    <ClCompile Include="..\modules\darknet\src\upsample_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\utils.c" />
+    <ClCompile Include="..\modules\darknet\src\voxel.c" />
+    <ClCompile Include="..\modules\darknet\src\writing.c" />
+    <ClCompile Include="..\modules\darknet\src\yolo.c" />
+    <ClCompile Include="..\modules\darknet\src\yolo_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\yolo_v2_class.cpp" />
+    <ClCompile Include="..\modules\darknet\src\yolo_v2_class.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\darknet\src\activations.h" />
-    <ClInclude Include="..\darknet\src\activation_layer.h" />
-    <ClInclude Include="..\darknet\src\avgpool_layer.h" />
-    <ClInclude Include="..\darknet\src\batchnorm_layer.h" />
-    <ClInclude Include="..\darknet\src\blas.h" />
-    <ClInclude Include="..\darknet\src\box.h" />
-    <ClInclude Include="..\darknet\src\classifier.h" />
-    <ClInclude Include="..\darknet\src\col2im.h" />
-    <ClInclude Include="..\darknet\src\connected_layer.h" />
-    <ClInclude Include="..\darknet\src\convolutional_layer.h" />
-    <ClInclude Include="..\darknet\src\cost_layer.h" />
-    <ClInclude Include="..\darknet\src\crnn_layer.h" />
-    <ClInclude Include="..\darknet\src\crop_layer.h" />
-    <ClInclude Include="..\darknet\src\cuda.h" />
-    <ClInclude Include="..\darknet\src\data.h" />
-    <ClInclude Include="..\darknet\src\deconvolutional_layer.h" />
-    <ClInclude Include="..\darknet\src\demo.h" />
-    <ClInclude Include="..\darknet\src\detection_layer.h" />
-    <ClInclude Include="..\darknet\src\dropout_layer.h" />
-    <ClInclude Include="..\darknet\src\gemm.h" />
-    <ClInclude Include="..\darknet\src\getopt.h" />
-    <ClInclude Include="..\darknet\src\gettimeofday.h" />
-    <ClInclude Include="..\darknet\src\gru_layer.h" />
-    <ClInclude Include="..\darknet\src\http_stream.h" />
-    <ClInclude Include="..\darknet\src\im2col.h" />
-    <ClInclude Include="..\darknet\src\image.h" />
-    <ClInclude Include="..\darknet\src\layer.h" />
-    <ClInclude Include="..\darknet\src\list.h" />
-    <ClInclude Include="..\darknet\src\local_layer.h" />
-    <ClInclude Include="..\darknet\src\matrix.h" />
-    <ClInclude Include="..\darknet\src\maxpool_layer.h" />
-    <ClInclude Include="..\darknet\src\network.h" />
-    <ClInclude Include="..\darknet\src\normalization_layer.h" />
-    <ClInclude Include="..\darknet\src\option_list.h" />
-    <ClInclude Include="..\darknet\src\parser.h" />
-    <ClInclude Include="..\darknet\src\region_layer.h" />
-    <ClInclude Include="..\darknet\src\reorg_layer.h" />
-    <ClInclude Include="..\darknet\src\reorg_old_layer.h" />
-    <ClInclude Include="..\darknet\src\rnn_layer.h" />
-    <ClInclude Include="..\darknet\src\route_layer.h" />
-    <ClInclude Include="..\darknet\src\shortcut_layer.h" />
-    <ClInclude Include="..\darknet\src\softmax_layer.h" />
-    <ClInclude Include="..\darknet\src\stb_image.h" />
-    <ClInclude Include="..\darknet\src\stb_image_write.h" />
-    <ClInclude Include="..\darknet\src\tree.h" />
-    <ClInclude Include="..\darknet\src\unistd.h" />
-    <ClInclude Include="..\darknet\src\upsample_layer.h" />
-    <ClInclude Include="..\darknet\src\utils.h" />
-    <ClInclude Include="..\darknet\src\yolo_layer.h" />
+    <ClInclude Include="..\modules\darknet\src\activations.h" />
+    <ClInclude Include="..\modules\darknet\src\activation_layer.h" />
+    <ClInclude Include="..\modules\darknet\src\avgpool_layer.h" />
+    <ClInclude Include="..\modules\darknet\src\batchnorm_layer.h" />
+    <ClInclude Include="..\modules\darknet\src\blas.h" />
+    <ClInclude Include="..\modules\darknet\src\box.h" />
+    <ClInclude Include="..\modules\darknet\src\classifier.h" />
+    <ClInclude Include="..\modules\darknet\src\col2im.h" />
+    <ClInclude Include="..\modules\darknet\src\connected_layer.h" />
+    <ClInclude Include="..\modules\darknet\src\convolutional_layer.h" />
+    <ClInclude Include="..\modules\darknet\src\cost_layer.h" />
+    <ClInclude Include="..\modules\darknet\src\crnn_layer.h" />
+    <ClInclude Include="..\modules\darknet\src\crop_layer.h" />
+    <ClInclude Include="..\modules\darknet\src\cuda.h" />
+    <ClInclude Include="..\modules\darknet\src\data.h" />
+    <ClInclude Include="..\modules\darknet\src\deconvolutional_layer.h" />
+    <ClInclude Include="..\modules\darknet\src\demo.h" />
+    <ClInclude Include="..\modules\darknet\src\detection_layer.h" />
+    <ClInclude Include="..\modules\darknet\src\dropout_layer.h" />
+    <ClInclude Include="..\modules\darknet\src\gemm.h" />
+    <ClInclude Include="..\modules\darknet\src\getopt.h" />
+    <ClInclude Include="..\modules\darknet\src\gettimeofday.h" />
+    <ClInclude Include="..\modules\darknet\src\gru_layer.h" />
+    <ClInclude Include="..\modules\darknet\src\http_stream.h" />
+    <ClInclude Include="..\modules\darknet\src\im2col.h" />
+    <ClInclude Include="..\modules\darknet\src\image.h" />
+    <ClInclude Include="..\modules\darknet\src\layer.h" />
+    <ClInclude Include="..\modules\darknet\src\list.h" />
+    <ClInclude Include="..\modules\darknet\src\local_layer.h" />
+    <ClInclude Include="..\modules\darknet\src\matrix.h" />
+    <ClInclude Include="..\modules\darknet\src\maxpool_layer.h" />
+    <ClInclude Include="..\modules\darknet\src\network.h" />
+    <ClInclude Include="..\modules\darknet\src\normalization_layer.h" />
+    <ClInclude Include="..\modules\darknet\src\option_list.h" />
+    <ClInclude Include="..\modules\darknet\src\parser.h" />
+    <ClInclude Include="..\modules\darknet\src\region_layer.h" />
+    <ClInclude Include="..\modules\darknet\src\reorg_layer.h" />
+    <ClInclude Include="..\modules\darknet\src\reorg_old_layer.h" />
+    <ClInclude Include="..\modules\darknet\src\rnn_layer.h" />
+    <ClInclude Include="..\modules\darknet\src\route_layer.h" />
+    <ClInclude Include="..\modules\darknet\src\shortcut_layer.h" />
+    <ClInclude Include="..\modules\darknet\src\softmax_layer.h" />
+    <ClInclude Include="..\modules\darknet\src\stb_image.h" />
+    <ClInclude Include="..\modules\darknet\src\stb_image_write.h" />
+    <ClInclude Include="..\modules\darknet\src\tree.h" />
+    <ClInclude Include="..\modules\darknet\src\unistd.h" />
+    <ClInclude Include="..\modules\darknet\src\upsample_layer.h" />
+    <ClInclude Include="..\modules\darknet\src\utils.h" />
+    <ClInclude Include="..\modules\darknet\src\yolo_layer.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="cuda">

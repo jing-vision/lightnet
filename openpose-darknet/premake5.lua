@@ -53,8 +53,8 @@ solution "openpose"
         kind "ConsoleApp"
         includedirs {
             "../modules",
-            "../darknet/3rdparty/include",
-            "../darknet/src",
+            "../modules/darknet/3rdparty/include",
+            "../modules/darknet/src",
             "src",
             path.join("$(CUDA_PATH)", "include"),
             path.join(OPENCV_PATH, "include")
