@@ -1,10 +1,12 @@
 # yolo-studio
 A turnkey solution to train and deploy your own object detection network, contains:
 
-- Augmentor - image augmentation library in Python.
-- Yolo_mark - the toolkit to prepare training data.
-- darknet - the main engine for training & inferencing.
-- yolo2_light - lightweighted inferencing engine, optional.
+- modules/darknet - the main engine for training & inferencing.
+- modules/Augmentor - image augmentation library in Python.
+- modules/Yolo_mark - the toolkit to prepare training data.
+- modules/yolo2_light - lightweighted inferencing engine [optional].
+- modules/cvui - lightweighted GUI based purely on OpenCV.
+- openpose-darknet - Openpose implementation using darknet framework.
 
 # How to build
 
@@ -20,17 +22,11 @@ A turnkey solution to train and deploy your own object detection network, contai
 ## Install OpenCV
 - OpenCV 3.4.0: https://sourceforge.net/projects/opencvlibrary/files/opencv-win/3.4.0/opencv-3.4.0-vc14_vc15.exe/download
 - Extract to `d:\opencv\`
-- Make symbolic link from `c:\opencv_3.0\opencv\` to `d:\opencv\`
 
 ## Build from source
 
 Execute the batch file
 > build.bat
-
-Or build the componets from Visual Studio
-- darknet: `darknet\build\darknet\darknet.sln`, x64|Release -> `darknet\build\darknet\x64\darknet.exe`
-- Yolo_mark: `Yolo_mark\yolo_mark.sln`, x64|Release -> `Yolo_mark\x64\Release\yolo_mark.exe`
-- yolo2_light: `yolo2_light\yolo_gpu.sln`, Release -> `yolo2_light\bin\yolo_gpu.exe`
 
 # Fine tune a existing network
 
@@ -48,7 +44,7 @@ darknet.exe partial cfg/darknet19_448.cfg darknet19_448.weights darknet19_448.co
 
 ## Train yolo v2
 
-0. Fork `networks/yolov2-template` to `networks/my-yolo-net`
+0. Fork `__template-yolov2` to `my-yolo-net`
 
 1. Download pre-trained weights for the convolutional layers: http://pjreddie.com/media/files/darknet19_448.conv.23 to `bin/darknet19_448.conv.23`
 
@@ -62,7 +58,7 @@ darknet.exe partial cfg/darknet19_448.cfg darknet19_448.weights darknet19_448.co
 
 ## Train yolo v3
 
-0. Fork `networks/yolov3-template` to `networks/my-yolo-net`
+0. Fork `__template-yolov3` to `my-yolo-net`
 
 1. Download pre-trained weights for the convolutional layers: http://pjreddie.com/media/files/darknet53.conv.74 to `bin/darknet53.conv.74`
 
@@ -155,7 +151,7 @@ cfg/densenet201.cfg|https://pjreddie.com/media/files/densenet201.weights
 
 ## Train custom darknet19_448 network
 
-0. Fork `networks/darknet19-template` to `networks/my-darknet19-net`
+0. Fork `__template-darknet19_448` to `my-darknet19-net`
 
 1. Download pre-trained weights for the convolutional layers: http://pjreddie.com/media/files/darknet19_448.conv.23 to `bin/darknet19_448.conv.23`
 
