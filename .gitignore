@@ -31,11 +31,8 @@
 *.out
 *.app
 
-/vs2015/x64/
-/proj_exe/x64/
-/proj_exe/bin/
-/proj_dll/x64/
-/proj_dll/bin/
+/darknet_vs/x64/
+/darknet_vs/bin/
 /video2image/img/
 
 *.suo
@@ -52,3 +49,5 @@
 !/networks/darknet19_448-template/
 !/networks/yolov2-template/
 !/networks/yolov3-template/
+
+/openpose-darknet/vs2015/obj/

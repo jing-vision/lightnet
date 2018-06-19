@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="modules">
+      <UniqueIdentifier>{FEAC8BD4-6A8C-0A70-73A4-9546DF0271D1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="modules\minitrace">
+      <UniqueIdentifier>{A9A1E228-15B8-E0BE-5E2F-6CE0CA84B146}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\modules\minitrace\minitrace.h">
+      <Filter>modules\minitrace</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\run_darknet.h">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\modules\minitrace\minitrace.c">
+      <Filter>modules\minitrace</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\run_darknet.c">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\modules\minitrace\LICENSE">
+      <Filter>modules\minitrace</Filter>
+    </None>
+    <None Include="..\..\modules\minitrace\README.md">
+      <Filter>modules\minitrace</Filter>
+    </None>
+  </ItemGroup>
+</Project>
