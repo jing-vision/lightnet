@@ -31,5 +31,4 @@ REM =========================
 REM Deploy to scripts/
 REM =========================
 robocopy darknet_vs\bin\ scripts\ *.dll
-robocopy modules\darknet\build\darknet\x64\ scripts\ pthreadVC2.dll
 robocopy modules\darknet\ scripts\ darknet.py
