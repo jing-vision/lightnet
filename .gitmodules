@@ -12,4 +12,4 @@
 	url = https://github.com/AlexeyAB/yolo2_light.git
 [submodule "modules/Augmentor"]
 	path = modules/Augmentor
-	url = https://github.com/mdbloice/Augmentor.git
+	url = https://github.com/jing-vision/Augmentor.git
