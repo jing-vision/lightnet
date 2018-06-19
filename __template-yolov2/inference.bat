@@ -1,1 +1,1 @@
-python ..\bin\detector.py --camera=0 --weights=weights\obj_200.weights
+python ..\scripts\detector.py --camera=0 --weights=weights\obj_200.weights

@@ -16,6 +16,9 @@
 *.dylib
 *.dll
 
+*.pyc
+*.7z
+
 # Fortran module files
 *.mod
 *.smod
@@ -51,3 +54,5 @@
 !/networks/yolov3-template/
 
 /openpose-darknet/vs2015/obj/
+
+==*/

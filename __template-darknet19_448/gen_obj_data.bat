@@ -1,1 +1,1 @@
-python ..\bin\auto_labeller.py
+python ..\scripts\auto_labeller.py

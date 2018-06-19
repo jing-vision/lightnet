@@ -1,1 +1,1 @@
-python ..\bin\auto_marker.py
+python ..\scripts\auto_marker.py
