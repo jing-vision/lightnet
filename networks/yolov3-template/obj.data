@@ -1,6 +1,0 @@
-classes= 2
-train  = ./train.txt
-valid  = ./train.txt
-names = ./obj.names
-backup = weights/
-

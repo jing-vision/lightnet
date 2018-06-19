@@ -1,1 +1,0 @@
-..\..\bin\darknet.exe detector demo obj.data obj.cfg weights\obj_100.weights %*
