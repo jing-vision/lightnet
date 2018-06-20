@@ -13,6 +13,9 @@ using namespace cv;
 #include "minitrace/minitrace.h"
 #include "readerwriterqueue/readerwriterqueue.h"
 
+#define CVUI_IMPLEMENTATION
+#include "cvui/cvui.h"
+
 using namespace moodycamel;
 
 #define POSE_MAX_PEOPLE 96
@@ -31,14 +34,15 @@ inline T fastMin(const T a, const T b)
 }
 
 const char* params
-= "{ h help         | false           | print usage          }"
-"{ proto          |openpose.cfg| model configuration }"
-"{ model          |openpose.weight| model weights }"
-"{ camera         | 0     | camera device number }"
-"{ image video    |         | video or image for detection }"
-"{ fps            | 0       | override the fps for video or camera device }"
-"{ video_ratio    | 0       | Relative position of the video file: 0=start of the film, 1=end of the film. }"
-"{ min_confidence | 0.5     | min confidence       }";
+= "{ h help       | false           | print usage          }"
+"{ proto          |openpose.cfg     | model configuration }"
+"{ model          |openpose.weight  | model weights }"
+"{ camera         | 0               | camera device number }"
+"{ image video    |                 | video or image for detection }"
+"{ loop           | true            | whether to loop the video}"
+"{ fps            | 0               | override the fps for video or camera device }"
+"{ video_ratio    | 0               | Relative position of the video file: 0=start of the film, 1=end of the film. }"
+"{ min_confidence | 0.5             | min confidence       }";
 
 void render_pose_keypoints
 (
@@ -531,7 +535,7 @@ Mat create_netsize_im
 //      MTR_META_THREAD_NAME("reader");
 struct MiniTraceHelper
 {
-    MiniTraceHelper()
+    void setup()
     {
         mtr_init("trace.json");
         mtr_register_sigint_handler();
@@ -557,9 +561,70 @@ struct NetOutpus
 
 ReaderWriterQueue<NetOutpus> q_output(CONCURRENT_PKT_COUNT);
 
+struct ParamWindow
+{
+    void setup()
+    {
+        cvui::init(WINDOW_NAME);
+    }
+
+    void update()
+    {
+        int x = 10;
+        int y = 0;
+        int dy_small = 16;
+        int dy_large = 50;
+        int width = 300;
+        frame = cv::Scalar(49, 52, 49);
+
+        cvui::text(frame, x, y += dy_large, "find_heatmap_peaks_thresh");
+        cvui::trackbar(frame, x, y += dy_small, width, &find_heatmap_peaks_thresh, 0.0f, 1.0f);
+        
+        y += dy_large;
+
+        cvui::text(frame, x, y += dy_large, "body_inter_min_above_th");
+        cvui::trackbar(frame, x, y += dy_small, width, &body_inter_min_above_th,0, 20);
+
+        cvui::text(frame, x, y += dy_large, "body_inter_th");
+        cvui::trackbar(frame, x, y += dy_small, width, &body_inter_th, 0.0f, 1.0f);
+
+        cvui::text(frame, x, y += dy_large, "body_min_subset_cnt");
+        cvui::trackbar(frame, x, y += dy_small, width, &body_min_subset_cnt, 0, 20);
+
+        cvui::text(frame, x, y += dy_large, "body_min_subset_score");
+        cvui::trackbar(frame, x, y += dy_small, width, &body_min_subset_score, 0.0f, 1.0f);
+
+        y += dy_large;
+
+        cvui::text(frame, x, y += dy_large, "render_thresh");
+        cvui::trackbar(frame, x, y += dy_small, width, &render_thresh, 0.0f, 1.0f);
+
+        y += dy_large;
+
+        cvui::update();
+        cv::imshow(WINDOW_NAME, frame);
+    }
+
+    const String WINDOW_NAME = "Param";
+    cv::Mat frame = cv::Mat(770, 350, CV_8UC3);
+
+    // params
+    float find_heatmap_peaks_thresh = 0.05;
+
+    int body_inter_min_above_th = 9;
+    float body_inter_th = 0.05;
+    int body_min_subset_cnt = 6;
+    float body_min_subset_score = 0.4;
+
+    float render_thresh = 0.05;
+};
+
 int main(int argc, char **argv)
 {
     MiniTraceHelper mr_hepler;
+    mr_hepler.setup();
+
+    ParamWindow param_window;
 
     CommandLineParser parser(argc, argv, params);
     if (parser.get<bool>("help"))
@@ -575,8 +640,8 @@ int main(int argc, char **argv)
 
     // 1. read args
     VideoCapture cap;
-    String video = parser.get<String>("video");
-    if (video.empty())
+    String video_path = parser.get<String>("video");
+    if (video_path.empty())
     {
         MTR_SCOPE(__FILE__, "cap.open(camera)");
         int camera = parser.get<int>("camera");
@@ -589,14 +654,13 @@ int main(int argc, char **argv)
     }
     else
     {
-        MTR_SCOPE(__FILE__, "cap.open(video)");
-        cap.open(video);
-        if (!cap.isOpened())
+        MTR_SCOPE(__FILE__, "cap.open(video_path)");
+        if (frame.empty())
         {
-            frame = imread(video);
-            if (frame.empty())
+            cap.open(video_path);
+            if (!cap.isOpened())
             {
-                cout << "Couldn't open image or video: " << video << endl;
+                cout << "Couldn't open image / video: " << video_path << endl;
                 return -1;
             }
         }
@@ -647,7 +711,7 @@ int main(int argc, char **argv)
             {
                 MTR_SCOPE(__FILE__, "cap >> frame");
                 cap >> frame; // get a new frame from camera/video or read image
-                if (video.empty())
+                if (video_path.empty())
                 {
                     MTR_SCOPE(__FILE__, "flip");
                     flip(frame, frame, 1);
@@ -656,7 +720,11 @@ int main(int argc, char **argv)
 
             if (frame.empty())
             {
-                waitKey();
+                if (parser.get<bool>("loop"))
+                {
+                    cap.open(video_path);
+                    continue;
+                }
                 break;
             }
 
@@ -715,6 +783,8 @@ int main(int argc, char **argv)
         vector<float> heatmap_peaks(3 * (POSE_MAX_PEOPLE + 1) * (NET_OUT_CHANNELS - 1));
         vector<float> heatmap(net_inw * net_inh * NET_OUT_CHANNELS);
 
+        param_window.setup();
+
         while (is_running)
         {
             NetOutpus pkt;
@@ -743,22 +813,29 @@ int main(int argc, char **argv)
                 }
 
                 // 8. get heatmap peaks
-                find_heatmap_peaks(heatmap.data(), heatmap_peaks.data(), net_inw, net_inh, NET_OUT_CHANNELS, 0.05);
+                find_heatmap_peaks(heatmap.data(), heatmap_peaks.data(), net_inw, net_inh, NET_OUT_CHANNELS, param_window.find_heatmap_peaks_thresh);
 
                 // 9. link parts
-                connect_bodyparts(keypoints, heatmap.data(), heatmap_peaks.data(), net_inw, net_inh, 9, 0.05, 6, 0.4, shape);
+                connect_bodyparts(keypoints, heatmap.data(), heatmap_peaks.data(), net_inw, net_inh, 
+                    param_window.body_inter_min_above_th,
+                    param_window.body_inter_th,
+                    param_window.body_min_subset_cnt,
+                    param_window.body_min_subset_score,
+                    shape);
             }
 
             {
                 MTR_SCOPE(__FILE__, "viz");
                 // 10. draw result
-                render_pose_keypoints(pkt.frame, keypoints, shape, 0.05, scale);
+                render_pose_keypoints(pkt.frame, keypoints, shape, param_window.render_thresh, scale);
 
                 // 11. show and save result
                 {
                     MTR_SCOPE(__FILE__, "imshow");
                     cout << "people: " << shape[0] << endl;
-                    imshow("demo", pkt.frame);
+                    imshow("pose", pkt.frame);
+
+                    param_window.update();
                 }
 
                 {

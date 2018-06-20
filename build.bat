@@ -6,7 +6,7 @@ msbuild darknet_vs\darknet.sln /p:Configuration=Release /p:Platform=x64 /v:minim
 REM msbuild darknet_vs\darknet.sln /p:Configuration=Release-CPU /p:Platform=x64 /v:minimal /m
 
 msbuild darknet_vs\yolo_cpp_dll.sln /p:Configuration=Release /p:Platform=x64 /v:minimal /m
-REM msbuild darknet_vs\yolo_cpp_dll.sln /p:Configuration=Debug /p:Platform=x64 /v:minimal /m
+msbuild darknet_vs\yolo_cpp_dll.sln /p:Configuration=Debug /p:Platform=x64 /v:minimal /m
 REM msbuild darknet_vs\yolo_cpp_dll.sln /p:Configuration=Release-CPU /p:Platform=x64 /v:minimal /m
 
 msbuild modules\Yolo_mark\yolo_mark.sln /p:Configuration=Release /p:Platform=x64 /v:minimal /m
@@ -30,5 +30,6 @@ robocopy D:\opencv\build\x64\vc14\bin\ bin\ *.dll
 REM =========================
 REM Deploy to scripts/
 REM =========================
+robocopy darknet_vs\bin\ bin\ *.dll
 robocopy darknet_vs\bin\ scripts\ *.dll
 robocopy modules\darknet\ scripts\ darknet.py

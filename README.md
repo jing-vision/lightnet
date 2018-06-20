@@ -160,3 +160,10 @@ cfg/densenet201.cfg|https://pjreddie.com/media/files/densenet201.weights
   * set `batch` to `128` or `64` or `32` depends on your GPU memory in darknet19-classify.cfg#L4
   * change line to [`subdivisions=4`](darknet19-classify.cfg#L5)
   * set `filter`-value equal to `classes` in darknet19-classify.cfg#L189
+
+
+# Build cvui
+
+> mkdir vs2015
+> cd vs2015
+> cmake -DOpenCV_DIR=d:\opencv\build -G "Visual Studio 14 2015 Win64" ..
