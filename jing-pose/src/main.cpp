@@ -40,11 +40,14 @@ const char* params =
 "{ c camera     | 0                 | camera device number }"
 "{ w width      | 0                 | width of video or camera device}"
 "{ h height     | 0                 | height of video or camera device}"
+"{ gui          | false             | show gui, you can also press SPACEBAR to toggle }"
 "{ fps          | 0                 | fps of video or camera device }"
 "{ image video  |                   | video or image for detection }"
 "{ loop         | true              | whether to loop the video}"
 "{ video_pos    | 0                 | Current position of the video file in milliseconds. }"
 ;
+
+bool is_gui_visible = false;
 
 void render_pose_keypoints
 (
@@ -641,6 +644,8 @@ int main(int argc, char **argv)
     Mat frame;
 
     // 1. read args
+    is_gui_visible = parser.get<bool>("gui");
+
     VideoCapture cap;
     String video_path = parser.get<String>("video");
     if (video_path.empty())
@@ -844,7 +849,10 @@ int main(int argc, char **argv)
                     cout << "people: " << shape[0] << endl;
                     imshow("jing-pose", pkt.frame);
 
-                    param_window.update();
+                    if (is_gui_visible)
+                    {
+                        param_window.update();
+                    }
                 }
 
                 {
