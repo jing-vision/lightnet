@@ -6,7 +6,7 @@ A turnkey solution to train and deploy your own object detection network, contai
 - modules/Yolo_mark - the toolkit to prepare training data.
 - modules/yolo2_light - lightweighted inferencing engine [optional].
 - modules/cvui - lightweighted GUI based purely on OpenCV.
-- openpose-darknet - Openpose implementation using darknet framework.
+- jing-pose - Openpose implementation using darknet framework.
 
 # How to build
 
