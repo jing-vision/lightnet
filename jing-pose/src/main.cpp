@@ -33,16 +33,18 @@ inline T fastMin(const T a, const T b)
     return (a < b ? a : b);
 }
 
-const char* params
-= "{ h help       | false           | print usage          }"
-"{ proto          |openpose.cfg     | model configuration }"
-"{ model          |openpose.weight  | model weights }"
-"{ camera         | 0               | camera device number }"
-"{ image video    |                 | video or image for detection }"
-"{ loop           | true            | whether to loop the video}"
-"{ fps            | 0               | override the fps for video or camera device }"
-"{ video_ratio    | 0               | Relative position of the video file: 0=start of the film, 1=end of the film. }"
-"{ min_confidence | 0.5             | min confidence       }";
+const char* params =
+"{ help         | false             | print usage          }"
+"{ proto        |openpose.cfg       | model configuration }"
+"{ model        |openpose.weight    | model weights }"
+"{ c camera     | 0                 | camera device number }"
+"{ w width      | 0                 | width of video or camera device}"
+"{ h height     | 0                 | height of video or camera device}"
+"{ fps          | 0                 | fps of video or camera device }"
+"{ image video  |                   | video or image for detection }"
+"{ loop         | true              | whether to loop the video}"
+"{ video_pos    | 0                 | Current position of the video file in milliseconds. }"
+;
 
 void render_pose_keypoints
 (
@@ -580,7 +582,7 @@ struct ParamWindow
         cvui::text(frame, x, y += dy_large, "find_heatmap_peaks_thresh");
         cvui::trackbar(frame, x, y += dy_small, width, &find_heatmap_peaks_thresh, 0.0f, 1.0f);
         
-        y += dy_large;
+        y += dy_small;
 
         cvui::text(frame, x, y += dy_large, "body_inter_min_above_th");
         cvui::trackbar(frame, x, y += dy_small, width, &body_inter_min_above_th,0, 20);
@@ -594,18 +596,18 @@ struct ParamWindow
         cvui::text(frame, x, y += dy_large, "body_min_subset_score");
         cvui::trackbar(frame, x, y += dy_small, width, &body_min_subset_score, 0.0f, 1.0f);
 
-        y += dy_large;
+        y += dy_small;
 
         cvui::text(frame, x, y += dy_large, "render_thresh");
         cvui::trackbar(frame, x, y += dy_small, width, &render_thresh, 0.0f, 1.0f);
 
-        y += dy_large;
+        y += dy_small;
 
         cvui::update();
         cv::imshow(WINDOW_NAME, frame);
     }
 
-    const String WINDOW_NAME = "Param";
+    const String WINDOW_NAME = "param";
     cv::Mat frame = cv::Mat(770, 350, CV_8UC3);
 
     // params
@@ -668,21 +670,28 @@ int main(int argc, char **argv)
 
     if (cap.isOpened())
     {
-        int fps = parser.get<int>("fps");
+        auto fps = parser.get<int>("fps");
         if (fps > 0)
         {
-            if (!cap.set(CAP_PROP_FPS, fps))
-            {
-                cout << "WARNING: Can't set fps" << endl;
-            }
+            if (!cap.set(CAP_PROP_FPS, fps)) cout << "WARNING: Can't set fps" << endl;
         }
-        double video_ratio = parser.get<double>("video_ratio");
-        if (video_ratio > 0)
+
+        auto video_pos = parser.get<int>("video_pos");
+        if (video_pos > 0)
         {
-            if (!cap.set(CAP_PROP_POS_AVI_RATIO, video_ratio))
-            {
-                cout << "WARNING: Can't set video_ratio" << endl;
-            }
+            if (!cap.set(CAP_PROP_POS_MSEC, video_pos)) cout << "WARNING: Can't set video_pos" << endl;
+        }
+
+        auto width = parser.get<int>("width");
+        if (width > 0)
+        {
+            if (!cap.set(CAP_PROP_FRAME_WIDTH, width)) cout << "WARNING: Can't set width" << endl;
+        }
+
+        auto height = parser.get<int>("height");
+        if (height > 0)
+        {
+            if (!cap.set(CAP_PROP_FRAME_HEIGHT, height)) cout << "WARNING: Can't set height" << endl;
         }
     }
 
@@ -833,7 +842,7 @@ int main(int argc, char **argv)
                 {
                     MTR_SCOPE(__FILE__, "imshow");
                     cout << "people: " << shape[0] << endl;
-                    imshow("pose", pkt.frame);
+                    imshow("jing-pose", pkt.frame);
 
                     param_window.update();
                 }

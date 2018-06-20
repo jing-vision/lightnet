@@ -167,3 +167,9 @@ cfg/densenet201.cfg|https://pjreddie.com/media/files/densenet201.weights
 > mkdir vs2015
 > cd vs2015
 > cmake -DOpenCV_DIR=d:\opencv\build -G "Visual Studio 14 2015 Win64" ..
+
+# Run jing-pose
+
+<b>[Weight file] (darknet version openpose.weight)</b><p>
+https://drive.google.com/open?id=1BfY0Hx2d2nm3I4JFh0W1cK2aHD1FSGea
+  
