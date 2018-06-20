@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jing-pose", "jing-pose.vcxproj", "{91B9DA1B-FD23-8F92-4662-4038B20B6DE7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Profile|x64 = Profile|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{91B9DA1B-FD23-8F92-4662-4038B20B6DE7}.Debug|x64.ActiveCfg = Debug|x64
+		{91B9DA1B-FD23-8F92-4662-4038B20B6DE7}.Debug|x64.Build.0 = Debug|x64
+		{91B9DA1B-FD23-8F92-4662-4038B20B6DE7}.Profile|x64.ActiveCfg = Profile|x64
+		{91B9DA1B-FD23-8F92-4662-4038B20B6DE7}.Profile|x64.Build.0 = Profile|x64
+		{91B9DA1B-FD23-8F92-4662-4038B20B6DE7}.Release|x64.ActiveCfg = Release|x64
+		{91B9DA1B-FD23-8F92-4662-4038B20B6DE7}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

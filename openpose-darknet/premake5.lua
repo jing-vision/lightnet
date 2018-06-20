@@ -4,7 +4,7 @@ local action = _ACTION or ""
 
 local OPENCV_PATH   = "d:/opencv/build"
 
-solution "openpose"
+solution "jing-pose"
     location (action)
     configurations { "Debug", "Profile", "Release" }
     platforms {"x64"}
@@ -49,7 +49,7 @@ solution "openpose"
         optimize "On"
         editandcontinue "Off"
 
-    project "openpose"
+    project "jing-pose"
         kind "ConsoleApp"
         includedirs {
             "../modules",
