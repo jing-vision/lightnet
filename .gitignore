@@ -53,6 +53,6 @@
 !/networks/yolov2-template/
 !/networks/yolov3-template/
 
-/openpose-darknet/vs2015/obj/
+*/vs2015/obj/
 
 ==*/
