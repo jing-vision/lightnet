@@ -24,7 +24,9 @@ openpose.exe openpose.cfg openpose.weight data/person.jpg
 
 <b>[note]</b><p>
 1. Darknet version openpose.cfg and openpose.weight are ported from COCO version 
-  pose_deploy_linevec.prototxt and pose_iter_440000.caffemodel.
+
+  [pose_deploy_linevec.prototxt](https://github.com/ZheC/Realtime_Multi-Person_Pose_Estimation/tree/master/model/_trained_COCO) and [pose_iter_440000.caffemodel](  http://posefs1.perception.cs.cmu.edu/Users/ZheCao/pose_iter_440000.caffemodel).
+
 2. You could change net input width, height in openpose.cfg.
 
 # network layout

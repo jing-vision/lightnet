@@ -13,3 +13,6 @@
 [submodule "modules/darknet"]
 	path = modules/darknet
 	url = https://github.com/jing-vision/darknet.git
+[submodule "modules/pytorch-caffe-darknet-convert"]
+	path = modules/pytorch-caffe-darknet-convert
+	url = https://github.com/jing-vision/pytorch-caffe-darknet-convert.git
