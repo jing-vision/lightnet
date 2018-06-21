@@ -62,6 +62,7 @@ solution "jing-pose"
         files { 
             "src/**",
             "../modules/minitrace/**",
+            "../modules/PDollar/**",
         }
         configuration "Debug"
             links {

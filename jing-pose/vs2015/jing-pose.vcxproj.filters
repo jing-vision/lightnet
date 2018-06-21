@@ -4,6 +4,9 @@
     <Filter Include="modules">
       <UniqueIdentifier>{FEAC8BD4-6A8C-0A70-73A4-9546DF0271D1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="modules\PDollar">
+      <UniqueIdentifier>{9B58ED73-07E4-5A38-10F5-DD2C7CFFB638}</UniqueIdentifier>
+    </Filter>
     <Filter Include="modules\minitrace">
       <UniqueIdentifier>{A9A1E228-15B8-E0BE-5E2F-6CE0CA84B146}</UniqueIdentifier>
     </Filter>
@@ -12,6 +15,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\modules\PDollar\PDollar.h">
+      <Filter>modules\PDollar</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\modules\minitrace\minitrace.h">
       <Filter>modules\minitrace</Filter>
     </ClInclude>
@@ -20,6 +26,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\modules\PDollar\PDollar.cpp">
+      <Filter>modules\PDollar</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\modules\minitrace\minitrace.c">
       <Filter>modules\minitrace</Filter>
     </ClCompile>
@@ -31,6 +40,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\modules\PDollar\README.md">
+      <Filter>modules\PDollar</Filter>
+    </None>
     <None Include="..\..\modules\minitrace\LICENSE">
       <Filter>modules\minitrace</Filter>
     </None>
