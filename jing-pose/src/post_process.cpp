@@ -471,6 +471,8 @@ Mat create_netsize_im(
 {
     MTR_SCOPE_FUNC();
 
+    CV_Assert(!im.empty());
+
     // for tall image
     int newh = neth;
     float s = newh / (float)im.rows;

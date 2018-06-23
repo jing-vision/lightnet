@@ -23,18 +23,25 @@ const char* params =
 "{ help ?       | false             | print usage          }"
 "{ proto        |openpose.cfg       | model configuration }"
 "{ model        |openpose.weight    | model weights }"
-"{ c camera     | 0                 | camera device number }"
+"{@source1      |0                  | source1 for processing   }"
+"{@source2      |<none>             | source2 for processing (optional) }"
 "{ w width      | 0                 | width of video or camera device}"
 "{ h height     | 0                 | height of video or camera device}"
-"{ gui          | false             | show gui, you can also press SPACEBAR to toggle }"
+"{ gui          | true              | show gui, you can also press SPACEBAR to toggle }"
 "{ fps          | 0                 | fps of video or camera device }"
-"{ image video  |                   | video or image for detection }"
 "{ single_step  |                   | single step mode, press any key to move to next frame }"
 "{ loop         | true              | whether to loop the video}"
 "{ video_pos    | 0                 | current position of the video file in milliseconds. }"
 "{ data_write_dir  |                | enables data write mode }"
 "{ data_read_dir   |                | enables data read mode }"
 ;
+
+cv::Rect dancer_rois[] =
+{
+    { 69,32, 241,361 },
+    { 337,32, 241,361 },
+};
+int player_location = 0;
 
 bool is_gui_visible = false;
 
@@ -89,11 +96,11 @@ struct ParamWindow
 
         cvui::text(frame, x, y += dy_large, "find_heatmap_peaks_thresh");
         cvui::trackbar(frame, x, y += dy_small, width, &find_heatmap_peaks_thresh, 0.0f, 1.0f);
-        
+
         y += dy_small;
 
         cvui::text(frame, x, y += dy_large, "body_inter_min_above_th");
-        cvui::trackbar(frame, x, y += dy_small, width, &body_inter_min_above_th,0, 20);
+        cvui::trackbar(frame, x, y += dy_small, width, &body_inter_min_above_th, 0, 20);
 
         cvui::text(frame, x, y += dy_large, "body_inter_th");
         cvui::trackbar(frame, x, y += dy_small, width, &body_inter_th, 0.0f, 1.0f);
@@ -118,7 +125,7 @@ struct ParamWindow
     const String WINDOW_NAME = "param";
     cv::Mat frame = cv::Mat(770, 350, CV_8UC3);
 
-    // params
+    // param
     float find_heatmap_peaks_thresh = 0.05;
 
     int body_inter_min_above_th = 9;
@@ -129,53 +136,26 @@ struct ParamWindow
     float render_thresh = 0.05;
 };
 
-int main(int argc, char **argv)
-{
-    MiniTraceHelper mr_hepler;
-    mr_hepler.setup();
-
-    ParamWindow param_window;
-
-    CommandLineParser parser(argc, argv, params);
-    if (parser.get<bool>("help"))
-    {
-        parser.printMessage();
-        return 0;
-    }
-
-    auto cfg_path = parser.get<string>("proto");
-    auto weight_path = parser.get<string>("model");
-
-    Mat frame;
-
-    // 1. read args
-    is_gui_visible = parser.get<bool>("gui");
-
+auto safe_open_video = [](const CommandLineParser& parser, const String& source, bool* source_is_camera = nullptr) -> VideoCapture {
+    MTR_SCOPE(__FILE__, "safe_open_video");
     VideoCapture cap;
-    String video_path = parser.get<String>("video");
-    if (video_path.empty())
+
+    if (source.empty()) return cap;
+
+    if (source.size() == 1 && isdigit(source[0]))
     {
-        MTR_SCOPE(__FILE__, "cap.open(camera)");
-        int camera = parser.get<int>("camera");
-        cap.open(camera);
-        if (!cap.isOpened())
-        {
-            cout << "Couldn't find camera: " << camera << endl;
-            return -1;
-        }
+        cap.open(source[0] - '0');
+        if (source_is_camera) *source_is_camera = true;
     }
     else
     {
-        MTR_SCOPE(__FILE__, "cap.open(video_path)");
-        if (frame.empty())
-        {
-            cap.open(video_path);
-            if (!cap.isOpened())
-            {
-                cout << "Couldn't open image / video: " << video_path << endl;
-                return -1;
-            }
-        }
+        cap.open(source);
+        if (source_is_camera) *source_is_camera = false;
+    }
+    if (!cap.isOpened())
+    {
+        cout << "Failed to open: " << source << endl;
+        return -1;
     }
 
     if (cap.isOpened())
@@ -204,6 +184,46 @@ int main(int argc, char **argv)
             if (!cap.set(CAP_PROP_FRAME_HEIGHT, height)) cout << "WARNING: Can't set height" << endl;
         }
     }
+    return cap;
+};
+
+
+int main(int argc, char **argv)
+{
+    MiniTraceHelper mr_hepler;
+    mr_hepler.setup();
+
+    ParamWindow param_window;
+
+    CommandLineParser parser(argc, argv, params);
+    if (parser.get<bool>("help"))
+    {
+        parser.printMessage();
+        return 0;
+    }
+
+    auto cfg_path = parser.get<string>("proto");
+    auto weight_path = parser.get<string>("model");
+
+    Mat frame;
+
+    // 1. read args
+    is_gui_visible = parser.get<bool>("gui");
+
+    String sources[] = {
+        parser.get<String>("@source1"),
+        parser.get<String>("@source2"),
+    };
+
+    bool source_is_camera[] = {
+        false,
+        false,
+    };
+
+    VideoCapture captures[] = {
+        safe_open_video(parser, sources[0], &source_is_camera[0]),
+        safe_open_video(parser, sources[1], &source_is_camera[1]),
+    };
 
     bool is_running = true;
 
@@ -216,41 +236,52 @@ int main(int argc, char **argv)
         MTR_SCOPE(__FILE__, "init_net");
         init_net(cfg_path.c_str(), weight_path.c_str(), &net_inw, &net_inh, &net_outw, &net_outh);
     }
-    
+
     float scale = 0.0f;
 
     vector<float> net_inputs(net_inw * net_inh * 3);
 
+    auto safe_grab_video = [&parser](VideoCapture& cap, Mat& frame, const String& source, bool source_is_camera) {
+        if (!cap.isOpened()) return;
+
+        MTR_SCOPE(__FILE__, "safe_grab_video");
+        cap >> frame; // get a new frame from camera/video or read image
+        if (source_is_camera)
+        {
+            MTR_SCOPE(__FILE__, "flip");
+            flip(frame, frame, 1);
+        }
+
+        if (frame.empty())
+        {
+            if (parser.get<bool>("loop"))
+            {
+                cap = safe_open_video(parser, source);
+            }
+        }
+
+    };
+
     std::thread CUDA([&] {
         MTR_META_THREAD_NAME("2) CUDA");
         int frame_count = 0;
+
+        Mat frames[2];
+
         while (is_running)
         {
-            if (cap.isOpened())
-            {
-                MTR_SCOPE(__FILE__, "cap >> frame");
-                cap >> frame; // get a new frame from camera/video or read image
-                if (video_path.empty())
-                {
-                    MTR_SCOPE(__FILE__, "flip");
-                    flip(frame, frame, 1);
-                }
-            }
-
-            if (frame.empty())
-            {
-                if (parser.get<bool>("loop"))
-                {
-                    cap.open(video_path);
-                    continue;
-                }
-                break;
-            }
-
             MTR_SCOPE_FUNC_I("frame", frame_count);
+
+            parallel_for_(Range(0, 2), [&](const Range& range) {
+                for (int r = range.start; r < range.end; r++)
+                {
+                    safe_grab_video(captures[r], frames[r], sources[r], source_is_camera[r]);
+                }
+            });
 
             {
                 MTR_SCOPE(__FILE__, "pre process");
+                frame = frames[0];
 
                 // 3. resize to net input size, put scaled image on the top left
                 Mat netim = create_netsize_im(frame, net_inw, net_inh, &scale);
@@ -321,8 +352,13 @@ int main(int argc, char **argv)
                 MTR_SCOPE(__FILE__, "post process");
 
                 // 7. resize net output back to input size to get heatmap
-                {
-                    for (int i = 0; i < NET_OUT_CHANNELS; ++i)
+#define PARALLEL_RESIZE
+#ifdef PARALLEL_RESIZE
+                parallel_for_(Range(0, NET_OUT_CHANNELS), [&](const Range& range) {
+                    for (int i = range.start; i < range.end; i++)
+#else
+                for (int i = 0; i < NET_OUT_CHANNELS; ++i)
+#endif
                     {
                         MTR_SCOPE(__FILE__, "resize");
                         Mat netout(net_outh, net_outw, CV_32F, (netoutdata + net_outh*net_outw*i));
@@ -330,12 +366,14 @@ int main(int argc, char **argv)
                         resize(netout, nmsin, Size(net_inw, net_inh), 0, 0, CV_INTER_CUBIC);
                     }
                 }
-
+#ifdef PARALLEL_RESIZE
+            );
+#endif
                 // 8. get heatmap peaks
                 find_heatmap_peaks(heatmap.data(), heatmap_peaks.data(), net_inw, net_inh, NET_OUT_CHANNELS, param_window.find_heatmap_peaks_thresh);
 
                 // 9. link parts
-                connect_bodyparts(keypoints, heatmap.data(), heatmap_peaks.data(), net_inw, net_inh, 
+                connect_bodyparts(keypoints, heatmap.data(), heatmap_peaks.data(), net_inw, net_inh,
                     param_window.body_inter_min_above_th,
                     param_window.body_inter_th,
                     param_window.body_min_subset_cnt,
@@ -357,10 +395,10 @@ int main(int argc, char **argv)
                             const int index = (person * num_keypoints + part) * keyshape[2];
                             if (keypoints[index + 2] > param_window.render_thresh)
                             {
-                                Point center{keypoints[index] * scale, keypoints[index + 1] * scale};
-                                if (center.y < 200)
-                                {
-                                }
+                                //Point center{keypoints[index] * scale, keypoints[index + 1] * scale};
+                                //if (center.y < 200)
+                                //{
+                                //}
                             }
                         }
                     }
@@ -369,7 +407,7 @@ int main(int argc, char **argv)
                 // 11. show and save result
                 {
                     MTR_SCOPE(__FILE__, "imshow");
-                    cout << "people: " << shape[0] << endl;
+                    cout << "people: " << keyshape[0] << endl;
                     imshow("jing-pose", pkt.frame);
 
                     if (is_gui_visible)
