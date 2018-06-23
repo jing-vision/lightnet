@@ -10,6 +10,7 @@ using namespace cv;
 
 #include "run_darknet.h"
 #include "post_process.h"
+#include "os_hal.h"
 
 #include "minitrace/minitrace.h"
 #include "readerwriterqueue/readerwriterqueue.h"
@@ -27,7 +28,8 @@ const char* params =
 "{@source2      |<none>             | source2 for processing (optional) }"
 "{ w width      | 0                 | width of video or camera device}"
 "{ h height     | 0                 | height of video or camera device}"
-"{ gui          | true              | show gui, you can also press SPACEBAR to toggle }"
+"{ g gui        | true              | show gui, press g to toggle }"
+"{ f fullscreen | false             | show in fullscreen, press f to toggle }"
 "{ fps          | 0                 | fps of video or camera device }"
 "{ single_step  |                   | single step mode, press any key to move to next frame }"
 "{ loop         | true              | whether to loop the video}"
@@ -36,15 +38,15 @@ const char* params =
 "{ data_read_dir   |                | enables data read mode }"
 ;
 
-cv::Rect dancer_rois[] =
-{
-    { 69,32, 241,361 },
-    { 337,32, 241,361 },
-};
-int player_location = 0;
-
 bool is_gui_visible = false;
+bool is_fullscreen = false;
 
+#define APP_NAME "Dancing Gaga"
+#define VER_MAJOR 0
+#define VER_MINOR 1
+#define VER_PATCH 0
+
+#define TITLE APP_NAME " " CVAUX_STR(VER_MAJOR) "." CVAUX_STR(VER_MINOR) "." CVAUX_STR(VER_PATCH)
 
 // Recommended macros:
 //      MTR_SCOPE(__FILE__, "post processing");
@@ -137,7 +139,9 @@ struct ParamWindow
 };
 
 auto safe_open_video = [](const CommandLineParser& parser, const String& source, bool* source_is_camera = nullptr) -> VideoCapture {
-    MTR_SCOPE(__FILE__, "safe_open_video");
+    char info[100];
+    sprintf(info, "open: %s", source.c_str());
+    MTR_SCOPE(__FILE__, info);
     VideoCapture cap;
 
     if (source.empty()) return cap;
@@ -209,6 +213,8 @@ int main(int argc, char **argv)
 
     // 1. read args
     is_gui_visible = parser.get<bool>("gui");
+    is_fullscreen = parser.get<bool>("fullscreen");
+    Mat upscale_frame;
 
     String sources[] = {
         parser.get<String>("@source1"),
@@ -244,7 +250,10 @@ int main(int argc, char **argv)
     auto safe_grab_video = [&parser](VideoCapture& cap, Mat& frame, const String& source, bool source_is_camera) {
         if (!cap.isOpened()) return;
 
-        MTR_SCOPE(__FILE__, "safe_grab_video");
+        char info[100];
+        sprintf(info, "open: %s", source.c_str());
+        MTR_SCOPE_FUNC_C("open", source.c_str());
+
         cap >> frame; // get a new frame from camera/video or read image
         if (source_is_camera)
         {
@@ -267,40 +276,78 @@ int main(int argc, char **argv)
         int frame_count = 0;
 
         Mat frames[2];
+        Mat netim;
+        Mat netim_f32;
+        vector<Mat> input_channels;
 
         while (is_running)
         {
             MTR_SCOPE_FUNC_I("frame", frame_count);
 
-            parallel_for_(Range(0, 2), [&](const Range& range) {
-                for (int r = range.start; r < range.end; r++)
-                {
-                    safe_grab_video(captures[r], frames[r], sources[r], source_is_camera[r]);
-                }
-            });
-
             {
                 MTR_SCOPE(__FILE__, "pre process");
-                frame = frames[0];
+
+                parallel_for_(Range(0, 2), [&](const Range& range) {
+                    for (int r = range.start; r < range.end; r++)
+                    {
+                        safe_grab_video(captures[r], frames[r], sources[r], source_is_camera[r]);
+                    }
+                });
+
+                {
+                    if (captures[1].isOpened())
+                    {
+                        MTR_SCOPE(__FILE__, "mix");
+
+                        cv::Rect dancer_rois[] =
+                        {
+                            { 67,0, 240,360 },
+                            { 336,0, 240,360 },
+                        };
+                        int player_location = 0;
+                        float ar = dancer_rois[0].width / (float)dancer_rois[0].height;
+
+                        int crop_h = frames[0].rows;
+                        int crop_w = ar * crop_h;
+                        int crop_x = (frames[0].cols - crop_w) * 0.5f;
+                        int crop_y = 0;
+                        Rect src_crop{
+                            crop_x, crop_y,
+                            crop_w, crop_h,
+                        };
+                        Rect dst_crop = dancer_rois[0];
+                        frame = frames[1];
+
+                        resize(frames[0](src_crop), frame(dst_crop), dst_crop.size());
+                    }
+                    else
+                    {
+                        frame = frames[0];
+                    }
+                }
 
                 // 3. resize to net input size, put scaled image on the top left
-                Mat netim = create_netsize_im(frame, net_inw, net_inh, &scale);
+                create_netsize_im(frame, netim, net_inw, net_inh, &scale);
 
                 // 4. normalized to float type
-                netim.convertTo(netim, CV_32F, 1 / 256.f, -0.5);
+                netim.convertTo(netim_f32, CV_32F, 1 / 256.f, -0.5);
 
                 {
                     // 5. split channels
                     MTR_SCOPE(__FILE__, "split");
-                    float *netin_data_ptr = net_inputs.data();
-                    vector<Mat> input_channels;
-                    for (int i = 0; i < 3; ++i)
+                    static bool init_input_channels = true;
+                    if (init_input_channels)
                     {
-                        Mat channel(net_inh, net_inw, CV_32FC1, netin_data_ptr);
-                        input_channels.emplace_back(channel);
-                        netin_data_ptr += (net_inw * net_inh);
+                        init_input_channels = false;
+                        float *netin_data_ptr = net_inputs.data();
+                        for (int i = 0; i < 3; ++i)
+                        {
+                            Mat channel(net_inh, net_inw, CV_32FC1, netin_data_ptr);
+                            input_channels.emplace_back(channel);
+                            netin_data_ptr += (net_inw * net_inh);
+                        }
                     }
-                    split(netim, input_channels);
+                    split(netim_f32, input_channels);
                 }
             }
 
@@ -359,70 +406,91 @@ int main(int argc, char **argv)
 #else
                 for (int i = 0; i < NET_OUT_CHANNELS; ++i)
 #endif
-                    {
-                        MTR_SCOPE(__FILE__, "resize");
-                        Mat netout(net_outh, net_outw, CV_32F, (netoutdata + net_outh*net_outw*i));
-                        Mat nmsin(net_inh, net_inw, CV_32F, heatmap.data() + net_inh*net_inw*i);
-                        resize(netout, nmsin, Size(net_inw, net_inh), 0, 0, CV_INTER_CUBIC);
-                    }
+                {
+                    MTR_SCOPE(__FILE__, "resize");
+                    Mat netout(net_outh, net_outw, CV_32F, (netoutdata + net_outh*net_outw*i));
+                    Mat nmsin(net_inh, net_inw, CV_32F, heatmap.data() + net_inh*net_inw*i);
+                    resize(netout, nmsin, Size(net_inw, net_inh), 0, 0, CV_INTER_CUBIC);
+                }
                 }
 #ifdef PARALLEL_RESIZE
             );
 #endif
-                // 8. get heatmap peaks
-                find_heatmap_peaks(heatmap.data(), heatmap_peaks.data(), net_inw, net_inh, NET_OUT_CHANNELS, param_window.find_heatmap_peaks_thresh);
+    // 8. get heatmap peaks
+    find_heatmap_peaks(heatmap.data(), heatmap_peaks.data(), net_inw, net_inh, NET_OUT_CHANNELS, param_window.find_heatmap_peaks_thresh);
 
-                // 9. link parts
-                connect_bodyparts(keypoints, heatmap.data(), heatmap_peaks.data(), net_inw, net_inh,
-                    param_window.body_inter_min_above_th,
-                    param_window.body_inter_th,
-                    param_window.body_min_subset_cnt,
-                    param_window.body_min_subset_score,
-                    keyshape);
+    // 9. link parts
+    connect_bodyparts(keypoints, heatmap.data(), heatmap_peaks.data(), net_inw, net_inh,
+        param_window.body_inter_min_above_th,
+        param_window.body_inter_th,
+        param_window.body_min_subset_cnt,
+        param_window.body_min_subset_score,
+        keyshape);
             }
 
+        {
+            MTR_SCOPE(__FILE__, "viz");
+            // 10. draw result
+            if (is_fullscreen)
             {
-                MTR_SCOPE(__FILE__, "viz");
-                // 10. draw result
-                render_pose_keypoints(pkt.frame, keypoints, keyshape, param_window.render_thresh, scale);
-
+                if (upscale_frame.empty())
                 {
-                    const int num_keypoints = keyshape[1];
-                    for (int person = 0; person < keyshape[0]; ++person)
+                    int w, h;
+                    getScreenResolution(w, h);
+                    float ar = frame.cols / (float)frame.rows;
+                    upscale_frame = Mat(h, h * ar, CV_8UC3);
+
+                    setWindowProperty(TITLE, WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
+                    moveWindow(TITLE, 0, 0);
+                }
+
+                MTR_SCOPE(__FILE__, "upscale");
+                resize(pkt.frame, upscale_frame, upscale_frame.size());
+                pkt.frame = upscale_frame;
+                scale = upscale_frame.cols / (float)net_inw;
+            }
+            render_pose_keypoints(pkt.frame, keypoints, keyshape, param_window.render_thresh, scale);
+
+            {
+                const int num_keypoints = keyshape[1];
+                for (int person = 0; person < keyshape[0]; ++person)
+                {
+                    for (int part = 0; part < num_keypoints; ++part)
                     {
-                        for (int part = 0; part < num_keypoints; ++part)
+                        const int index = (person * num_keypoints + part) * keyshape[2];
+                        if (keypoints[index + 2] > param_window.render_thresh)
                         {
-                            const int index = (person * num_keypoints + part) * keyshape[2];
-                            if (keypoints[index + 2] > param_window.render_thresh)
-                            {
-                                //Point center{keypoints[index] * scale, keypoints[index + 1] * scale};
-                                //if (center.y < 200)
-                                //{
-                                //}
-                            }
+                            //Point center{keypoints[index] * scale, keypoints[index + 1] * scale};
+                            //if (center.y < 200)
+                            //{
+                            //}
                         }
                     }
                 }
+            }
 
-                // 11. show and save result
+            // 11. show and save result
+            {
+                MTR_SCOPE(__FILE__, "imshow");
+                cout << "people: " << keyshape[0] << endl;
+
+                imshow(TITLE, pkt.frame);
+                if (is_gui_visible)
                 {
-                    MTR_SCOPE(__FILE__, "imshow");
-                    cout << "people: " << keyshape[0] << endl;
-                    imshow("jing-pose", pkt.frame);
-
-                    if (is_gui_visible)
-                    {
-                        param_window.update();
-                    }
-                }
-
-                {
-                    MTR_SCOPE(__FILE__, "waitkey");
-                    if (waitKey(1) == 27) break;
+                    param_window.update();
                 }
             }
+
+            {
+                MTR_SCOPE(__FILE__, "waitkey");
+                int key = waitKey(1);
+                if (key == 27) break;
+                if (key == 'f') is_fullscreen = !is_fullscreen;
+                if (key == 'g') is_gui_visible = !is_gui_visible;
+            }
         }
-        is_running = false;
+        }
+    is_running = false;
     });
 
     CUDA.join();

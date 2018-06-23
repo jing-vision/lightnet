@@ -463,31 +463,35 @@ void find_heatmap_peaks(
     }
 }
 
-Mat create_netsize_im(
-    const Mat &im,
+void create_netsize_im(
+    const Mat &input,
+    Mat &output,
     const int netw,
     const int neth,
     float *scale)
 {
     MTR_SCOPE_FUNC();
 
-    CV_Assert(!im.empty());
+    CV_Assert(!input.empty());
 
     // for tall image
     int newh = neth;
-    float s = newh / (float)im.rows;
-    int neww = im.cols * s;
+    float s = newh / (float)input.rows;
+    int neww = input.cols * s;
     if (neww > netw)
     {
         //for fat image
         neww = netw;
-        s = neww / (float)im.cols;
-        newh = im.rows * s;
+        s = neww / (float)input.cols;
+        newh = input.rows * s;
     }
 
     *scale = 1 / s;
     Rect dst_area(0, 0, neww, newh);
-    Mat dst = Mat::zeros(neth, netw, CV_8UC3);
-    resize(im, dst(dst_area), Size(neww, newh));
-    return dst;
+    if (output.empty())
+    {
+        output = Mat::zeros(neth, netw, CV_8UC3);
+    }
+
+    resize(input, output(dst_area), Size(neww, newh));
 }

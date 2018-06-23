@@ -31,8 +31,9 @@ void find_heatmap_peaks(
     const int SRC_CH,
     const float TH);
 
-cv::Mat create_netsize_im(
-    const cv::Mat &im,
+void create_netsize_im(
+    const cv::Mat &intput,
+    cv::Mat& out,
     const int netw,
     const int neth,
     float *scale);

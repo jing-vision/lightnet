@@ -132,6 +132,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\modules\PDollar\PDollar.h" />
     <ClInclude Include="..\..\modules\minitrace\minitrace.h" />
+    <ClInclude Include="..\src\os_hal.h" />
     <ClInclude Include="..\src\post_process.h" />
     <ClInclude Include="..\src\run_darknet.h" />
   </ItemGroup>
@@ -139,6 +140,7 @@
     <ClCompile Include="..\..\modules\PDollar\PDollar.cpp" />
     <ClCompile Include="..\..\modules\minitrace\minitrace.c" />
     <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\os_hal.cpp" />
     <ClCompile Include="..\src\post_process.cpp" />
     <ClCompile Include="..\src\run_darknet.c" />
   </ItemGroup>
