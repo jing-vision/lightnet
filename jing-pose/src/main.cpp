@@ -18,6 +18,9 @@ using namespace cv;
 #define CVUI_IMPLEMENTATION
 #include "cvui/cvui.h"
 
+//#define PARALLEL_GRAB_VIDEO
+#define PARALLEL_RESIZE
+
 using namespace moodycamel;
 
 const char* params =
@@ -32,8 +35,9 @@ const char* params =
 "{ f fullscreen | false             | show in fullscreen, press f to toggle }"
 "{ fps          | 0                 | fps of video or camera device }"
 "{ single_step  |                   | single step mode, press any key to move to next frame }"
-"{ loop         | true              | whether to loop the video}"
+"{ l loop       | true              | whether to loop the video}"
 "{ video_pos    | 0                 | current position of the video file in milliseconds. }"
+"{ player       | 1                 | current position for player, press p to toggle. }"
 "{ data_write_dir  |                | enables data write mode }"
 "{ data_read_dir   |                | enables data read mode }"
 ;
@@ -47,6 +51,12 @@ bool is_fullscreen = false;
 #define VER_PATCH 0
 
 #define TITLE APP_NAME " " CVAUX_STR(VER_MAJOR) "." CVAUX_STR(VER_MINOR) "." CVAUX_STR(VER_PATCH)
+
+cv::Rect dancer_rois[] =
+{
+    { 67,0, 240,360 },
+    { 335,0, 240,360 },
+};
 
 // Recommended macros:
 //      MTR_SCOPE(__FILE__, "post processing");
@@ -216,6 +226,8 @@ int main(int argc, char **argv)
     is_fullscreen = parser.get<bool>("fullscreen");
     Mat upscale_frame;
 
+    int player = parser.get<int>("player");
+
     String sources[] = {
         parser.get<String>("@source1"),
         parser.get<String>("@source2"),
@@ -247,8 +259,8 @@ int main(int argc, char **argv)
 
     vector<float> net_inputs(net_inw * net_inh * 3);
 
-    auto safe_grab_video = [&parser](VideoCapture& cap, Mat& frame, const String& source, bool source_is_camera) {
-        if (!cap.isOpened()) return;
+    auto safe_grab_video = [&parser, &is_running](VideoCapture& cap, Mat& frame, const String& source, bool source_is_camera) -> bool {
+        if (!cap.isOpened()) return true;
 
         char info[100];
         sprintf(info, "open: %s", source.c_str());
@@ -263,12 +275,12 @@ int main(int argc, char **argv)
 
         if (frame.empty())
         {
-            if (parser.get<bool>("loop"))
-            {
-                cap = safe_open_video(parser, source);
-            }
+            if (!parser.get<bool>("loop")) return false;
+            
+            cap = safe_open_video(parser, source);
         }
 
+        return true;
     };
 
     std::thread CUDA([&] {
@@ -287,25 +299,29 @@ int main(int argc, char **argv)
             {
                 MTR_SCOPE(__FILE__, "pre process");
 
-                parallel_for_(Range(0, 2), [&](const Range& range) {
-                    for (int r = range.start; r < range.end; r++)
+#ifdef PARALLEL_GRAB_VIDEO
+                parallel_for_(Range(0, 2), [&](const Range& range) { for (int i = range.start; i < range.end; i++)
+#else
+                for (int i = 0; i < 2; i++)
+#endif
+                {
+                    if (!safe_grab_video(captures[i], frames[i], sources[i], source_is_camera[i]))
                     {
-                        safe_grab_video(captures[r], frames[r], sources[r], source_is_camera[r]);
+                        is_running = false;
                     }
+                }
+#ifdef PARALLEL_GRAB_VIDEO
                 });
+#endif
+
+                if (!is_running) break;
 
                 {
                     if (captures[1].isOpened())
                     {
                         MTR_SCOPE(__FILE__, "mix");
 
-                        cv::Rect dancer_rois[] =
-                        {
-                            { 67,0, 240,360 },
-                            { 336,0, 240,360 },
-                        };
-                        int player_location = 0;
-                        float ar = dancer_rois[0].width / (float)dancer_rois[0].height;
+                        float ar = dancer_rois[player].width / (float)dancer_rois[player].height;
 
                         int crop_h = frames[0].rows;
                         int crop_w = ar * crop_h;
@@ -315,7 +331,7 @@ int main(int argc, char **argv)
                             crop_x, crop_y,
                             crop_w, crop_h,
                         };
-                        Rect dst_crop = dancer_rois[0];
+                        Rect dst_crop = dancer_rois[player];
                         frame = frames[1];
 
                         resize(frames[0](src_crop), frame(dst_crop), dst_crop.size());
@@ -399,10 +415,8 @@ int main(int argc, char **argv)
                 MTR_SCOPE(__FILE__, "post process");
 
                 // 7. resize net output back to input size to get heatmap
-#define PARALLEL_RESIZE
 #ifdef PARALLEL_RESIZE
-                parallel_for_(Range(0, NET_OUT_CHANNELS), [&](const Range& range) {
-                    for (int i = range.start; i < range.end; i++)
+                parallel_for_(Range(0, NET_OUT_CHANNELS), [&](const Range& range) { for (int i = range.start; i < range.end; i++)
 #else
                 for (int i = 0; i < NET_OUT_CHANNELS; ++i)
 #endif
@@ -412,9 +426,8 @@ int main(int argc, char **argv)
                     Mat nmsin(net_inh, net_inw, CV_32F, heatmap.data() + net_inh*net_inw*i);
                     resize(netout, nmsin, Size(net_inw, net_inh), 0, 0, CV_INTER_CUBIC);
                 }
-                }
 #ifdef PARALLEL_RESIZE
-            );
+                });
 #endif
     // 8. get heatmap peaks
     find_heatmap_peaks(heatmap.data(), heatmap_peaks.data(), net_inw, net_inh, NET_OUT_CHANNELS, param_window.find_heatmap_peaks_thresh);
@@ -452,12 +465,14 @@ int main(int argc, char **argv)
             render_pose_keypoints(pkt.frame, keypoints, keyshape, param_window.render_thresh, scale);
 
             {
-                const int num_keypoints = keyshape[1];
-                for (int person = 0; person < keyshape[0]; ++person)
+                int num_persons = keyshape[0];
+                int num_joints = keyshape[1];
+                int dim_joint = keyshape[2];
+                for (int person = 0; person < num_persons; ++person)
                 {
-                    for (int part = 0; part < num_keypoints; ++part)
+                    for (int part = 0; part < num_joints; ++part)
                     {
-                        const int index = (person * num_keypoints + part) * keyshape[2];
+                        int index = (person * num_joints + part) * dim_joint;
                         if (keypoints[index + 2] > param_window.render_thresh)
                         {
                             //Point center{keypoints[index] * scale, keypoints[index + 1] * scale};
@@ -487,6 +502,7 @@ int main(int argc, char **argv)
                 if (key == 27) break;
                 if (key == 'f') is_fullscreen = !is_fullscreen;
                 if (key == 'g') is_gui_visible = !is_gui_visible;
+                if (key == 'p') player = 1 - player;
             }
         }
         }
