@@ -43,7 +43,7 @@ if __name__ == '__main__':
         '--source', type=int, default=0, help='Path to image or video. Skip to capture frames from camera')
     parser.add_argument('--w', type=int, default=1024)
     parser.add_argument('--h', type=int, default=768)
-    parser.add_argument('--shotdir', default='')
+    parser.add_argument('--shotdir', default='img')
     parser.add_argument('--prefix', default='shot')
     args = parser.parse_args()
 
