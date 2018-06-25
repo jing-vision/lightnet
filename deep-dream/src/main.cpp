@@ -1,3 +1,5 @@
+// https://pjreddie.com/darknet/nightmare/
+// 
 #include <iostream>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -35,6 +37,20 @@ bool is_fullscreen = false;
 #define VER_PATCH 0
 
 #define TITLE APP_NAME " " CVAUX_STR(VER_MAJOR) "." CVAUX_STR(VER_MINOR) "." CVAUX_STR(VER_PATCH)
+
+Mat nightmare(Mat im, int max_layer, int range, int norm, int rounds, int iters, int octaves, float rate, float thresh)
+{
+    for (int e = 0; e < rounds; ++e) {
+        fprintf(stderr, "Iteration: ");
+        for (int n = 0; n < iters; ++n) {
+            fprintf(stderr, "%d, ", n);
+            int layer = max_layer + rand() % range - range / 2;
+            int octave = rand() % octaves;
+            //optimize_picture(im, layer, 1 / pow(1.33333333, octave), rate, thresh, norm);
+        }
+    }
+    return im;
+}
 
 int main(int argc, char **argv)
 {

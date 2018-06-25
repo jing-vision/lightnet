@@ -19,5 +19,7 @@ extern "C"
         float *indata
     );
 
+    //void optimize_picture(image orig, int max_layer, float scale, float rate, float thresh, int norm);
+
 }
 #endif // RUN_DARKNET_H

@@ -29,3 +29,8 @@ float *run_net
     network_predict(*net, indata);
     return net->output;
 }
+
+void optimize_picture(image orig, int max_layer, float scale, float rate, float thresh, int norm)
+{
+
+}
