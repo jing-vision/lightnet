@@ -1,10 +1,10 @@
-n-- http://industriousone.com/scripting-reference
+-- http://industriousone.com/scripting-reference
 
 local action = _ACTION or ""
 
 local OPENCV_PATH   = "d:/opencv/build"
 
-solution "dark-app"
+solution "app"
     location (action)
     configurations { "Debug", "Profile", "Release" }
     platforms {"x64"}
@@ -49,7 +49,7 @@ solution "dark-app"
         optimize "On"
         editandcontinue "Off"
 
-    project "dark-app"
+    project "app"
         kind "ConsoleApp"
         includedirs {
             "../modules",
