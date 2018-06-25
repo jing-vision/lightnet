@@ -5,6 +5,7 @@
 
 #include "run_darknet.h"
 #include "MiniTraceHelper.h"
+#include "VideoHelper.h"
 
 using namespace std;
 using namespace cv;
@@ -35,60 +36,6 @@ bool is_fullscreen = false;
 
 #define TITLE APP_NAME " " CVAUX_STR(VER_MAJOR) "." CVAUX_STR(VER_MINOR) "." CVAUX_STR(VER_PATCH)
 
-auto safe_open_video = [](const CommandLineParser& parser, const String& source, bool* source_is_camera = nullptr) -> VideoCapture {
-    char info[100];
-    sprintf(info, "open: %s", source.c_str());
-    MTR_SCOPE(__FILE__, info);
-    VideoCapture cap;
-
-    if (source.empty()) return cap;
-
-    if (source.size() == 1 && isdigit(source[0]))
-    {
-        cap.open(source[0] - '0');
-        if (source_is_camera) *source_is_camera = true;
-    }
-    else
-    {
-        cap.open(source);
-        if (source_is_camera) *source_is_camera = false;
-    }
-    if (!cap.isOpened())
-    {
-        cout << "Failed to open: " << source << endl;
-        return -1;
-    }
-
-    if (cap.isOpened())
-    {
-        auto fps = parser.get<int>("fps");
-        if (fps > 0)
-        {
-            if (!cap.set(CAP_PROP_FPS, fps)) cout << "WARNING: Can't set fps" << endl;
-        }
-
-        auto video_pos = parser.get<int>("video_pos");
-        if (video_pos > 0)
-        {
-            if (!cap.set(CAP_PROP_POS_MSEC, video_pos)) cout << "WARNING: Can't set video_pos" << endl;
-        }
-
-        auto width = parser.get<int>("width");
-        if (width > 0)
-        {
-            if (!cap.set(CAP_PROP_FRAME_WIDTH, width)) cout << "WARNING: Can't set width" << endl;
-        }
-
-        auto height = parser.get<int>("height");
-        if (height > 0)
-        {
-            if (!cap.set(CAP_PROP_FRAME_HEIGHT, height)) cout << "WARNING: Can't set height" << endl;
-        }
-    }
-    return cap;
-};
-
-
 int main(int argc, char **argv)
 {
     CommandLineParser parser(argc, argv, params);
@@ -111,7 +58,6 @@ int main(int argc, char **argv)
 
     Mat frame;
 
-    // 1. read args
     is_gui_visible = parser.get<bool>("gui");
     is_fullscreen = parser.get<bool>("fullscreen");
     Mat upscale_frame;
@@ -126,7 +72,6 @@ int main(int argc, char **argv)
 
     bool is_running = true;
 
-    // 2. initialize net
     int net_inw = 0;
     int net_inh = 0;
     int net_outw = 0;
@@ -183,11 +128,9 @@ int main(int argc, char **argv)
                 is_running = false;
             }
 
-            // 4. normalized to float type
             netim.convertTo(netim_f32, CV_32F, 1 / 256.f, -0.5);
 
             {
-                // 5. split channels
                 MTR_SCOPE(__FILE__, "split");
                 static bool init_input_channels = true;
                 if (init_input_channels)
@@ -205,7 +148,6 @@ int main(int argc, char **argv)
             }
         }
 
-        // 6. feed forward
         float *netoutdata = NULL;
         {
             MTR_SCOPE(__FILE__, "run_net");
@@ -215,12 +157,16 @@ int main(int argc, char **argv)
             cout << "forward fee: " << fee_time << "ms" << endl;
         }
 
-        // 11. show and save result
         {
-            MTR_SCOPE(__FILE__, "imshow");
-            imshow(TITLE, frame);
+            MTR_SCOPE(__FILE__, "post process");
+        }
 
+        {
+            MTR_SCOPE(__FILE__, "viz");
             {
+                MTR_SCOPE(__FILE__, "imshow");
+                imshow(TITLE, frame);
+
                 MTR_SCOPE(__FILE__, "waitkey");
                 int key = waitKey(1);
                 if (key == 27) break;
