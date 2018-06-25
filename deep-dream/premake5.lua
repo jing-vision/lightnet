@@ -4,7 +4,7 @@ local action = _ACTION or ""
 
 local OPENCV_PATH   = "d:/opencv/build"
 
-solution "native-app"
+solution "deep-dream"
     location (action)
     configurations { "Debug", "Profile", "Release" }
     platforms {"x64"}
@@ -49,7 +49,7 @@ solution "native-app"
         optimize "On"
         editandcontinue "Off"
 
-    project "native-app"
+    project "deep-dream"
         kind "ConsoleApp"
         includedirs {
             "../modules",

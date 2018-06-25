@@ -9,20 +9,21 @@
 using namespace std;
 using namespace cv;
 
-const char *params =
-    "{ help ?       | false             | print usage          }"
-    "{ proto        |<none>             | model configuration }"
-    "{ model        |<none>             | model weights }"
-    "{@source       |0                  | source for processing   }"
-    "{ w width      | 0                 | width of video or camera device}"
-    "{ h height     | 0                 | height of video or camera device}"
-    "{ g gui        | true              | show gui, press g to toggle }"
-    "{ f fullscreen | false             | show in fullscreen, press f to toggle }"
-    "{ fps          | 0                 | fps of video or camera device }"
-    "{ single_step  |                   | single step mode, press any key to move to next frame }"
-    "{ l loop       | true              | whether to loop the video}"
-    "{ video_pos    | 0                 | current position of the video file in milliseconds. }"
-    "{ player       | 1                 | current position for player, press p to toggle. }";
+const char* params =
+"{ help ?       | false             | print usage          }"
+"{ proto        | cfg/vgg-conv.cfg  | model configuration }"
+"{ model        |vgg-conv.weights   | model weights }"
+"{@source       |0                  | source for processing   }"
+"{ w width      | 0                 | width of video or camera device}"
+"{ h height     | 0                 | height of video or camera device}"
+"{ g gui        | true              | show gui, press g to toggle }"
+"{ f fullscreen | false             | show in fullscreen, press f to toggle }"
+"{ fps          | 0                 | fps of video or camera device }"
+"{ single_step  |                   | single step mode, press any key to move to next frame }"
+"{ l loop       | true              | whether to loop the video}"
+"{ video_pos    | 0                 | current position of the video file in milliseconds. }"
+"{ player       | 1                 | current position for player, press p to toggle. }"
+;
 
 bool is_gui_visible = false;
 bool is_fullscreen = false;

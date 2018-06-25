@@ -1,0 +1,1 @@
+python ..\modules\pytorch-caffe-darknet-convert\caffe2darknet.py pose_deploy.prototxt pose_iter_440000.caffemodel pose_deploy.cfg pose_deploy.weights
