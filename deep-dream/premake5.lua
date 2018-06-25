@@ -60,6 +60,7 @@ solution "deep-dream"
             path.join("$(CUDA_PATH)", "include"),
             path.join(OPENCV_PATH, "include")
         }
+        debugdir "../bin"
         files { 
             "src/**",
             "../src/**",
