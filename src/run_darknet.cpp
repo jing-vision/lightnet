@@ -12,7 +12,7 @@ void init_net
     int *outh
 )
 {
-    net = load_network_custom(cfgfile, weightfile, 0, 1);
+    net = load_network_custom((char*)cfgfile, (char*)weightfile, 0, 1);
     *inw = net->w;
     *inh = net->h;
 
