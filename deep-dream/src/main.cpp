@@ -38,19 +38,30 @@ bool is_fullscreen = false;
 
 #define TITLE APP_NAME " " CVAUX_STR(VER_MAJOR) "." CVAUX_STR(VER_MINOR) "." CVAUX_STR(VER_PATCH)
 
-Mat nightmare(Mat im, int max_layer, int range, int norm, int rounds, int iters, int octaves, float rate, float thresh)
+Mat nightmare(Mat org, int max_layer, int range, int norm, int rounds, int iters, int octaves, float rate, float thresh)
 {
+    Mat im = org.clone();
     for (int e = 0; e < rounds; ++e) {
         fprintf(stderr, "Iteration: ");
         for (int n = 0; n < iters; ++n) {
             fprintf(stderr, "%d, ", n);
             int layer = max_layer + rand() % range - range / 2;
             int octave = rand() % octaves;
-            //optimize_picture(im, layer, 1 / pow(1.33333333, octave), rate, thresh, norm);
+            optimize_mat(im, layer, 1 / pow(1.33333333, octave), rate, thresh, norm);
         }
     }
     return im;
 }
+
+//gui.add(isDreaming.set("dream", false));
+//gui.add(max_layer.set("max_layer", 13, 1, 13));
+//gui.add(iters.set("iterations", 1, 1, 10));
+//gui.add(octaves.set("octaves", 2, 1, 8));
+//gui.add(thresh.set("thresh", 0.85, 0.0, 1.0));
+//gui.add(range.set("range", 3, 1, 10));
+//gui.add(norm.set("norm", 1, 1, 10));
+//gui.add(rate.set("rate", 0.01, 0.0, 0.1));
+//gui.add(blendAmt.set("blendAmt", 0.5, 0.0, 1.0));
 
 int main(int argc, char **argv)
 {
@@ -98,9 +109,7 @@ int main(int argc, char **argv)
     }
 
     float scale = 0.0f;
-
-    vector<float> net_inputs(net_inw * net_inh * 3);
-
+    
     auto safe_grab_video = [&parser, &is_running](VideoCapture& cap, Mat& frame, const String& source, bool source_is_camera) -> bool {
         if (!cap.isOpened()) return true;
 
@@ -127,9 +136,6 @@ int main(int argc, char **argv)
 
     int frame_count = 0;
 
-    Mat frames[2];
-    Mat netim;
-    Mat netim_f32;
     vector<Mat> input_channels;
 
     while (is_running)
@@ -143,32 +149,15 @@ int main(int argc, char **argv)
             {
                 is_running = false;
             }
-
-            netim.convertTo(netim_f32, CV_32F, 1 / 256.f, -0.5);
-
-            {
-                MTR_SCOPE(__FILE__, "split");
-                static bool init_input_channels = true;
-                if (init_input_channels)
-                {
-                    init_input_channels = false;
-                    float *netin_data_ptr = net_inputs.data();
-                    for (int i = 0; i < 3; ++i)
-                    {
-                        Mat channel(net_inh, net_inw, CV_32FC1, netin_data_ptr);
-                        input_channels.emplace_back(channel);
-                        netin_data_ptr += (net_inw * net_inh);
-                    }
-                }
-                split(netim_f32, input_channels);
-            }
         }
 
         float *netoutdata = NULL;
         {
             MTR_SCOPE(__FILE__, "run_net");
             double time_begin = getTickCount();
-            netoutdata = run_net(net_inputs.data());
+
+            frame = nightmare(frame, max_layer, range, norm, 1, iters, octaves, rate, thresh);
+
             double fee_time = (getTickCount() - time_begin) / getTickFrequency() * 1000;
             cout << "forward fee: " << fee_time << "ms" << endl;
         }

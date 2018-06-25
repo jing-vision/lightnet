@@ -1,6 +1,8 @@
 #ifndef RUN_DARKNET_H
 #define RUN_DARKNET_H
 
+#include <opencv2/core.hpp>
+
 void init_net
 (
     const char *cfgfile,
@@ -15,5 +17,7 @@ float *run_net
 (
     float *indata
 );
+
+void optimize_mat(cv::Mat orig, int max_layer, float scale, float rate, float thresh, int norm);
 
 #endif // RUN_DARKNET_H

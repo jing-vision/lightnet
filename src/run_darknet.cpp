@@ -1,3 +1,4 @@
+#include "run_darknet.h"
 #include <network.h>
 
 static network *net;
@@ -30,7 +31,30 @@ float *run_net
     return net->output;
 }
 
-void optimize_picture(image orig, int max_layer, float scale, float rate, float thresh, int norm)
+image ipl_to_image(IplImage* src)
 {
+    unsigned char *data = (unsigned char *)src->imageData;
+    int h = src->height;
+    int w = src->width;
+    int c = src->nChannels;
+    int step = src->widthStep;
+    image out = make_image(w, h, c);
+    int i, j, k, count = 0;;
 
+    for (k = 0; k < c; ++k) {
+        for (i = 0; i < h; ++i) {
+            for (j = 0; j < w; ++j) {
+                out.data[count++] = data[i*step + j*c + k] / 255.;
+            }
+        }
+    }
+    return out;
+}
+
+void optimize_mat(cv::Mat orig, int max_layer, float scale, float rate, float thresh, int norm)
+{
+    IplImage ipl = orig;
+    image im = ipl_to_image(&ipl);
+
+    optimize_picture(net, im, max_layer, scale, rate, thresh, norm);
 }
