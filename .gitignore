@@ -36,7 +36,7 @@
 
 /darknet_vs/x64/
 /darknet_vs/bin/
-/video2image/img/
+/scripts/img/
 
 *.suo
 *.user
