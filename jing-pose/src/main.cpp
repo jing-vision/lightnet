@@ -12,7 +12,7 @@ using namespace cv;
 #include "post_process.h"
 #include "os_hal.h"
 
-#include "minitrace/minitrace.h"
+#include "MiniTraceHelper.h"
 #include "readerwriterqueue/readerwriterqueue.h"
 
 #define CVUI_IMPLEMENTATION
@@ -56,27 +56,6 @@ cv::Rect dancer_rois[] =
 {
     { 67,0, 240,360 },
     { 335,0, 240,360 },
-};
-
-// Recommended macros:
-//      MTR_SCOPE(__FILE__, "post processing");
-//      MTR_SCOPE_FUNC();
-//      MTR_META_THREAD_NAME("reader");
-struct MiniTraceHelper
-{
-    void setup()
-    {
-        mtr_init("trace.json");
-        mtr_register_sigint_handler();
-        MTR_META_PROCESS_NAME("main process");
-        MTR_META_THREAD_NAME("0) main thread");
-    }
-
-    ~MiniTraceHelper()
-    {
-        mtr_flush();
-        mtr_shutdown();
-    }
 };
 
 #define CONCURRENT_PKT_COUNT 1
@@ -205,8 +184,6 @@ auto safe_open_video = [](const CommandLineParser& parser, const String& source,
 int main(int argc, char **argv)
 {
     MiniTraceHelper mr_hepler;
-    mr_hepler.setup();
-
     ParamWindow param_window;
 
     CommandLineParser parser(argc, argv, params);

@@ -3,15 +3,11 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+#include "run_darknet.h"
+#include "MiniTraceHelper.h"
+
 using namespace std;
 using namespace cv;
-
-#include "run_darknet.h"
-
-#include "minitrace/minitrace.h"
-#include "readerwriterqueue/readerwriterqueue.h"
-
-using namespace moodycamel;
 
 const char* params =
 "{ help ?       | false             | print usage          }"
@@ -40,194 +36,196 @@ bool is_fullscreen = false;
 #define TITLE APP_NAME " " CVAUX_STR(VER_MAJOR) "." CVAUX_STR(VER_MINOR) "." CVAUX_STR(VER_PATCH)
 
 auto safe_open_video = [](const CommandLineParser& parser, const String& source, bool* source_is_camera = nullptr) -> VideoCapture {
-	char info[100];
-	sprintf(info, "open: %s", source.c_str());
-	MTR_SCOPE(__FILE__, info);
-	VideoCapture cap;
+    char info[100];
+    sprintf(info, "open: %s", source.c_str());
+    MTR_SCOPE(__FILE__, info);
+    VideoCapture cap;
 
-	if (source.empty()) return cap;
+    if (source.empty()) return cap;
 
-	if (source.size() == 1 && isdigit(source[0]))
-	{
-		cap.open(source[0] - '0');
-		if (source_is_camera) *source_is_camera = true;
-	}
-	else
-	{
-		cap.open(source);
-		if (source_is_camera) *source_is_camera = false;
-	}
-	if (!cap.isOpened())
-	{
-		cout << "Failed to open: " << source << endl;
-		return -1;
-	}
+    if (source.size() == 1 && isdigit(source[0]))
+    {
+        cap.open(source[0] - '0');
+        if (source_is_camera) *source_is_camera = true;
+    }
+    else
+    {
+        cap.open(source);
+        if (source_is_camera) *source_is_camera = false;
+    }
+    if (!cap.isOpened())
+    {
+        cout << "Failed to open: " << source << endl;
+        return -1;
+    }
 
-	if (cap.isOpened())
-	{
-		auto fps = parser.get<int>("fps");
-		if (fps > 0)
-		{
-			if (!cap.set(CAP_PROP_FPS, fps)) cout << "WARNING: Can't set fps" << endl;
-		}
+    if (cap.isOpened())
+    {
+        auto fps = parser.get<int>("fps");
+        if (fps > 0)
+        {
+            if (!cap.set(CAP_PROP_FPS, fps)) cout << "WARNING: Can't set fps" << endl;
+        }
 
-		auto video_pos = parser.get<int>("video_pos");
-		if (video_pos > 0)
-		{
-			if (!cap.set(CAP_PROP_POS_MSEC, video_pos)) cout << "WARNING: Can't set video_pos" << endl;
-		}
+        auto video_pos = parser.get<int>("video_pos");
+        if (video_pos > 0)
+        {
+            if (!cap.set(CAP_PROP_POS_MSEC, video_pos)) cout << "WARNING: Can't set video_pos" << endl;
+        }
 
-		auto width = parser.get<int>("width");
-		if (width > 0)
-		{
-			if (!cap.set(CAP_PROP_FRAME_WIDTH, width)) cout << "WARNING: Can't set width" << endl;
-		}
+        auto width = parser.get<int>("width");
+        if (width > 0)
+        {
+            if (!cap.set(CAP_PROP_FRAME_WIDTH, width)) cout << "WARNING: Can't set width" << endl;
+        }
 
-		auto height = parser.get<int>("height");
-		if (height > 0)
-		{
-			if (!cap.set(CAP_PROP_FRAME_HEIGHT, height)) cout << "WARNING: Can't set height" << endl;
-		}
-	}
-	return cap;
+        auto height = parser.get<int>("height");
+        if (height > 0)
+        {
+            if (!cap.set(CAP_PROP_FRAME_HEIGHT, height)) cout << "WARNING: Can't set height" << endl;
+        }
+    }
+    return cap;
 };
 
 
 int main(int argc, char **argv)
 {
-	CommandLineParser parser(argc, argv, params);
-	if (parser.get<bool>("help"))
-	{
-		parser.printMessage();
-		return 0;
-	}
+    CommandLineParser parser(argc, argv, params);
+    if (parser.get<bool>("help"))
+    {
+        parser.printMessage();
+        return 0;
+    }
 
-	auto cfg_path = parser.get<string>("proto");
-	auto weight_path = parser.get<string>("model");
+    MiniTraceHelper _;
 
-	Mat frame;
+    auto cfg_path = parser.get<string>("proto");
+    auto weight_path = parser.get<string>("model");
 
-	// 1. read args
-	is_gui_visible = parser.get<bool>("gui");
-	is_fullscreen = parser.get<bool>("fullscreen");
-	Mat upscale_frame;
+    Mat frame;
 
-	int player = parser.get<int>("player");
+    // 1. read args
+    is_gui_visible = parser.get<bool>("gui");
+    is_fullscreen = parser.get<bool>("fullscreen");
+    Mat upscale_frame;
 
-	String source = parser.get<String>("@source");
+    int player = parser.get<int>("player");
 
-	bool source_is_camera = false;
+    String source = parser.get<String>("@source");
 
-	VideoCapture capture = safe_open_video(parser, source, &source_is_camera);
+    bool source_is_camera = false;
 
-	bool is_running = true;
+    VideoCapture capture = safe_open_video(parser, source, &source_is_camera);
 
-	// 2. initialize net
-	int net_inw = 0;
-	int net_inh = 0;
-	int net_outw = 0;
-	int net_outh = 0;
-	{
-		MTR_SCOPE(__FILE__, "init_net");
-		init_net(cfg_path.c_str(), weight_path.c_str(), &net_inw, &net_inh, &net_outw, &net_outh);
-	}
+    bool is_running = true;
 
-	float scale = 0.0f;
+    // 2. initialize net
+    int net_inw = 0;
+    int net_inh = 0;
+    int net_outw = 0;
+    int net_outh = 0;
+    {
+        MTR_SCOPE(__FILE__, "init_net");
+        init_net(cfg_path.c_str(), weight_path.c_str(), &net_inw, &net_inh, &net_outw, &net_outh);
+    }
 
-	vector<float> net_inputs(net_inw * net_inh * 3);
+    float scale = 0.0f;
 
-	auto safe_grab_video = [&parser, &is_running](VideoCapture& cap, Mat& frame, const String& source, bool source_is_camera) -> bool {
-		if (!cap.isOpened()) return true;
+    vector<float> net_inputs(net_inw * net_inh * 3);
 
-		char info[100];
-		sprintf(info, "open: %s", source.c_str());
-		MTR_SCOPE_FUNC_C("open", source.c_str());
+    auto safe_grab_video = [&parser, &is_running](VideoCapture& cap, Mat& frame, const String& source, bool source_is_camera) -> bool {
+        if (!cap.isOpened()) return true;
 
-		cap >> frame; // get a new frame from camera/video or read image
-		if (source_is_camera)
-		{
-			MTR_SCOPE(__FILE__, "flip");
-			flip(frame, frame, 1);
-		}
+        char info[100];
+        sprintf(info, "open: %s", source.c_str());
+        MTR_SCOPE_FUNC_C("open", source.c_str());
 
-		if (frame.empty())
-		{
-			if (!parser.get<bool>("loop")) return false;
+        cap >> frame; // get a new frame from camera/video or read image
+        if (source_is_camera)
+        {
+            MTR_SCOPE(__FILE__, "flip");
+            flip(frame, frame, 1);
+        }
 
-			cap = safe_open_video(parser, source);
-		}
+        if (frame.empty())
+        {
+            if (!parser.get<bool>("loop")) return false;
 
-		return true;
-	};
+            cap = safe_open_video(parser, source);
+        }
 
-	int frame_count = 0;
+        return true;
+    };
 
-	Mat frames[2];
-	Mat netim;
-	Mat netim_f32;
-	vector<Mat> input_channels;
+    int frame_count = 0;
 
-	while (is_running)
-	{
-		MTR_SCOPE_FUNC_I("frame", frame_count);
+    Mat frames[2];
+    Mat netim;
+    Mat netim_f32;
+    vector<Mat> input_channels;
 
-		{
-			MTR_SCOPE(__FILE__, "pre process");
+    while (is_running)
+    {
+        MTR_SCOPE_FUNC_I("frame", frame_count);
 
-			if (!safe_grab_video(capture, frame, source, source_is_camera))
-			{
-				is_running = false;
-			}
+        {
+            MTR_SCOPE(__FILE__, "pre process");
 
-			// 4. normalized to float type
-			netim.convertTo(netim_f32, CV_32F, 1 / 256.f, -0.5);
+            if (!safe_grab_video(capture, frame, source, source_is_camera))
+            {
+                is_running = false;
+            }
 
-			{
-				// 5. split channels
-				MTR_SCOPE(__FILE__, "split");
-				static bool init_input_channels = true;
-				if (init_input_channels)
-				{
-					init_input_channels = false;
-					float *netin_data_ptr = net_inputs.data();
-					for (int i = 0; i < 3; ++i)
-					{
-						Mat channel(net_inh, net_inw, CV_32FC1, netin_data_ptr);
-						input_channels.emplace_back(channel);
-						netin_data_ptr += (net_inw * net_inh);
-					}
-				}
-				split(netim_f32, input_channels);
-			}
-		}
+            // 4. normalized to float type
+            netim.convertTo(netim_f32, CV_32F, 1 / 256.f, -0.5);
 
-		// 6. feed forward
-		float *netoutdata = NULL;
-		{
-			MTR_SCOPE(__FILE__, "run_net");
-			double time_begin = getTickCount();
-			netoutdata = run_net(net_inputs.data());
-			double fee_time = (getTickCount() - time_begin) / getTickFrequency() * 1000;
-			cout << "forward fee: " << fee_time << "ms" << endl;
-		}
+            {
+                // 5. split channels
+                MTR_SCOPE(__FILE__, "split");
+                static bool init_input_channels = true;
+                if (init_input_channels)
+                {
+                    init_input_channels = false;
+                    float *netin_data_ptr = net_inputs.data();
+                    for (int i = 0; i < 3; ++i)
+                    {
+                        Mat channel(net_inh, net_inw, CV_32FC1, netin_data_ptr);
+                        input_channels.emplace_back(channel);
+                        netin_data_ptr += (net_inw * net_inh);
+                    }
+                }
+                split(netim_f32, input_channels);
+            }
+        }
 
-		// 11. show and save result
-		{
-			MTR_SCOPE(__FILE__, "imshow");
-			imshow(TITLE, frame);
+        // 6. feed forward
+        float *netoutdata = NULL;
+        {
+            MTR_SCOPE(__FILE__, "run_net");
+            double time_begin = getTickCount();
+            netoutdata = run_net(net_inputs.data());
+            double fee_time = (getTickCount() - time_begin) / getTickFrequency() * 1000;
+            cout << "forward fee: " << fee_time << "ms" << endl;
+        }
 
-			{
-				MTR_SCOPE(__FILE__, "waitkey");
-				int key = waitKey(1);
-				if (key == 27) break;
-				if (key == 'f') is_fullscreen = !is_fullscreen;
-				if (key == 'g') is_gui_visible = !is_gui_visible;
-				if (key == 'p') player = 1 - player;
-			}
-		}
+        // 11. show and save result
+        {
+            MTR_SCOPE(__FILE__, "imshow");
+            imshow(TITLE, frame);
 
-		frame_count++;
-	}
+            {
+                MTR_SCOPE(__FILE__, "waitkey");
+                int key = waitKey(1);
+                if (key == 27) break;
+                if (key == 'f') is_fullscreen = !is_fullscreen;
+                if (key == 'g') is_gui_visible = !is_gui_visible;
+                if (key == 'p') player = 1 - player;
+            }
+        }
 
-	return 0;
+        frame_count++;
+    }
+
+    return 0;
 }

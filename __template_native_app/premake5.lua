@@ -56,11 +56,13 @@ solution "app"
             "../modules/darknet/3rdparty/include",
             "../modules/darknet/src",
             "src",
+            "../src",
             path.join("$(CUDA_PATH)", "include"),
             path.join(OPENCV_PATH, "include")
         }
         files { 
             "src/**",
+            "../src/**",
             "../modules/minitrace/**",
             "../modules/PDollar/**",
         }
