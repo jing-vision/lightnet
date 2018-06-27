@@ -114,7 +114,7 @@ struct ControlPanel
         cvui::trackbar(frame, x, y += dy_small, width, &norm, 1, 10);
     
         cvui::text(frame, x, y += dy_large, "rate");
-        cvui::trackbar(frame, x, y += dy_small, width, &rate, 0.0f, 0.1f);
+        cvui::trackbar(frame, x, y += dy_small, width, &rate, 0.0f, 1.0f);
 
         cvui::text(frame, x, y += dy_large, "blendAmt");
         cvui::trackbar(frame, x, y += dy_small, width, &blendAmt, 0.0f, 1.0f);
@@ -136,7 +136,7 @@ struct ControlPanel
     int range = 3;
     float thresh = 0.85;
     int norm = 1;
-    float rate = 0.01;
+    float rate = 0.05;
     float blendAmt = 0.5;
 };
 
