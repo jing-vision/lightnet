@@ -9,6 +9,9 @@
 #include "MiniTraceHelper.h"
 #include "VideoHelper.h"
 
+#define CVUI_IMPLEMENTATION
+#include "cvui/cvui.h"
+
 using namespace std;
 using namespace cv;
 
@@ -47,21 +50,83 @@ Mat nightmare(Mat org, int max_layer, int range, int norm, int rounds, int iters
             fprintf(stderr, "%d, ", n);
             int layer = max_layer + rand() % range - range / 2;
             int octave = rand() % octaves;
-            optimize_mat(im, layer, 1 / pow(1.33333333, octave), rate, thresh, norm);
+            im = optimize_mat(im, layer, 1 / pow(1.33333333, octave), rate, thresh, norm);
         }
     }
     return im;
 }
 
-//gui.add(isDreaming.set("dream", false));
-//gui.add(max_layer.set("max_layer", 13, 1, 13));
-//gui.add(iters.set("iterations", 1, 1, 10));
-//gui.add(octaves.set("octaves", 2, 1, 8));
-//gui.add(thresh.set("thresh", 0.85, 0.0, 1.0));
-//gui.add(range.set("range", 3, 1, 10));
-//gui.add(norm.set("norm", 1, 1, 10));
-//gui.add(rate.set("rate", 0.01, 0.0, 0.1));
-//gui.add(blendAmt.set("blendAmt", 0.5, 0.0, 1.0));
+
+struct ControlPanel
+{
+    ControlPanel()
+    {
+        cvui::init(WINDOW_NAME);
+    }
+
+    void update()
+    {
+        int x = 10;
+        int y = 0;
+        int dy_small = 16;
+        int dy_large = 50;
+        int width = 300;
+        frame = cv::Scalar(49, 52, 49);
+
+        //gui.add(isDreaming.set("dream", false));
+        //gui.add(max_layer.set("max_layer", 13, 1, 13));
+        //gui.add(iters.set("iterations", 1, 1, 10));
+        //gui.add(octaves.set("octaves", 2, 1, 8));
+        //gui.add(thresh.set("thresh", 0.85, 0.0, 1.0));
+        //gui.add(range.set("range", 3, 1, 10));
+        //gui.add(norm.set("norm", 1, 1, 10));
+        //gui.add(rate.set("rate", 0.01, 0.0, 0.1));
+        //gui.add(blendAmt.set("blendAmt", 0.5, 0.0, 1.0));
+
+        cvui::text(frame, x, y += dy_large, "max_layer");
+        cvui::trackbar(frame, x, y += dy_small, width, &max_layer, 1, 13);
+
+        cvui::text(frame, x, y += dy_large, "iterations");
+        cvui::trackbar(frame, x, y += dy_small, width, &iterations, 1, 10);
+
+        cvui::text(frame, x, y += dy_large, "octaves");
+        cvui::trackbar(frame, x, y += dy_small, width, &octaves, 1, 8);
+
+        cvui::text(frame, x, y += dy_large, "thresh");
+        cvui::trackbar(frame, x, y += dy_small, width, &thresh, 0.0f, 1.0f);
+
+        cvui::text(frame, x, y += dy_large, "range");
+        cvui::trackbar(frame, x, y += dy_small, width, &range, 1, 10);
+
+        cvui::text(frame, x, y += dy_large, "norm");
+        cvui::trackbar(frame, x, y += dy_small, width, &norm, 1, 10);
+    
+        cvui::text(frame, x, y += dy_large, "rate");
+        cvui::trackbar(frame, x, y += dy_small, width, &rate, 0.0f, 0.1f);
+
+        cvui::text(frame, x, y += dy_large, "blendAmt");
+        cvui::trackbar(frame, x, y += dy_small, width, &blendAmt, 0.0f, 1.0f);
+
+        y += dy_small;
+
+        cvui::update();
+        cv::imshow(WINDOW_NAME, frame);
+    }
+
+    const String WINDOW_NAME = "param";
+    cv::Mat frame = cv::Mat(770, 350, CV_8UC3);
+
+    // param
+    bool dream = false;
+    int max_layer = 13;
+    int iterations = 1;
+    int octaves = 2;
+    int range = 3;
+    float thresh = 0.85;
+    int norm = 1;
+    float rate = 0.01;
+    float blendAmt = 5;
+};
 
 int main(int argc, char **argv)
 {
@@ -77,6 +142,8 @@ int main(int argc, char **argv)
         parser.printErrors();
         return 0;
     }
+
+    ControlPanel control;
 
     MiniTraceHelper _;
 
@@ -156,7 +223,7 @@ int main(int argc, char **argv)
             MTR_SCOPE(__FILE__, "run_net");
             double time_begin = getTickCount();
 
-            frame = nightmare(frame, max_layer, range, norm, 1, iters, octaves, rate, thresh);
+            frame = nightmare(frame, control.max_layer, control.range, control.norm, 1, control.iterations, control.octaves, control.rate, control.thresh);
 
             double fee_time = (getTickCount() - time_begin) / getTickFrequency() * 1000;
             cout << "forward fee: " << fee_time << "ms" << endl;
@@ -173,6 +240,9 @@ int main(int argc, char **argv)
                 imshow(TITLE, frame);
 
                 MTR_SCOPE(__FILE__, "waitkey");
+
+                control.update();
+
                 int key = waitKey(1);
                 if (key == 27) break;
                 if (key == 'f') is_fullscreen = !is_fullscreen;

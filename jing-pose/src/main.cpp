@@ -70,7 +70,7 @@ struct NetOutpus
 
 ReaderWriterQueue<NetOutpus> q_output(CONCURRENT_PKT_COUNT);
 
-struct ParamWindow
+struct ControlPanel
 {
     void setup()
     {
@@ -131,7 +131,7 @@ struct ParamWindow
 int main(int argc, char **argv)
 {
     MiniTraceHelper mr_hepler;
-    ParamWindow param_window;
+    ControlPanel param_window;
 
     CommandLineParser parser(argc, argv, params);
     if (parser.get<bool>("help"))

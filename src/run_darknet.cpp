@@ -3,6 +3,8 @@
 
 static network *net;
 
+using namespace cv;
+
 void init_net
 (
     const char *cfgfile,
@@ -51,10 +53,13 @@ image ipl_to_image(IplImage* src)
     return out;
 }
 
-void optimize_mat(cv::Mat orig, int max_layer, float scale, float rate, float thresh, int norm)
+Mat optimize_mat(Mat orig, int max_layer, float scale, float rate, float thresh, int norm)
 {
     IplImage ipl = orig;
     image im = ipl_to_image(&ipl);
 
     optimize_picture(net, im, max_layer, scale, rate, thresh, norm);
+
+    Mat output(orig.rows, orig.cols, orig.type(), im.data, orig.step);
+    return output;
 }

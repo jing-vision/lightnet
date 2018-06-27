@@ -18,6 +18,6 @@ float *run_net
     float *indata
 );
 
-void optimize_mat(cv::Mat orig, int max_layer, float scale, float rate, float thresh, int norm);
+cv::Mat optimize_mat(cv::Mat orig, int max_layer, float scale, float rate, float thresh, int norm);
 
 #endif // RUN_DARKNET_H
