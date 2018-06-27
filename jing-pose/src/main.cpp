@@ -190,7 +190,7 @@ int main(int argc, char **argv)
         sprintf(info, "open: %s", source.c_str());
         MTR_SCOPE_FUNC_C("open", source.c_str());
 
-        cap >> frame; // get a new frame from camera/video or read image
+        cap >> frame;
         if (source_is_camera)
         {
             MTR_SCOPE(__FILE__, "flip");
@@ -202,6 +202,7 @@ int main(int argc, char **argv)
             if (!parser.get<bool>("loop")) return false;
             
             cap = safe_open_video(parser, source);
+            cap >> frame;
         }
 
         return true;
