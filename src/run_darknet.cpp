@@ -33,13 +33,13 @@ float *run_net
     return net->output;
 }
 
-image ipl_to_image(IplImage* src)
+static image mat_to_image(Mat src)
 {
-    unsigned char *data = (unsigned char *)src->imageData;
-    int h = src->height;
-    int w = src->width;
-    int c = src->nChannels;
-    int step = src->widthStep;
+    uint8_t *data = (uint8_t *)src.data;
+    int h = src.rows;
+    int w = src.cols;
+    int c = src.channels();
+    int step = src.step;
     image out = make_image(w, h, c);
     int i, j, k, count = 0;;
 
@@ -53,13 +53,35 @@ image ipl_to_image(IplImage* src)
     return out;
 }
 
+static float get_pixel(image m, int x, int y, int c)
+{
+    assert(x < m.w && y < m.h && c < m.c);
+    return m.data[c*m.h*m.w + y*m.w + x];
+}
+
+static Mat image_to_mat(image im)
+{
+    Mat frame(im.h, im.w, CV_8UC3);
+    int step = frame.step;
+    uint8_t *data = (uint8_t*)(frame.data);
+
+    for (int y = 0; y < im.h; ++y) {
+        for (int x = 0; x < im.w; ++x) {
+            for (int k = 0; k < im.c; ++k) {
+                data[y*step + x*im.c + k] = (uint8_t)(get_pixel(im, x, y, k) * 255);
+            }
+        }
+    }
+
+    return frame;
+}
+
 Mat optimize_mat(Mat orig, int max_layer, float scale, float rate, float thresh, int norm)
 {
-    IplImage ipl = orig;
-    image im = ipl_to_image(&ipl);
+    image im = mat_to_image(orig);
 
     optimize_picture(net, im, max_layer, scale, rate, thresh, norm);
 
-    Mat output(orig.rows, orig.cols, orig.type(), im.data, orig.step);
+    Mat output = image_to_mat(im);
     return output;
 }

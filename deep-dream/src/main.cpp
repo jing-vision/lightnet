@@ -1,5 +1,14 @@
 // https://pjreddie.com/darknet/nightmare/
+
 // 
+// http://pjreddie.com/media/files/vgg-conv.weights
+// darknet nightmare cfg/vgg-conv.cfg vgg-conv.weights data/dog.jpg 13
+// darknet nightmare cfg/vgg-conv.cfg vgg-conv.weights data/dog.jpg 11 -rounds 4 -range 3
+
+// http://pjreddie.com/media/files/jnet-conv.weights
+// darknet nightmare cfg/jnet-conv.cfg jnet-conv.weights data/dog.jpg 13
+// darknet nightmare cfg/jnet-conv.cfg jnet-conv.weights data/dog.jpg 11 -rounds 4 -range 3
+
 #include <iostream>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
