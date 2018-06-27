@@ -59,6 +59,9 @@ Mat nightmare(Mat org, int max_layer, int range, int norm, int rounds, int iters
             fprintf(stderr, "%d, ", n);
             int layer = max_layer + rand() % range - range / 2;
             int octave = rand() % octaves;
+#if 1
+            octave = 1;
+#endif
             im = optimize_mat(im, layer, 1 / pow(1.33333333, octave), rate, thresh, norm);
         }
     }
@@ -134,7 +137,7 @@ struct ControlPanel
     float thresh = 0.85;
     int norm = 1;
     float rate = 0.01;
-    float blendAmt = 5;
+    float blendAmt = 0.5;
 };
 
 int main(int argc, char **argv)
@@ -245,8 +248,10 @@ int main(int argc, char **argv)
         {
             MTR_SCOPE(__FILE__, "viz");
             {
-                MTR_SCOPE(__FILE__, "imshow");
-                imshow(TITLE, frame);
+                {
+                    MTR_SCOPE(__FILE__, "imshow");
+                    imshow(TITLE, frame);
+                }
 
                 MTR_SCOPE(__FILE__, "waitkey");
 
