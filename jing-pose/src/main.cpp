@@ -185,8 +185,8 @@ int main(int argc, char **argv)
         if (!cap.isOpened()) return true;
 
         char info[100];
-        sprintf(info, "open: %s", source.c_str());
-        MTR_SCOPE_FUNC_C("open", source.c_str());
+        sprintf(info, "grab: %s", source.c_str());
+        MTR_SCOPE_FUNC_C("grab", source.c_str());
 
         cap >> frame;
         if (source_is_camera)
