@@ -25,13 +25,13 @@ using namespace cv;
 using namespace moodycamel;
 
 const char* params =
-"{ help ?       | false             | print usage          }"
-"{ proto        |openpose.cfg       | model configuration }"
-"{ model        |openpose.weight    | model weights }"
+"{ h help ?     | false             | print usage          }"
+"{ cfg          |openpose.cfg       | model configuration }"
+"{ weights      |openpose.weight    | model weights }"
 "{@source1      |0                  | source1 for processing   }"
 "{@source2      |<none>             | source2 for processing (optional) }"
-"{ w width      | 0                 | width of video or camera device}"
-"{ h height     | 0                 | height of video or camera device}"
+"{ width        | 0                 | width of video or camera device}"
+"{ height       | 0                 | height of video or camera device}"
 "{ g gui        | true              | show gui, press g to toggle }"
 "{ f fullscreen | false             | show in fullscreen, press f to toggle }"
 "{ fps          | 0                 | fps of video or camera device }"
@@ -39,8 +39,6 @@ const char* params =
 "{ l loop       | true              | whether to loop the video}"
 "{ video_pos    | 0                 | current position of the video file in milliseconds. }"
 "{ player       | 1                 | current position for player, press p to toggle. }"
-"{ data_write_dir  |                | enables data write mode }"
-"{ data_read_dir   |                | enables data read mode }"
 ;
 
 bool is_gui_visible = false;
@@ -140,8 +138,8 @@ int main(int argc, char **argv)
         return 0;
     }
 
-    auto cfg_path = parser.get<string>("proto");
-    auto weight_path = parser.get<string>("model");
+    auto cfg_path = parser.get<string>("cfg");
+    auto weights_path = parser.get<string>("weights");
 
     Mat frame;
 
@@ -176,7 +174,7 @@ int main(int argc, char **argv)
     int net_outh = 0;
     {
         MTR_SCOPE(__FILE__, "init_net");
-        init_net(cfg_path.c_str(), weight_path.c_str(), &net_inw, &net_inh, &net_outw, &net_outh);
+        init_net(cfg_path.c_str(), weights_path.c_str(), &net_inw, &net_inh, &net_outw, &net_outh);
     }
 
     float scale = 0.0f;
