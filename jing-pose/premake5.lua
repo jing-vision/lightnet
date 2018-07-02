@@ -55,7 +55,7 @@ solution "jing-pose"
             "../modules",
             "../modules/darknet/3rdparty/include",
             "../modules/darknet/src",
-            "openpose",
+            ".",
             "src",
             "../src",
             path.join("$(CUDA_PATH)", "include"),

@@ -46,7 +46,7 @@ bool is_fullscreen = false;
 
 #define APP_NAME "Dancing Gaga"
 #define VER_MAJOR 0
-#define VER_MINOR 1
+#define VER_MINOR 2
 #define VER_PATCH 0
 
 #define TITLE APP_NAME " " CVAUX_STR(VER_MAJOR) "." CVAUX_STR(VER_MINOR) "." CVAUX_STR(VER_PATCH)
@@ -141,6 +141,11 @@ int main(int argc, char **argv)
     auto cfg_path = parser.get<string>("cfg");
     auto weights_path = parser.get<string>("weights");
 
+    if (cfg_path.find("body_25") != string::npos)
+    {
+        setPoseModel(op::PoseModel::BODY_25);
+        cout << "setPoseModel BODY_25" << endl;
+    }
     Mat frame;
 
     // 1. read args

@@ -1,8 +1,11 @@
 #include <vector>
 #include <opencv2/opencv.hpp>
+#include "openpose/enumClasses.hpp"
 
-#define POSE_MAX_PEOPLE 96
+#define POSE_MAX_PEOPLE 127
 #define NET_OUT_CHANNELS 57 // 38 for pafs, 19 for parts
+
+void setPoseModel(op::PoseModel model);
 
 void render_pose_keypoints(
     cv::Mat &frame,

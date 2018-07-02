@@ -1,9 +1,11 @@
 #include "post_process.h"
 #include "minitrace/minitrace.h"
+#include "openpose/poseParameters.hpp"
+#include "openpose/poseParametersRender.hpp"
 
 using namespace std;
 using namespace cv;
-
+using namespace op;
 
 template<typename T>
 inline int intRound(const T a)
@@ -17,6 +19,13 @@ inline T fastMin(const T a, const T b)
     return (a < b ? a : b);
 }
 
+static PoseModel s_model = PoseModel::COCO_18;
+
+void setPoseModel(PoseModel model)
+{
+    s_model = model;
+}
+
 void render_pose_keypoints(
     Mat &frame,
     const vector<float> &keypoints,
@@ -27,19 +36,30 @@ void render_pose_keypoints(
     MTR_SCOPE_FUNC();
 
     const int num_keypoints = keyshape[1];
-    static unsigned int pairs[] =
-        {
-            1, 2, 1, 5, 2, 3, 3, 4, 5, 6, 6, 7, 1, 8, 8, 9, 9, 10,
-            1, 11, 11, 12, 12, 13, 1, 0, 0, 14, 14, 16, 0, 15, 15, 17};
-    static float colors[] =
-        {
-            255.f, 0.f, 85.f, 255.f, 0.f, 0.f, 255.f, 85.f, 0.f, 255.f, 170.f, 0.f,
-            255.f, 255.f, 0.f, 170.f, 255.f, 0.f, 85.f, 255.f, 0.f, 0.f, 255.f, 0.f,
-            0.f, 255.f, 85.f, 0.f, 255.f, 170.f, 0.f, 255.f, 255.f, 0.f, 170.f, 255.f,
-            0.f, 85.f, 255.f, 0.f, 0.f, 255.f, 255.f, 0.f, 170.f, 170.f, 0.f, 255.f,
-            255.f, 0.f, 255.f, 85.f, 0.f, 255.f};
-    const int pairs_size = sizeof(pairs) / sizeof(unsigned int);
-    const int number_colors = sizeof(colors) / sizeof(float);
+
+    vector<unsigned int> pairs;
+    vector<float> colors;
+    if (s_model == PoseModel::BODY_25)
+    {
+        pairs = {
+            POSE_BODY_25_PAIRS_RENDER_GPU
+        };
+        colors = {
+            POSE_BODY_25_COLORS_RENDER_GPU
+        };
+    }
+    else if (s_model == PoseModel::COCO_18)
+    {
+        pairs = {
+            POSE_COCO_PAIRS_RENDER_GPU
+        };
+        colors = {
+            POSE_COCO_COLORS_RENDER_GPU
+        };
+    }
+
+    const int pairs_size = pairs.size();
+    const int number_colors = colors.size();
 
     for (int person = 0; person < keyshape[0]; ++person)
     {
@@ -91,19 +111,13 @@ void connect_bodyparts(
     MTR_SCOPE_FUNC();
 
     keypoint_shape.resize(3);
-    const int body_part_pairs[] =
-        {
-            1, 2, 1, 5, 2, 3, 3, 4, 5, 6, 6, 7, 1, 8, 8, 9, 9, 10, 1, 11, 11,
-            12, 12, 13, 1, 0, 0, 14, 14, 16, 0, 15, 15, 17, 2, 16, 5, 17};
-    const int limb_idx[] =
-        {
-            31, 32, 39, 40, 33, 34, 35, 36, 41, 42, 43, 44, 19, 20, 21, 22, 23, 24, 25,
-            26, 27, 28, 29, 30, 47, 48, 49, 50, 53, 54, 51, 52, 55, 56, 37, 38, 45, 46};
-    const int num_body_parts = 18; // COCO part number
+
+    vector<unsigned int> body_part_pairs = getPosePartPairs(s_model);
+    vector<unsigned int> limb_idx = getPoseMapIndex(s_model);
+    const int num_body_parts = getPoseNumberBodyParts(s_model);
     const int num_body_part_pairs = num_body_parts + 1;
     std::vector<std::pair<std::vector<int>, double>> subset;
     const int subset_counter_index = num_body_parts;
-    const int subset_size = num_body_parts + 1;
     const int peaks_offset = 3 * (POSE_MAX_PEOPLE + 1);
     const int map_offset = mapw * maph;
 
@@ -136,7 +150,7 @@ void connect_bodyparts(
                     }
                     if (!num)
                     {
-                        std::vector<int> row_vector(subset_size, 0);
+                        std::vector<int> row_vector(num_body_part_pairs, 0);
                         // store the index
                         row_vector[body_partB] = body_partB * peaks_offset + i * 3 + 2;
                         // the parts number of that person
@@ -163,7 +177,7 @@ void connect_bodyparts(
                     }
                     if (!num)
                     {
-                        std::vector<int> row_vector(subset_size, 0);
+                        std::vector<int> row_vector(num_body_part_pairs, 0);
                         // store the index
                         row_vector[body_partA] = body_partA * peaks_offset + i * 3 + 2;
                         // parts number of that person
@@ -180,9 +194,9 @@ void connect_bodyparts(
             std::vector<std::tuple<double, int, int>> temp;
             const int num_inter = 10;
             // limb PAF x-direction heatmap
-            const float *const mapX = map + limb_idx[2 * pair_index] * map_offset;
+            const float *const mapX = map + (num_body_part_pairs + limb_idx[2 * pair_index]) * map_offset;
             // limb PAF y-direction heatmap
-            const float *const mapY = map + limb_idx[2 * pair_index + 1] * map_offset;
+            const float *const mapY = map + (num_body_part_pairs + limb_idx[2 * pair_index + 1]) * map_offset;
             // start greedy algorithm
             for (int i = 1; i <= nA; i++)
             {
@@ -317,7 +331,7 @@ void connect_bodyparts(
                         // if A is not found in the subset, create new one and add both
                         if (num == 0)
                         {
-                            std::vector<int> row_vector(subset_size, 0);
+                            std::vector<int> row_vector(num_body_part_pairs, 0);
                             row_vector[body_partA] = indexA;
                             row_vector[body_partB] = indexB;
                             row_vector[subset_counter_index] = 2;
