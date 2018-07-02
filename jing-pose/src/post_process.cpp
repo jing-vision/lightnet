@@ -26,6 +26,12 @@ void setPoseModel(PoseModel model)
     s_model = model;
 }
 
+uint32_t getNetOutChannels()
+{
+    // #define NET_OUT_CHANNELS 57 // 38 for pafs, 19 for parts
+    return getPoseNumberBodyParts(s_model) + 1 + getPoseMapIndex(s_model).size();
+}
+
 void render_pose_keypoints(
     Mat &frame,
     const vector<float> &keypoints,

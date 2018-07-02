@@ -3,9 +3,10 @@
 #include "openpose/enumClasses.hpp"
 
 #define POSE_MAX_PEOPLE 127
-#define NET_OUT_CHANNELS 57 // 38 for pafs, 19 for parts
 
 void setPoseModel(op::PoseModel model);
+
+uint32_t getNetOutChannels();
 
 void render_pose_keypoints(
     cv::Mat &frame,

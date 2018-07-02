@@ -146,6 +146,9 @@ int main(int argc, char **argv)
         setPoseModel(op::PoseModel::BODY_25);
         cout << "setPoseModel BODY_25" << endl;
     }
+
+    uint32_t NET_OUT_CHANNELS = getNetOutChannels();
+
     Mat frame;
 
     // 1. read args
