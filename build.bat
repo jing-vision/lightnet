@@ -16,8 +16,8 @@ REM =========================
 REM Deploy to bin/
 REM =========================
 
-robocopy darknet_vs\bin\ bin\ *.exe
-robocopy darknet_vs\bin\ bin\ *.lib
+REM robocopy darknet_vs\bin\ bin\ *.exe
+REM robocopy darknet_vs\bin\ bin\ *.lib
 
 robocopy modules\darknet\build\darknet\x64\ bin\ pthreadVC2.dll
 
@@ -30,6 +30,7 @@ robocopy D:\opencv\build\x64\vc14\bin\ bin\ *.dll
 REM =========================
 REM Deploy to scripts/
 REM =========================
-robocopy darknet_vs\bin\ bin\ *.dll
-robocopy darknet_vs\bin\ scripts\ *.dll
+
+REM robocopy darknet_vs\bin\ bin\ *.dll
+robocopy bin\ scripts\ *.dll
 robocopy modules\darknet\ scripts\ darknet.py
