@@ -76,6 +76,12 @@ static Mat image_to_mat(image im)
     return frame;
 }
 
+Mat float_to_mat(int w, int h, int c, float *data)
+{
+    image im = { w, h, c, data };
+    return image_to_mat(im);
+}
+
 Mat optimize_mat(Mat orig, int max_layer, float scale, float rate, float thresh, int norm)
 {
     image im = mat_to_image(orig);
@@ -85,3 +91,49 @@ Mat optimize_mat(Mat orig, int max_layer, float scale, float rate, float thresh,
     Mat output = image_to_mat(im);
     return output;
 }
+
+float* get_network_output_layer(int i)
+{
+    layer l = net->layers[i];
+    if (l.type != REGION) cuda_pull_array(l.output_gpu, l.output, l.outputs*l.batch);
+    return l.output;
+}
+
+#if 0
+image get_convolutional_weight(layer l, int i)
+{
+    int h = l.size;
+    int w = l.size;
+    int c = l.c;
+    return float_to_image(w, h, c, l.weights + i*h*w*c);
+}
+
+image *get_weights(layer l)
+{
+    image *weights = (image*)malloc(l.n * sizeof(image));
+    int i;
+    for (i = 0; i < l.n; ++i) {
+        weights[i] = copy_image(get_convolutional_weight(l, i));
+        //normalize_image(weights[i]);
+    }
+    return weights;
+}
+
+// TODO: WIP
+image *visualize_convolutional_layer(layer l, char *window, image *prev_weights)
+{
+    image *single_weights = get_weights(l);
+#if 0
+    show_images(single_weights, l.n, window);
+
+    image delta = get_convolutional_image(l);
+    image dc = collapse_image_layers(delta, 1);
+    char buff[256];
+    sprintf(buff, "%s: Output", window);
+    //show_image(dc, buff);
+    //save_image(dc, buff);
+    free_image(dc);
+#endif
+    return single_weights;
+}
+#endif

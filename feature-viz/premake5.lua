@@ -4,7 +4,7 @@ local action = _ACTION or ""
 
 local OPENCV_PATH   = "d:/opencv/build"
 
-solution "native-app"
+solution "feature-viz"
     location (action)
     configurations { "Debug", "Profile", "Release" }
     platforms {"x64"}
@@ -15,6 +15,7 @@ solution "native-app"
         defines { 
             "_CRT_SECURE_NO_WARNINGS",
             "WIN32",
+            
             "_TIMESPEC_DEFINED",
             "OPENCV",
             "GPU",
@@ -49,9 +50,8 @@ solution "native-app"
         optimize "On"
         editandcontinue "Off"
 
-    project "native-app"
+    project "feature-viz"
         kind "ConsoleApp"
-        debugdir "../bin"        
         includedirs {
             "../modules",
             "../modules/darknet/3rdparty/include",
@@ -61,6 +61,7 @@ solution "native-app"
             path.join("$(CUDA_PATH)", "include"),
             path.join(OPENCV_PATH, "include")
         }
+        debugdir "../bin"        
         files { 
             "src/**",
             "../src/**",
