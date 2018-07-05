@@ -16,3 +16,6 @@
 [submodule "modules/pytorch-caffe-darknet-convert"]
 	path = modules/pytorch-caffe-darknet-convert
 	url = https://github.com/jing-vision/pytorch-caffe-darknet-convert.git
+[submodule "modules/bhtsne"]
+	path = modules/bhtsne
+	url = https://github.com/lvdmaaten/bhtsne
