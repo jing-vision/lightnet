@@ -36,7 +36,7 @@ bool is_fullscreen = false;
 #define APP_NAME "feature-viz"
 #define VER_MAJOR 0
 #define VER_MINOR 1
-#define VER_PATCH 1
+#define VER_PATCH 2
 
 #define TITLE APP_NAME " " CVAUX_STR(VER_MAJOR) "." CVAUX_STR(VER_MINOR) "." CVAUX_STR(VER_PATCH)
 
@@ -176,9 +176,13 @@ int main(int argc, char **argv)
 
                 int layer = 0;
                 const int btn_width = 100;
+                const int btn_height = 30;
+                const int btn_cols = (panel.width - x) / btn_width;
                 for (auto layer_name : layer_names)
                 {
-                    if (cvui::button(panel.canvas, x + btn_width * layer, y, layer_name))
+                    int btn_y = layer / btn_cols;
+                    int btn_x = layer % btn_cols;
+                    if (cvui::button(panel.canvas, x + btn_width * btn_x, y + btn_height * btn_y, layer_name))
                     {
                         current_viz_layer = layer;
                     }
@@ -193,7 +197,7 @@ int main(int argc, char **argv)
                 const int cell_x0 = 30;
                 const int cell_y0 = 100;
 
-                if (layer_names[current_viz_layer].find("Softmax") != string::npos)
+                if (false && layer_names[current_viz_layer].find("Softmax") != string::npos)
                 {
                     // To viz Softmax layer
                 }

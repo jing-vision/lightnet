@@ -161,8 +161,12 @@ vector<Mat> get_layer_output_tensor(int layer_idx)
         cuda_pull_array(l->output_gpu, l->output, l->outputs*l->batch);
         if (l->type == SOFTMAX)
         {
-            tensor.resize(1);
-            tensor[0] = Mat(l->outputs, 1, CV_32F, l->output);
+            tensor.resize(l->outputs);
+            //tensor[i] = Mat(l, 1, CV_32F, l->output);
+            for (int i = 0; i < l->outputs; i++)
+            {
+                tensor[i] = float_to_mat(1, 1, 1, l->output + i);
+            }
         }
         else
         {
