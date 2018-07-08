@@ -2,8 +2,18 @@ lightnet
 ====
 lightnet is a turnkey solution to real world problems accelerated with deep learning AI technology, including but not limited to object detection, image classification and human pose estimation.
 
-The folder structure:
+* **[The source code](#how-to-read-the-source-code)**
+* **[Build instructions](#how-to-build-from-visual-studio-2015)**
+* **[End2end Object Detection](#object-detection---inference-w-pre-trained-weights)**
+* **[End2end Image Classification](#image-classification---inference-w-pre-trained-weights)**
+* **[Human Pose Estimation](#human-pose-estimation---inference-w-pre-trained-weights)**
+* **[FAQ](#faq)**
 
+
+How to read the source code
+====
+
+This project is dependent on a few open-source projects:
 - modules/darknet - the main engine for training & inferencing.
 - modules/Augmentor - image augmentation library in Python.
 - modules/Yolo_mark - the toolkit to prepare training data for object detection.
@@ -173,8 +183,10 @@ Human Pose Estimation - inference w/ pre-trained weights
 https://drive.google.com/open?id=1BfY0Hx2d2nm3I4JFh0W1cK2aHD1FSGea
   
 
-Fine tune a existing network
+FAQ
 ====
+How to fine tune a existing network?
+----
 
 https://github.com/pjreddie/darknet/wiki/YOLO:-Real-Time-Object-Detection
 
