@@ -2,6 +2,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/dnn.hpp>
 
 #include "run_darknet.h"
 #include "MiniTraceHelper.h"
@@ -30,7 +31,7 @@ const char* params =
 bool is_gui_visible = false;
 bool is_fullscreen = false;
 
-#define APP_NAME "app"
+#define APP_NAME "feature-viz"
 #define VER_MAJOR 0
 #define VER_MINOR 1
 #define VER_PATCH 0
@@ -84,7 +85,7 @@ int main(int argc, char **argv)
 
     float scale = 0.0f;
 
-    vector<float> net_inputs(net_inw * net_inh * 3);
+    Mat input_blob;
 
     auto safe_grab_video = [&parser, &is_running](VideoCapture& cap, Mat& frame, const String& source, bool source_is_camera) -> bool {
         if (!cap.isOpened()) return true;
@@ -123,15 +124,17 @@ int main(int argc, char **argv)
             {
                 is_running = false;
             }
+            input_blob = dnn::blobFromImage(frame, 1.0f, Size(net_inw, net_inh), Scalar(127, 127, 127), false, true);
         }
 
         float *netoutdata = NULL;
+        TickMeter tick;
         {
             MTR_SCOPE(__FILE__, "run_net");
-            double time_begin = getTickCount();
-            netoutdata = run_net(net_inputs.data());
-            double fee_time = (getTickCount() - time_begin) / getTickFrequency() * 1000;
-            cout << "forward fee: " << fee_time << "ms" << endl;
+            tick.start();
+            netoutdata = run_net(input_blob);
+            tick.stop();
+            cout << "forward fee: " << tick.getTimeMilli() << "ms" << endl;
         }
 
         {
@@ -142,7 +145,7 @@ int main(int argc, char **argv)
             MTR_SCOPE(__FILE__, "viz");
             {
                 MTR_SCOPE(__FILE__, "imshow");
-                Mat out = float_to_mat(net_inw, net_inh, 3, netoutdata);
+                Mat out = float_to_mat(net_outw, net_outh, 1, netoutdata);
                 imshow(TITLE, out);
 
                 MTR_SCOPE(__FILE__, "waitkey");

@@ -1,9 +1,10 @@
 #include <iostream>
 #include <thread>
 
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/dnn.hpp>
 
 using namespace std;
 using namespace cv;
@@ -188,6 +189,7 @@ int main(int argc, char **argv)
     float scale = 0.0f;
 
     vector<float> net_inputs(net_inw * net_inh * 3);
+    float* net_inputs_ptr = net_inputs.data();
 
     auto safe_grab_video = [&parser, &is_running](VideoCapture& cap, Mat& frame, const String& source, bool source_is_camera) -> bool {
         if (!cap.isOpened()) return true;
@@ -219,9 +221,8 @@ int main(int argc, char **argv)
         int frame_count = 0;
 
         Mat frames[2];
-        Mat netim;
-        Mat netim_f32;
-        vector<Mat> input_channels;
+        Mat input_frame;
+        Mat input_blob;
 
         while (is_running)
         {
@@ -273,39 +274,24 @@ int main(int argc, char **argv)
                     }
                 }
 
-                // 3. resize to net input size, put scaled image on the top left
-                create_netsize_im(frame, netim, net_inw, net_inh, &scale);
-
-                // 4. normalized to float type
-                netim.convertTo(netim_f32, CV_32F, 1 / 256.f, -0.5);
-
                 {
-                    // 5. split channels
-                    MTR_SCOPE(__FILE__, "split");
-                    static bool init_input_channels = true;
-                    if (init_input_channels)
-                    {
-                        init_input_channels = false;
-                        float *netin_data_ptr = net_inputs.data();
-                        for (int i = 0; i < 3; ++i)
-                        {
-                            Mat channel(net_inh, net_inw, CV_32FC1, netin_data_ptr);
-                            input_channels.emplace_back(channel);
-                            netin_data_ptr += (net_inw * net_inh);
-                        }
-                    }
-                    split(netim_f32, input_channels);
+                    MTR_SCOPE(__FILE__, "Mat to float*");
+
+                    // 3. resize to net input size, put scaled image on the top left
+                    create_netsize_im(frame, input_frame, net_inw, net_inh, &scale);
+                    input_blob = dnn::blobFromImage(input_frame, 1.0f / 255, Size(net_inw, net_inh), Scalar(127, 127, 127), false);
                 }
             }
 
             // 6. feed forward
             float *netoutdata = NULL;
+            TickMeter tick;
             {
                 MTR_SCOPE(__FILE__, "run_net");
-                double time_begin = getTickCount();
-                netoutdata = run_net(net_inputs.data());
-                double fee_time = (getTickCount() - time_begin) / getTickFrequency() * 1000;
-                cout << "forward fee: " << fee_time << "ms" << endl;
+                tick.start();
+                netoutdata = run_net(input_blob);
+                tick.stop();
+                cout << "forward fee: " << tick.getTimeMilli() << "ms" << endl;
             }
 
             NetOutpus pkt;

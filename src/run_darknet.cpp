@@ -24,13 +24,15 @@ void init_net
     *outh = last_layer->out_h;
 }
 
-float *run_net
-(
-    float *indata
-)
+float* run_net(float* indata)
 {
     network_predict(*net, indata);
     return net->output;
+}
+
+float* run_net(cv::Mat frame)
+{
+    return run_net(frame.ptr<float>());
 }
 
 static image mat_to_image(Mat src)

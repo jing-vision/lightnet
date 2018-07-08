@@ -13,10 +13,8 @@ void init_net
     int *outh
 );
 
-float *run_net
-(
-    float *indata
-);
+float* run_net(float *indata);
+float *run_net(cv::Mat frame);
 
 cv::Mat float_to_mat(int w, int h, int c, float *data);
 
