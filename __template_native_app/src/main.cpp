@@ -12,8 +12,8 @@ using namespace cv;
 
 const char* params =
 "{ help ?       | false             | print usage          }"
-"{ proto        | cfg/vgg-conv.cfg  | model configuration }"
-"{ model        |vgg-conv.weights   | model weights }"
+"{ cfg          | cfg/vgg-conv.cfg  | model configuration }"
+"{ weights      |vgg-conv.weights   | model weights }"
 "{@source       |0                  | source for processing   }"
 "{ w width      | 0                 | width of video or camera device}"
 "{ h height     | 0                 | height of video or camera device}"
@@ -52,8 +52,8 @@ int main(int argc, char **argv)
 
     MiniTraceHelper _;
 
-    auto cfg_path = parser.get<string>("proto");
-    auto weight_path = parser.get<string>("model");
+    auto cfg_path = parser.get<string>("cfg");
+    auto weights_path = parser.get<string>("weights");
 
     Mat frame;
 
@@ -74,7 +74,7 @@ int main(int argc, char **argv)
     int net_outh = 0;
     {
         MTR_SCOPE(__FILE__, "init_net");
-        init_net(cfg_path.c_str(), weight_path.c_str(), &net_inw, &net_inh, &net_outw, &net_outh);
+        init_net(cfg_path.c_str(), weights_path.c_str(), &net_inw, &net_inh, &net_outw, &net_outh);
     }
 
     int frame_count = 0;

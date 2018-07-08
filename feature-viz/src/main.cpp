@@ -16,8 +16,8 @@ using namespace cv;
 
 const char* params =
 "{ help ?       | false             | print usage          }"
-"{ proto        | cfg/darknet.cfg   | model configuration }"
-"{ model        | darknet.weights   | model weights }"
+"{ cfg          | cfg/darknet.cfg   | model configuration }"
+"{ weights      | darknet.weights   | model weights }"
 "{ names        | obj.names         | list of the object names }"
 "{@source       | 0                 | source for processing   }"
 "{ w width      | 0                 | width of video or camera device}"
@@ -97,8 +97,8 @@ int main(int argc, char **argv)
     ControlPanel panel;
     MiniTraceHelper _;
 
-    auto cfg_path = parser.get<string>("proto");
-    auto weight_path = parser.get<string>("model");
+    auto cfg_path = parser.get<string>("cfg");
+    auto weights_path = parser.get<string>("weights");
 
     Mat frame;
 
@@ -122,7 +122,7 @@ int main(int argc, char **argv)
     int net_output_count = 0;
     {
         MTR_SCOPE(__FILE__, "init_net");
-        init_net(cfg_path.c_str(), weight_path.c_str(), &net_inw, &net_inh, &net_outw, &net_outh, &net_output_count);
+        init_net(cfg_path.c_str(), weights_path.c_str(), &net_inw, &net_inh, &net_outw, &net_outh, &net_output_count);
         layer_names = get_layer_names();
     }
 
