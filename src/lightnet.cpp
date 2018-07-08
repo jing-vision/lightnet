@@ -159,10 +159,18 @@ vector<Mat> get_layer_output_tensor(int layer_idx)
     {
         CV_Assert(l->batch == 1 && "TODO: support non-one batch");
         cuda_pull_array(l->output_gpu, l->output, l->outputs*l->batch);
-        tensor.resize(l->out_c);
-        for (int i = 0; i < l->out_c; i++)
+        if (l->type == SOFTMAX)
         {
-            tensor[i] = float_to_mat(l->out_w, l->out_h, 1, l->output + l->out_w * l->out_h * i);
+            tensor.resize(1);
+            tensor[0] = Mat(l->outputs, 1, CV_32F, l->output);
+        }
+        else
+        {
+            tensor.resize(l->out_c);
+            for (int i = 0; i < l->out_c; i++)
+            {
+                tensor[i] = float_to_mat(l->out_w, l->out_h, 1, l->output + l->out_w * l->out_h * i);
+            }
         }
     }
 

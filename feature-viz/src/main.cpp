@@ -192,27 +192,34 @@ int main(int argc, char **argv)
                 int tensor_rows = ceil(channel_count / (float)tensor_cols);
                 const int cell_x0 = 30;
                 const int cell_y0 = 100;
-                const int cell_spc = 10;
-                const int cell_w = (panel.width - cell_x0) * 0.9f / tensor_cols - cell_spc;
-                const int cell_h = (panel.height - cell_y0) * 0.9f / tensor_rows - cell_spc;
 
-                for (int i = 0; i < tensor.size(); i++)
+                if (layer_names[current_viz_layer].find("Softmax") != string::npos)
                 {
-                    int cell_y = i / tensor_cols;
-                    int cell_x = i % tensor_cols;
-
-                    Rect dst_area(cell_x0 + cell_x * (cell_w + cell_spc), 
-                        cell_y0 + cell_y * (cell_h + cell_spc),
-                        cell_w,
-                        cell_h);
-
-                    Mat channel_8uc1 = tensor[i];
-                    Mat channel_8uc3;
-                    cvtColor(channel_8uc1, channel_8uc3, COLOR_GRAY2BGR);
-                    resize(channel_8uc3, panel.canvas(dst_area), Size(cell_w, cell_h), 0, 0, INTER_NEAREST);
-                    //imshow(title, channel);
+                    // To viz Softmax layer
                 }
+                else
+                {
+                    const int cell_spc = 10;
+                    const int cell_w = (panel.width - cell_x0) * 0.9f / tensor_cols - cell_spc;
+                    const int cell_h = (panel.height - cell_y0) * 0.9f / tensor_rows - cell_spc;
 
+                    for (int i = 0; i < tensor.size(); i++)
+                    {
+                        int cell_y = i / tensor_cols;
+                        int cell_x = i % tensor_cols;
+
+                        Rect dst_area(cell_x0 + cell_x * (cell_w + cell_spc),
+                            cell_y0 + cell_y * (cell_h + cell_spc),
+                            cell_w,
+                            cell_h);
+
+                        Mat channel_8uc1 = tensor[i];
+                        Mat channel_8uc3;
+                        cvtColor(channel_8uc1, channel_8uc3, COLOR_GRAY2BGR);
+                        resize(channel_8uc3, panel.canvas(dst_area), Size(cell_w, cell_h), 0, 0, INTER_NEAREST);
+                        //imshow(title, channel);
+                    }
+                }
                 //cvui::trackbar(canvas, x, y += dy_small, width, &max_layer, 1, 13);
 
                 cvui::imshow(TITLE, panel.canvas);
