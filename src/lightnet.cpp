@@ -150,9 +150,9 @@ int get_layer_count()
     return net->n;
 }
 
-vector<Mat> get_layer_output_tensor(int layer_idx)
+vector<Mat> get_layer_activations(int layer_idx)
 {
-    vector<Mat> tensor;
+    vector<Mat> activations;
 
     layer* l = get_network_layer(net, layer_idx);
     if (l->type != REGION)
@@ -161,61 +161,42 @@ vector<Mat> get_layer_output_tensor(int layer_idx)
         cuda_pull_array(l->output_gpu, l->output, l->outputs*l->batch);
         if (l->type == SOFTMAX)
         {
-            tensor.resize(l->outputs);
-            //tensor[i] = Mat(l, 1, CV_32F, l->output);
+            activations.resize(l->outputs);
+            //activations[i] = Mat(l, 1, CV_32F, l->output);
             for (int i = 0; i < l->outputs; i++)
             {
-                tensor[i] = float_to_mat(1, 1, 1, l->output + i);
+                activations[i] = float_to_mat(1, 1, 1, l->output + i);
             }
         }
         else
         {
-            tensor.resize(l->out_c);
+            activations.resize(l->out_c);
             for (int i = 0; i < l->out_c; i++)
             {
-                tensor[i] = float_to_mat(l->out_w, l->out_h, 1, l->output + l->out_w * l->out_h * i);
+                activations[i] = float_to_mat(l->out_w, l->out_h, 1, l->output + l->out_w * l->out_h * i);
             }
         }
     }
 
-    return tensor;
+    return activations;
 }
 
-#if 0
-image get_convolutional_weight(layer l, int i)
-{
-    int h = l->size;
-    int w = l->size;
-    int c = l->c;
-    return float_to_image(w, h, c, l->weights + i*h*w*c);
-}
 
-image *get_weights(layer l)
+vector<Mat> get_layer_weights(int layer_idx)
 {
-    image *weights = (image*)malloc(l->n * sizeof(image));
-    int i;
-    for (i = 0; i < l->n; ++i) {
-        weights[i] = copy_image(get_convolutional_weight(l, i));
-        //normalize_image(weights[i]);
+    vector<Mat> weights;
+
+    layer* l = get_network_layer(net, layer_idx);
+    if (l->type != REGION)
+    {
+        weights.resize(l->n);
+        for (int i = 0; i < l->n; i++)
+        {
+            int h = l->size;
+            int w = l->size;
+            weights[i] = float_to_mat(w, h, 1, l->weights + w * h * i);
+        }
     }
+
     return weights;
 }
-
-// TODO: WIP
-image *visualize_convolutional_layer(layer l, char *window, image *prev_weights)
-{
-    image *single_weights = get_weights(l);
-#if 0
-    show_images(single_weights, l->n, window);
-
-    image delta = get_convolutional_image(l);
-    image dc = collapse_image_layers(delta, 1);
-    char buff[256];
-    sprintf(buff, "%s: Output", window);
-    //show_image(dc, buff);
-    //save_image(dc, buff);
-    free_image(dc);
-#endif
-    return single_weights;
-}
-#endif

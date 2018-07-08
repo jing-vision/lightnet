@@ -18,4 +18,5 @@ cv::Mat optimize_mat(cv::Mat orig, int max_layer, float scale, float rate, float
 
 int get_layer_count();
 std::vector<std::string> get_layer_names();
-std::vector<cv::Mat> get_layer_output_tensor(int layer_idx);
+std::vector<cv::Mat> get_layer_activations(int layer_idx);
+std::vector<cv::Mat> get_layer_weights(int layer_idx);

@@ -36,7 +36,7 @@ bool is_fullscreen = false;
 #define APP_NAME "feature-viz"
 #define VER_MAJOR 0
 #define VER_MINOR 1
-#define VER_PATCH 2
+#define VER_PATCH 3
 
 #define TITLE APP_NAME " " CVAUX_STR(VER_MAJOR) "." CVAUX_STR(VER_MINOR) "." CVAUX_STR(VER_PATCH)
 
@@ -113,6 +113,7 @@ int main(int argc, char **argv)
     VideoCapture capture = safe_open_video(parser, source, &source_is_camera);
 
     bool is_running = true;
+    bool is_weights_mode = false;
 
     vector<string> layer_names;
     int net_inw = 0;
@@ -190,24 +191,27 @@ int main(int argc, char **argv)
                 }
                 circle(panel.canvas, { x + int(btn_width * (current_viz_layer + 0.5f)), y }, 5, { 0, 0, 255 }, -1);
 
-                vector<Mat> tensor = get_layer_output_tensor(current_viz_layer);
-                int channel_count = tensor.size();
+                vector<Mat> tensors;
+                if (is_weights_mode)
+                {
+                    tensors = get_layer_weights(current_viz_layer);
+                }
+                else
+                {
+                    tensors = get_layer_activations(current_viz_layer);
+                }
+                int channel_count = tensors.size();
                 int tensor_cols = sqrt(channel_count);
                 int tensor_rows = ceil(channel_count / (float)tensor_cols);
                 const int cell_x0 = 30;
                 const int cell_y0 = 100;
 
-                if (false && layer_names[current_viz_layer].find("Softmax") != string::npos)
-                {
-                    // To viz Softmax layer
-                }
-                else
                 {
                     const int cell_spc = 10;
                     const int cell_w = (panel.width - cell_x0) * 0.9f / tensor_cols - cell_spc;
                     const int cell_h = (panel.height - cell_y0) * 0.9f / tensor_rows - cell_spc;
 
-                    for (int i = 0; i < tensor.size(); i++)
+                    for (int i = 0; i < tensors.size(); i++)
                     {
                         int cell_y = i / tensor_cols;
                         int cell_x = i % tensor_cols;
@@ -217,10 +221,12 @@ int main(int argc, char **argv)
                             cell_w,
                             cell_h);
 
-                        Mat channel_8uc1 = tensor[i];
-                        Mat channel_8uc3;
-                        cvtColor(channel_8uc1, channel_8uc3, COLOR_GRAY2BGR);
-                        resize(channel_8uc3, panel.canvas(dst_area), Size(cell_w, cell_h), 0, 0, INTER_NEAREST);
+                        Mat tensor = tensors[i];
+                        if (tensor.channels() == 1)
+                        {
+                            cvtColor(tensor, tensor, COLOR_GRAY2BGR);
+                        }
+                        resize(tensor, panel.canvas(dst_area), Size(cell_w, cell_h), 0, 0, INTER_NEAREST);
                         //imshow(title, channel);
                     }
                 }
@@ -235,6 +241,7 @@ int main(int argc, char **argv)
                 if (key == 27) break;
                 if (key == 'f') is_fullscreen = !is_fullscreen;
                 if (key == 'g') is_gui_visible = !is_gui_visible;
+                if (key == 'w') is_weights_mode = !is_weights_mode;
             }
         }
 
