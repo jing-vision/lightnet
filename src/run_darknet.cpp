@@ -12,22 +12,34 @@ void init_net
     int *inw,
     int *inh,
     int *outw,
-    int *outh
-)
+    int *outh,
+    int* net_output_count
+    )
 {
     net = load_network_custom((char*)cfgfile, (char*)weightfile, 0, 1);
     *inw = net->w;
     *inh = net->h;
 
-    layer* last_layer = get_network_layer(net, net->n - 2);
-    *outw = last_layer->out_w;
-    *outh = last_layer->out_h;
+    if (net_output_count)
+    {
+        *net_output_count = net->outputs;
+    }
+    for (int i = net->n - 1; i > 0; i--)
+    {
+        layer* lay = get_network_layer(net, i);
+        if (lay->type == CONVOLUTIONAL)
+        {
+            *outw = lay->out_w;
+            *outh = lay->out_h;
+            break;
+        }
+    }
 }
 
 float* run_net(float* indata)
 {
-    network_predict(*net, indata);
-    return net->output;
+    float* output = network_predict(*net, indata);
+    return output;
 }
 
 float* run_net(cv::Mat frame)

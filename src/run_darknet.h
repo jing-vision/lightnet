@@ -2,6 +2,7 @@
 #define RUN_DARKNET_H
 
 #include <opencv2/core.hpp>
+#include <vector>
 
 void init_net
 (
@@ -10,11 +11,12 @@ void init_net
     int *inw,
     int *inh,
     int *outw,
-    int *outh
+    int *outh,
+    int* net_output_count = NULL
 );
 
-float* run_net(float *indata);
-float *run_net(cv::Mat frame);
+float* run_net(float* indata);
+float* run_net(cv::Mat frame);
 
 cv::Mat float_to_mat(int w, int h, int c, float *data);
 

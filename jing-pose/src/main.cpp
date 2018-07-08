@@ -191,31 +191,6 @@ int main(int argc, char **argv)
     vector<float> net_inputs(net_inw * net_inh * 3);
     float* net_inputs_ptr = net_inputs.data();
 
-    auto safe_grab_video = [&parser, &is_running](VideoCapture& cap, Mat& frame, const String& source, bool source_is_camera) -> bool {
-        if (!cap.isOpened()) return true;
-
-        char info[100];
-        sprintf(info, "grab: %s", source.c_str());
-        MTR_SCOPE_FUNC_C("grab", source.c_str());
-
-        cap >> frame;
-        if (source_is_camera)
-        {
-            MTR_SCOPE(__FILE__, "flip");
-            flip(frame, frame, 1);
-        }
-
-        if (frame.empty())
-        {
-            if (!parser.get<bool>("loop")) return false;
-            
-            cap = safe_open_video(parser, source);
-            cap >> frame;
-        }
-
-        return true;
-    };
-
     std::thread CUDA([&] {
         MTR_META_THREAD_NAME("2) CUDA");
         int frame_count = 0;
@@ -237,7 +212,7 @@ int main(int argc, char **argv)
                 for (int i = 0; i < 2; i++)
 #endif
                 {
-                    if (!safe_grab_video(captures[i], frames[i], sources[i], source_is_camera[i]))
+                    if (!safe_grab_video(captures[i], parser, frames[i], sources[i], source_is_camera[i]))
                     {
                         is_running = false;
                     }

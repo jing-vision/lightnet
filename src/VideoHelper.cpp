@@ -63,3 +63,30 @@ VideoCapture safe_open_video(const CommandLineParser &parser, const String &sour
     }
     return cap;
 };
+
+
+bool safe_grab_video(VideoCapture& cap, const CommandLineParser &parser, Mat& frame, const String& source, bool source_is_camera)
+{
+    if (!cap.isOpened()) return true;
+
+    char info[100];
+    sprintf(info, "open: %s", source.c_str());
+    //MTR_SCOPE_FUNC_C("open", source.c_str());
+
+    cap >> frame; // get a new frame from camera/video or read image
+    if (source_is_camera)
+    {
+        //MTR_SCOPE(__FILE__, "flip");
+        flip(frame, frame, 1);
+    }
+
+    if (frame.empty())
+    {
+        if (!parser.get<bool>("loop")) return false;
+
+        cap = safe_open_video(parser, source);
+        cap >> frame;
+    }
+
+    return true;
+};

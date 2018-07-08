@@ -85,30 +85,6 @@ int main(int argc, char **argv)
 
     vector<float> net_inputs(net_inw * net_inh * 3);
 
-    auto safe_grab_video = [&parser, &is_running](VideoCapture& cap, Mat& frame, const String& source, bool source_is_camera) -> bool {
-        if (!cap.isOpened()) return true;
-
-        char info[100];
-        sprintf(info, "open: %s", source.c_str());
-        MTR_SCOPE_FUNC_C("open", source.c_str());
-
-        cap >> frame; // get a new frame from camera/video or read image
-        if (source_is_camera)
-        {
-            MTR_SCOPE(__FILE__, "flip");
-            flip(frame, frame, 1);
-        }
-
-        if (frame.empty())
-        {
-            if (!parser.get<bool>("loop")) return false;
-
-            cap = safe_open_video(parser, source);
-        }
-
-        return true;
-    };
-
     int frame_count = 0;
 
     Mat frames[2];
@@ -123,7 +99,7 @@ int main(int argc, char **argv)
         {
             MTR_SCOPE(__FILE__, "pre process");
 
-            if (!safe_grab_video(capture, frame, source, source_is_camera))
+            if (!safe_grab_video(capture, parser, frame, source, source_is_camera))
             {
                 is_running = false;
             }

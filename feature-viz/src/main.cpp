@@ -78,40 +78,18 @@ int main(int argc, char **argv)
     int net_inh = 0;
     int net_outw = 0;
     int net_outh = 0;
+    int net_output_count = 0;
     {
         MTR_SCOPE(__FILE__, "init_net");
-        init_net(cfg_path.c_str(), weight_path.c_str(), &net_inw, &net_inh, &net_outw, &net_outh);
+        init_net(cfg_path.c_str(), weight_path.c_str(), &net_inw, &net_inh, &net_outw, &net_outh, &net_output_count);
     }
 
     float scale = 0.0f;
 
     Mat input_blob;
 
-    auto safe_grab_video = [&parser, &is_running](VideoCapture& cap, Mat& frame, const String& source, bool source_is_camera) -> bool {
-        if (!cap.isOpened()) return true;
-
-        char info[100];
-        sprintf(info, "open: %s", source.c_str());
-        MTR_SCOPE_FUNC_C("open", source.c_str());
-
-        cap >> frame; // get a new frame from camera/video or read image
-        if (source_is_camera)
-        {
-            MTR_SCOPE(__FILE__, "flip");
-            flip(frame, frame, 1);
-        }
-
-        if (frame.empty())
-        {
-            if (!parser.get<bool>("loop")) return false;
-
-            cap = safe_open_video(parser, source);
-        }
-
-        return true;
-    };
-
     int frame_count = 0;
+    vector<int> top_indices;
 
     while (is_running)
     {
@@ -119,12 +97,11 @@ int main(int argc, char **argv)
 
         {
             MTR_SCOPE(__FILE__, "pre process");
-
-            if (!safe_grab_video(capture, frame, source, source_is_camera))
+            if (!safe_grab_video(capture, parser, frame, source, source_is_camera))
             {
                 is_running = false;
             }
-            input_blob = dnn::blobFromImage(frame, 1.0f, Size(net_inw, net_inh), Scalar(127, 127, 127), false, true);
+            input_blob = dnn::blobFromImage(frame, 1.0f / 255, Size(net_inw, net_inh), Scalar(), false, true);
         }
 
         float *netoutdata = NULL;
@@ -133,19 +110,20 @@ int main(int argc, char **argv)
             MTR_SCOPE(__FILE__, "run_net");
             tick.start();
             netoutdata = run_net(input_blob);
+            vector<float> result = { netoutdata, netoutdata + net_output_count };
+            int top_k = 5;
+            partial_sort(result.begin(), result.begin() + top_k, result.end(), [](float left, float right) -> bool {
+                return left > right;
+            });
             tick.stop();
             cout << "forward fee: " << tick.getTimeMilli() << "ms" << endl;
-        }
-
-        {
-            MTR_SCOPE(__FILE__, "post process");
         }
 
         {
             MTR_SCOPE(__FILE__, "viz");
             {
                 MTR_SCOPE(__FILE__, "imshow");
-                Mat out = float_to_mat(net_outw, net_outh, 1, netoutdata);
+                Mat out = float_to_mat(1, net_output_count, 1, netoutdata);
                 imshow(TITLE, out);
 
                 MTR_SCOPE(__FILE__, "waitkey");
