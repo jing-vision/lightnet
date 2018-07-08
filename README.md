@@ -1,48 +1,91 @@
-# yolo-studio
-A turnkey solution to train and deploy your own object detection network, contains:
+lightnet
+====
+lightnet is a turnkey solution to real world problems accelerated with deep learning AI technology, including but not limited to object detection, image classification and human pose estimation.
+
+The folder structure:
 
 - modules/darknet - the main engine for training & inferencing.
 - modules/Augmentor - image augmentation library in Python.
-- modules/Yolo_mark - the toolkit to prepare training data.
+- modules/Yolo_mark - the toolkit to prepare training data for object detection.
 - modules/yolo2_light - lightweighted inferencing engine [optional].
 - modules/cvui - lightweighted GUI based purely on OpenCV.
 - jing-pose - Openpose implementation using darknet framework.
 
-# How to build
+How to build from Visual Studio 2015
+====
 
-## Install CUDA
+Install NVIDIA SDK
+----
 
-- Uninstall Geforce Experience and current driver
-- CUDA 9.1: https://developer.nvidia.com/cuda-downloads
+- CUDA 9.1: https://developer.nvidia.com/cuda-91-download-archive
 - cuDNN v7.x for CUDA: https://developer.nvidia.com/rdp/cudnn-download
 
     -  Extract to the same folder as CUDA SDK
     -  e.g. `c:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\`
 
-## Install OpenCV
+Install OpenCV
+----
 - OpenCV 3.4.0: https://sourceforge.net/projects/opencvlibrary/files/opencv-win/3.4.0/opencv-3.4.0-vc14_vc15.exe/download
 - Extract to `d:\opencv\`
 
-## Build from source
+Build it
+----
 
 Execute the batch file
 > build.bat
 
-# Fine tune a existing network
 
-https://github.com/pjreddie/darknet/wiki/YOLO:-Real-Time-Object-Detection
+Object Detection - inference w/ pre-trained weights
+====
 
-darknet.exe partial cfg/darknet19_448.cfg darknet19_448.weights darknet19_448.conv.23 23
+First you need to download the weights. You can read more details on [darknet website](https://pjreddie.com/darknet/yolo/).
 
-# Object Detection - yolo
-## How to mark labelled images
+cfg|weights
+---|-------
+cfg/yolov2.cfg|https://pjreddie.com/media/files/yolov2.weights
+cfg/yolov2-tiny.cfg|https://pjreddie.com/media/files/yolov2-tiny.weights
+cfg/yolo9000.cfg|http://pjreddie.com/media/files/yolo9000.weights
+cfg/yolov3.cfg|https://pjreddie.com/media/files/yolov3.weights
+cfg/yolov3-tiny.cfg|https://pjreddie.com/media/files/yolov3-tiny.weights
+
+Syntax for object detection
+----
+```
+darknet.exe detector demo <data> <cfg> <weights> -c <camera_idx> -i <gpu_idx>
+darknet.exe detector demo <data> <cfg> <weights> <video_filename> -i <gpu_idx>
+darknet.exe detector test <data> <cfg> <weights> <img_filename> -i <gpu_idx>
+```
+
+Default launch device combination is `-i 0 -c 0`.
+
+Run yolov3
+----
+```
+darknet.exe detector demo cfg/coco.data cfg/yolov3.cfg yolov3.weights
+```
+
+Run yolo9000 on camera #0
+----
+```
+darknet.exe detector demo cfg/combine9k.data cfg/yolo9000.cfg yolo9000.weights
+```
+
+Run yolo9000 CPU on camera #0
+----
+```
+darknet_no_gpu.exe detector demo cfg/combine9k.data cfg/yolo9000.cfg yolo9000.weights
+```
+
+Object Detection - label images manually
+====
 
  - delete all files from directory `my-yolo-net/img` and put your `.jpg`-images in
  - change numer of classes (objects for detection) in file `my-yolo-net/obj.data`: https://github.com/jing-vision/yolo-studio/blob/master/networks/yolo-template/obj.data#L1
  - put names of objects, one for each line in file `my-yolo-net/obj.names`: https://github.com/jing-vision/yolo-studio/blob/master/networks/yolo-template/obj.names
  - Run file: `my-yolo-net/yolo_mark.cmd`
 
-## Train yolo v2
+Object Detection - train yolo v2 network
+====
 
 0. Fork `__template-yolov2` to `my-yolo-net`
 
@@ -56,7 +99,8 @@ darknet.exe partial cfg/darknet19_448.cfg darknet19_448.weights darknet19_448.co
 
 3. Run `my-yolo-net/train.cmd`
 
-## Train yolo v3
+Object detection - train yolo v3 network
+====
 
 0. Fork `__template-yolov3` to `my-yolo-net`
 
@@ -91,51 +135,10 @@ darknet.exe partial cfg/darknet19_448.cfg darknet19_448.weights darknet19_448.co
   classes=2
   ```
 
-## How to inference
+Image Classification - inference w/ pre-trained weights
+====
 
-## Pre-trained models for different cfg-files can be downloaded from (smaller -> faster & lower quality):
-
-cfg|weights
----|-------
-cfg/yolov2.cfg|https://pjreddie.com/media/files/yolov2.weights
-cfg/yolov2-tiny.cfg|https://pjreddie.com/media/files/yolov2-tiny.weights
-cfg/yolo9000.cfg|http://pjreddie.com/media/files/yolo9000.weights
-cfg/yolov3.cfg|https://pjreddie.com/media/files/yolov3.weights
-cfg/yolov3-tiny.cfg|https://pjreddie.com/media/files/yolov3-tiny.weights
-
-## Run Darknet
-
-### General
-
-```
-darknet.exe detector demo <data> <cfg> <weights> -c <camera_idx>
-darknet.exe detector demo <data> <cfg> <weights> <video_filename>
-darknet.exe detector test <data> <cfg> <weights> <img_filename>
-```
-
-Default launch device combination is `-i 0 -c 0`.
-
-## Run from bin/ folder
-
-### yolov3
-```
-darknet.exe detector demo cfg/coco.data cfg/yolov3.cfg yolov3.weights
-```
-
-### yolo9000 on camera #0
-```
-darknet.exe detector demo cfg/combine9k.data cfg/yolo9000.cfg yolo9000.weights
-```
-
-### yolo9000 CPU on camera #0
-```
-darknet_no_gpu.exe detector demo cfg/combine9k.data cfg/yolo9000.cfg yolo9000.weights
-```
-
-# Image Classification
-## Download weights
-
-https://pjreddie.com/darknet/imagenet/
+Again, you need download weights first. You can read more details on [darknet website](https://pjreddie.com/darknet/imagenet/).
 
 cfg|weights
 ---|-------
@@ -149,7 +152,8 @@ cfg/resnet50.cfg|https://pjreddie.com/media/files/resnet50.weights
 cfg/resnet152.cfg|https://pjreddie.com/media/files/resnet152.weights
 cfg/densenet201.cfg|https://pjreddie.com/media/files/densenet201.weights
 
-## Train custom darknet19_448 network
+Image Classification - train darknet19_448 network
+====
 
 0. Fork `__template-darknet19_448` to `my-darknet19-net`
 
@@ -162,14 +166,16 @@ cfg/densenet201.cfg|https://pjreddie.com/media/files/densenet201.weights
   * set `filter`-value equal to `classes` in darknet19-classify.cfg#L189
 
 
-# Build cvui
-
-> mkdir vs2015
-> cd vs2015
-> cmake -DOpenCV_DIR=d:\opencv\build -G "Visual Studio 14 2015 Win64" ..
-
-# Run jing-pose
+Human Pose Estimation - inference w/ pre-trained weights
+====
 
 <b>[Weight file] (darknet version openpose.weight)</b><p>
 https://drive.google.com/open?id=1BfY0Hx2d2nm3I4JFh0W1cK2aHD1FSGea
   
+
+Fine tune a existing network
+====
+
+https://github.com/pjreddie/darknet/wiki/YOLO:-Real-Time-Object-Detection
+
+darknet.exe partial cfg/darknet19_448.cfg darknet19_448.weights darknet19_448.conv.23 23

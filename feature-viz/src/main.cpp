@@ -14,6 +14,7 @@ const char* params =
 "{ help ?       | false             | print usage          }"
 "{ proto        | cfg/darknet.cfg   | model configuration }"
 "{ model        | darknet.weights   | model weights }"
+"{ names        | obj.names         | list of the object names }"
 "{@source       | 0                 | source for processing   }"
 "{ w width      | 0                 | width of video or camera device}"
 "{ h height     | 0                 | height of video or camera device}"
