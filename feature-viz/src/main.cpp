@@ -36,7 +36,7 @@ bool is_fullscreen = false;
 #define APP_NAME "feature-viz"
 #define VER_MAJOR 0
 #define VER_MINOR 1
-#define VER_PATCH 0
+#define VER_PATCH 1
 
 #define TITLE APP_NAME " " CVAUX_STR(VER_MAJOR) "." CVAUX_STR(VER_MINOR) "." CVAUX_STR(VER_PATCH)
 
@@ -63,7 +63,7 @@ struct ControlPanel
         cvui::imshow(TITLE, canvas);
     }
 
-    const int width = 1920;
+    const int width = 1800;
     const int height = 1080;
     cv::Mat canvas = cv::Mat(height, width, CV_8UC3);
 
@@ -184,7 +184,7 @@ int main(int argc, char **argv)
                     }
                     layer++;
                 }
-                circle(panel.canvas, { x + int(btn_width * (current_viz_layer + 0.5f)), y }, 10, { 0, 255, 0 });
+                circle(panel.canvas, { x + int(btn_width * (current_viz_layer + 0.5f)), y }, 5, { 0, 0, 255 }, -1);
 
                 vector<Mat> tensor = get_layer_output_tensor(current_viz_layer);
                 int channel_count = tensor.size();

@@ -37,11 +37,7 @@ vector<string> get_layer_names()
     for (int i = 0; i < net->n; i++)
     {
         layer* lay = get_network_layer(net, i);
-    }
-
-    for (int i = 0; i<net->n; i++)
-    {
-        LAYER_TYPE type = net->layers[i].type;
+        LAYER_TYPE type = lay->type;
         string layerName;
         if (type == CONVOLUTIONAL) layerName = "Conv";
         else if (type == DECONVOLUTIONAL) layerName = "Deconv";
@@ -158,15 +154,15 @@ vector<Mat> get_layer_output_tensor(int layer_idx)
 {
     vector<Mat> tensor;
 
-    layer l = net->layers[layer_idx];
-    if (l.type != REGION)
+    layer* l = get_network_layer(net, layer_idx);
+    if (l->type != REGION)
     {
-        CV_Assert(l.batch == 1 && "TODO: support non-one batch");
-        cuda_pull_array(l.output_gpu, l.output, l.outputs*l.batch);
-        tensor.resize(l.out_c);
-        for (int i = 0; i < l.out_c; i++)
+        CV_Assert(l->batch == 1 && "TODO: support non-one batch");
+        cuda_pull_array(l->output_gpu, l->output, l->outputs*l->batch);
+        tensor.resize(l->out_c);
+        for (int i = 0; i < l->out_c; i++)
         {
-            tensor[i] = float_to_mat(l.out_w, l.out_h, 1, l.output + l.out_w * l.out_h * i);
+            tensor[i] = float_to_mat(l->out_w, l->out_h, 1, l->output + l->out_w * l->out_h * i);
         }
     }
 
@@ -176,17 +172,17 @@ vector<Mat> get_layer_output_tensor(int layer_idx)
 #if 0
 image get_convolutional_weight(layer l, int i)
 {
-    int h = l.size;
-    int w = l.size;
-    int c = l.c;
-    return float_to_image(w, h, c, l.weights + i*h*w*c);
+    int h = l->size;
+    int w = l->size;
+    int c = l->c;
+    return float_to_image(w, h, c, l->weights + i*h*w*c);
 }
 
 image *get_weights(layer l)
 {
-    image *weights = (image*)malloc(l.n * sizeof(image));
+    image *weights = (image*)malloc(l->n * sizeof(image));
     int i;
-    for (i = 0; i < l.n; ++i) {
+    for (i = 0; i < l->n; ++i) {
         weights[i] = copy_image(get_convolutional_weight(l, i));
         //normalize_image(weights[i]);
     }
@@ -198,7 +194,7 @@ image *visualize_convolutional_layer(layer l, char *window, image *prev_weights)
 {
     image *single_weights = get_weights(l);
 #if 0
-    show_images(single_weights, l.n, window);
+    show_images(single_weights, l->n, window);
 
     image delta = get_convolutional_image(l);
     image dc = collapse_image_layers(delta, 1);
