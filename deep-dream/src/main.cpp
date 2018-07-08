@@ -14,7 +14,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-#include "run_darknet.h"
+#include "lightnet.h"
 #include "MiniTraceHelper.h"
 #include "VideoHelper.h"
 
@@ -37,7 +37,6 @@ const char* params =
 "{ single_step  |                   | single step mode, press any key to move to next frame }"
 "{ l loop       | true              | whether to loop the video}"
 "{ video_pos    | 0                 | current position of the video file in milliseconds. }"
-"{ player       | 1                 | current position for player, press p to toggle. }"
 ;
 
 bool is_gui_visible = false;
@@ -168,8 +167,6 @@ int main(int argc, char **argv)
     is_fullscreen = parser.get<bool>("fullscreen");
     Mat upscale_frame;
 
-    int player = parser.get<int>("player");
-
     String source = parser.get<String>("@source");
 
     bool source_is_camera = false;
@@ -189,31 +186,6 @@ int main(int argc, char **argv)
 
     float scale = 0.0f;
     
-    auto safe_grab_video = [&parser, &is_running](VideoCapture& cap, Mat& frame, const String& source, bool source_is_camera) -> bool {
-        if (!cap.isOpened()) return true;
-
-        char info[100];
-        sprintf(info, "open: %s", source.c_str());
-        MTR_SCOPE_FUNC_C("open", source.c_str());
-
-        cap >> frame;
-        if (source_is_camera)
-        {
-            MTR_SCOPE(__FILE__, "flip");
-            flip(frame, frame, 1);
-        }
-
-        if (frame.empty())
-        {
-            if (!parser.get<bool>("loop")) return false;
-
-            cap = safe_open_video(parser, source);
-            cap >> frame;
-        }
-
-        return true;
-    };
-
     int frame_count = 0;
 
     vector<Mat> input_channels;
@@ -225,7 +197,7 @@ int main(int argc, char **argv)
         {
             MTR_SCOPE(__FILE__, "pre process");
 
-            if (!safe_grab_video(capture, frame, source, source_is_camera))
+            if (!safe_grab_video(capture, parser, frame, source, source_is_camera))
             {
                 is_running = false;
             }
@@ -262,7 +234,6 @@ int main(int argc, char **argv)
                 if (key == 27) break;
                 if (key == 'f') is_fullscreen = !is_fullscreen;
                 if (key == 'g') is_gui_visible = !is_gui_visible;
-                if (key == 'p') player = 1 - player;
             }
         }
 

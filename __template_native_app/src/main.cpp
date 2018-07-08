@@ -3,7 +3,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-#include "run_darknet.h"
+#include "lightnet.h"
 #include "MiniTraceHelper.h"
 #include "VideoHelper.h"
 
@@ -23,7 +23,6 @@ const char* params =
 "{ single_step  |                   | single step mode, press any key to move to next frame }"
 "{ l loop       | true              | whether to loop the video}"
 "{ video_pos    | 0                 | current position of the video file in milliseconds. }"
-"{ player       | 1                 | current position for player, press p to toggle. }"
 ;
 
 bool is_gui_visible = false;
@@ -60,9 +59,6 @@ int main(int argc, char **argv)
 
     is_gui_visible = parser.get<bool>("gui");
     is_fullscreen = parser.get<bool>("fullscreen");
-    Mat upscale_frame;
-
-    int player = parser.get<int>("player");
 
     String source = parser.get<String>("@source");
 
@@ -81,16 +77,8 @@ int main(int argc, char **argv)
         init_net(cfg_path.c_str(), weight_path.c_str(), &net_inw, &net_inh, &net_outw, &net_outh);
     }
 
-    float scale = 0.0f;
-
-    vector<float> net_inputs(net_inw * net_inh * 3);
-
     int frame_count = 0;
-
-    Mat frames[2];
-    Mat netim;
-    Mat netim_f32;
-    vector<Mat> input_channels;
+    Mat input_blob;
 
     while (is_running)
     {
@@ -103,38 +91,17 @@ int main(int argc, char **argv)
             {
                 is_running = false;
             }
-
-            netim.convertTo(netim_f32, CV_32F, 1 / 256.f, -0.5);
-
-            {
-                MTR_SCOPE(__FILE__, "split");
-                static bool init_input_channels = true;
-                if (init_input_channels)
-                {
-                    init_input_channels = false;
-                    float *netin_data_ptr = net_inputs.data();
-                    for (int i = 0; i < 3; ++i)
-                    {
-                        Mat channel(net_inh, net_inw, CV_32FC1, netin_data_ptr);
-                        input_channels.emplace_back(channel);
-                        netin_data_ptr += (net_inw * net_inh);
-                    }
-                }
-                split(netim_f32, input_channels);
-            }
+            input_blob = dnn::blobFromImage(frame, 1.0f / 255, Size(net_inw, net_inh), Scalar(), false, true);
         }
 
         float *netoutdata = NULL;
+        TickMeter tick;
         {
             MTR_SCOPE(__FILE__, "run_net");
-            double time_begin = getTickCount();
-            netoutdata = run_net(net_inputs.data());
-            double fee_time = (getTickCount() - time_begin) / getTickFrequency() * 1000;
-            cout << "forward fee: " << fee_time << "ms" << endl;
-        }
-
-        {
-            MTR_SCOPE(__FILE__, "post process");
+            tick.start();
+            netoutdata = run_net(net_inputs);
+            tick.stop();
+            cout << "forward fee: " << tick.getTimeMilli() << "ms" << endl;
         }
 
         {
@@ -148,7 +115,6 @@ int main(int argc, char **argv)
                 if (key == 27) break;
                 if (key == 'f') is_fullscreen = !is_fullscreen;
                 if (key == 'g') is_gui_visible = !is_gui_visible;
-                if (key == 'p') player = 1 - player;
             }
         }
 

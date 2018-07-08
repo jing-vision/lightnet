@@ -1,20 +1,15 @@
-#include "run_darknet.h"
+#include "lightnet.h"
 #include <network.h>
+
+using namespace std;
+using namespace cv;
 
 static network *net;
 
-using namespace cv;
-
-void init_net
-(
-    const char *cfgfile,
-    const char *weightfile,
-    int *inw,
-    int *inh,
-    int *outw,
-    int *outh,
-    int* net_output_count
-    )
+void init_net(const char *cfgfile, const char *weightfile,
+    int *inw, int *inh,
+    int *outw, int *outh,
+    int* net_output_count)
 {
     net = load_network_custom((char*)cfgfile, (char*)weightfile, 0, 1);
     *inw = net->w;
@@ -34,6 +29,54 @@ void init_net
             break;
         }
     }
+}
+
+vector<string> get_layer_names()
+{
+    vector<string> layerNames;
+    for (int i = 0; i < net->n; i++)
+    {
+        layer* lay = get_network_layer(net, i);
+    }
+
+    for (int i = 0; i<net->n; i++)
+    {
+        LAYER_TYPE type = net->layers[i].type;
+        string layerName;
+        if (type == CONVOLUTIONAL) layerName = "Conv";
+        else if (type == DECONVOLUTIONAL) layerName = "Deconv";
+        else if (type == CONNECTED) layerName = "FC";
+        else if (type == MAXPOOL) layerName = "MaxPool";
+        else if (type == SOFTMAX) layerName = "Softmax";
+        else if (type == DETECTION) layerName = "Detect";
+        else if (type == DROPOUT) layerName = "Dropout";
+        else if (type == CROP) layerName = "Crop";
+        else if (type == ROUTE) layerName = "Route";
+        else if (type == COST) layerName = "Cost";
+        else if (type == NORMALIZATION) layerName = "Normalize";
+        else if (type == AVGPOOL) layerName = "AvgPool";
+        else if (type == LOCAL) layerName = "Local";
+        else if (type == SHORTCUT) layerName = "Shortcut";
+        else if (type == ACTIVE) layerName = "Active";
+        else if (type == RNN) layerName = "RNN";
+        else if (type == GRU) layerName = "GRU";
+        else if (type == CRNN) layerName = "CRNN";
+        else if (type == BATCHNORM) layerName = "Batchnorm";
+        else if (type == NETWORK) layerName = "Network";
+        else if (type == XNOR) layerName = "XNOR";
+        else if (type == REGION) layerName = "Region";
+        else if (type == YOLO) layerName = "Yolo";
+        else if (type == REORG) layerName = "Reorg";
+        else if (type == UPSAMPLE) layerName = "Upsample";
+        else if (type == REORG_OLD) layerName = "Reorg_old";
+        else if (type == BLANK) layerName = "Blank";
+        else layerName = "Unknown";
+        char info[100];
+        sprintf(info, "%s %d", layerName.c_str(), i);
+        layerNames.push_back(info);
+    }
+
+    return layerNames;
 }
 
 float* run_net(float* indata)
@@ -75,7 +118,7 @@ static float get_pixel(image m, int x, int y, int c)
 
 static Mat image_to_mat(image im)
 {
-    Mat frame(im.h, im.w, CV_8UC3);
+    Mat frame(im.h, im.w, CV_8UC(im.c));
     int step = frame.step;
     uint8_t *data = (uint8_t*)(frame.data);
 
@@ -106,11 +149,28 @@ Mat optimize_mat(Mat orig, int max_layer, float scale, float rate, float thresh,
     return output;
 }
 
-float* get_network_output_layer(int i)
+int get_layer_count()
 {
-    layer l = net->layers[i];
-    if (l.type != REGION) cuda_pull_array(l.output_gpu, l.output, l.outputs*l.batch);
-    return l.output;
+    return net->n;
+}
+
+vector<Mat> get_layer_output_tensor(int layer_idx)
+{
+    vector<Mat> tensor;
+
+    layer l = net->layers[layer_idx];
+    if (l.type != REGION)
+    {
+        CV_Assert(l.batch == 1 && "TODO: support non-one batch");
+        cuda_pull_array(l.output_gpu, l.output, l.outputs*l.batch);
+        tensor.resize(l.out_c);
+        for (int i = 0; i < l.out_c; i++)
+        {
+            tensor[i] = float_to_mat(l.out_w, l.out_h, 1, l.output + l.out_w * l.out_h * i);
+        }
+    }
+
+    return tensor;
 }
 
 #if 0

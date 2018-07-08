@@ -9,7 +9,7 @@
 using namespace std;
 using namespace cv;
 
-#include "run_darknet.h"
+#include "lightnet.h"
 #include "post_process.h"
 #include "os_hal.h"
 #include "VideoHelper.h"
