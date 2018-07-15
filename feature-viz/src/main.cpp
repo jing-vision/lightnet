@@ -36,7 +36,7 @@ bool is_fullscreen = false;
 #define APP_NAME "feature-viz"
 #define VER_MAJOR 0
 #define VER_MINOR 1
-#define VER_PATCH 4
+#define VER_PATCH 5
 
 #define TITLE APP_NAME " " CVAUX_STR(VER_MAJOR) "." CVAUX_STR(VER_MINOR) "." CVAUX_STR(VER_PATCH)
 
@@ -253,28 +253,28 @@ int main(int argc, char **argv)
                                 cell_h);
 
                             Mat tensor_ = tensors[i];
+                            Mat tensor_rgb;
                             Mat tensor_c0;
                             bool is_rgb = tensor_.channels() == 3;
                             extractChannel(tensor_, tensor_c0, 0);
-                            cv::Point min_loc, max_loc;
-                            double min_value, max_value;
-                            cv::minMaxLoc(tensor_c0, &min_value, &max_value, &min_loc, &max_loc);
 
-                            float convert_a = 255 / (max_value - min_value);
-                            float convert_b = -convert_a * min_value;
+                            float convert_a = 255;
+                            float convert_b = 0;
+
+                            if (tensor_c0.cols != 1 && tensor_c0.rows != 1)
+                            {
+                                cv::Point min_loc, max_loc;
+                                double min_value, max_value;
+                                cv::minMaxLoc(tensor_c0, &min_value, &max_value, &min_loc, &max_loc);
+
+                                convert_a = 255 / (max_value - min_value);
+                                convert_b = -convert_a * min_value;
+                            }
 
                             if (!is_rgb)
                             {
-                                if (false && min_loc == max_loc)
-                                {
-                                    tensor_c0.convertTo(tensor_c0, CV_8UC1, 255, 0);
-                                }
-                                else
-                                {
-                                    tensor_c0.convertTo(tensor_c0, CV_8UC1, convert_a, convert_b);
-                                }
                                 tensor_c0.convertTo(tensor_c0, CV_8UC1, convert_a, convert_b);
-                                cvtColor(tensor_c0, tensor_, COLOR_GRAY2BGR);
+                                cvtColor(tensor_c0, tensor_rgb, COLOR_GRAY2BGR);
                             }
                             else
                             {
@@ -287,11 +287,10 @@ int main(int argc, char **argv)
                                 tensor_c2.convertTo(tensor_c2, CV_8UC1, convert_a, convert_b);
 
                                 Mat channels[] = { tensor_c0, tensor_c1, tensor_c2 };
-                                cv::merge(channels, 3, tensor_);
+                                cv::merge(channels, 3, tensor_rgb);
                             }
 
-                            resize(tensor_, panel.canvas(dst_area), Size(cell_w, cell_h), 0, 0, INTER_NEAREST);
-                            //imshow(title, channel);
+                            resize(tensor_rgb, panel.canvas(dst_area), Size(cell_w, cell_h), 0, 0, INTER_NEAREST);
                         }
                     }
                 }
@@ -307,7 +306,6 @@ int main(int argc, char **argv)
                 if (key == 27) break;
                 if (key == 'f') is_fullscreen = !is_fullscreen;
                 if (key == 'g') is_gui_visible = !is_gui_visible;
-                if (key == 'w') is_weights_mode = !is_weights_mode;
                 if (key == 'a')
                 {
                     current_viz_layer--;

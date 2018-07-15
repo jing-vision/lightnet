@@ -189,6 +189,16 @@ vector<Mat> get_layer_weights(int layer_idx)
     layer* l = get_network_layer(net, layer_idx);
     if (l->type == REGION) return {};
 
+    if (l->type == CONNECTED)
+    {
+        weights.resize(l->out_c);
+        for (int i = 0; i < l->out_c; i++)
+        {
+            weights[i] = float_to_mat(1, 1, 1, l->weights + i);
+        }
+        return weights;
+    }
+
     weights.resize(l->n);
     int h = l->size;
     int w = l->size;
