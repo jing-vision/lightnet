@@ -10,6 +10,7 @@ feature-viz.exe -cfg=..\jing-pose\openpose.cfg -weights=openpose.weight
 feature-viz.exe -cfg=cfg\yolo9000.cfg -weights=yolo9000.weights
 feature-viz.exe -cfg=cfg\yolov3.cfg -weights=yolov3.weights
 feature-viz.exe -cfg=..\..\openpose\models\pose\body_25\body_25.cfg -weights=..\..\openpose\models\pose\body_25\body_25.weights
+feature-viz.exe -cfg=..\==nike_darknet19_448\obj.cfg -weights=..\==nike_darknet19_448\weights\obj_300.weights ..\==nike_darknet19_448\test.jpg
 ```
 
 
