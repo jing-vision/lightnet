@@ -186,7 +186,7 @@ int main(int argc, char **argv)
                     cvui::text(panel.canvas, x, y+= dy_small, cfg_path);
                     cvui::text(panel.canvas, x, y += dy_small, weights_path);
                     const auto& meta = layer_metas[current_layer_index];
-                    sprintf(info, "filter: %d %d x %d x %d", meta.filter_count, meta.filter_dim[0], meta.filter_dim[1], meta.filter_dim[2]);
+                    sprintf(info, "%d filter(s) : %d x %d x %d", meta.filter_count, meta.filter_dim[0], meta.filter_dim[1], meta.filter_dim[2]);
                     cvui::text(panel.canvas, x, y += dy_small, info);
                     sprintf(info, "output: %d x %d x %d", meta.output_dim[0], meta.output_dim[1], meta.output_dim[2]);
                     cvui::text(panel.canvas, x, y += dy_small, info);
@@ -237,28 +237,28 @@ int main(int argc, char **argv)
                     if (!mode) cell_x0 += panel.width / 2;
                     const int cell_y0 = y + 30 + btn_height * ((layer_metas.size() - 1) / btn_cols + 1);
 
-                    const int cell_spc = 10;
-                    int cell_w = (panel.width / 2 - 30) * 0.9f / tensor_cols - cell_spc;
-                    int cell_h = (panel.height - cell_y0) * 0.9f / tensor_rows - cell_spc;
+                    int cell_w = (panel.width / 2 - 30) * 0.9f / tensor_cols;
+                    int cell_h = (panel.height - cell_y0) * 0.9f / tensor_rows;
                     if (cell_w > cell_h) cell_w = cell_h;
                     else cell_h = cell_w;
+                    const int cell_spc = min(10, cell_w / 4);
 
                     for (int i = 0; i < tensors.size(); i++)
                     {
                         int cell_y = i / tensor_cols;
                         int cell_x = i % tensor_cols;
 
-                        Rect dst_area(cell_x0 + cell_x * (cell_w + cell_spc),
-                            cell_y0 + cell_y * (cell_h + cell_spc),
-                            cell_w,
-                            cell_h);
+                        Rect dst_area(cell_x0 + cell_x * (cell_w + 0),
+                            cell_y0 + cell_y * (cell_h + 0),
+                            cell_w - cell_spc,
+                            cell_h - cell_spc);
 
                         Mat tensor_ = tensors[i];
                         Mat tensor_rgb;
                         Mat tensor_c0;
                         bool is_rgb = tensor_.channels() == 3;
 
-                        if (mode && !is_rgb)
+                        if (mode && !is_rgb && current_filter_index < tensor_.channels())
                         {
                             extractChannel(tensor_, tensor_c0, current_filter_index);
                         }
@@ -299,7 +299,7 @@ int main(int argc, char **argv)
                             cv::merge(channels, 3, tensor_rgb);
                         }
 
-                        resize(tensor_rgb, panel.canvas(dst_area), Size(cell_w, cell_h), 0, 0, INTER_NEAREST);
+                        resize(tensor_rgb, panel.canvas(dst_area), dst_area.size(), 0, 0, INTER_NEAREST);
                     }
                 }
 

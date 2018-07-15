@@ -198,7 +198,8 @@ vector<Mat> get_layer_weights(int layer_idx)
 
     layer* l = get_network_layer(net, layer_idx);
     if (l->type == REGION) return{};
-    if (l->type == ROUTE) return {};
+    if (l->type == ROUTE) return{};
+    if (l->type == YOLO) return {};
 
     if (l->type == CONNECTED)
     {
@@ -214,10 +215,9 @@ vector<Mat> get_layer_weights(int layer_idx)
     int h = l->size;
     int w = l->size;
     int c = l->c;
-    //if (c > 999) c = 999;
     for (int i = 0; i < l->n; i++)
     {
-        weights[i] = float_to_mat(w, h, c == 3 ? c : min(c, 800), l->weights + w * h * c * i);
+        weights[i] = float_to_mat(w, h, c == 3 ? c : min(c, 100), l->weights + w * h * c * i);
     }
 
     return weights;
