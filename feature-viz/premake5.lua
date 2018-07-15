@@ -61,12 +61,11 @@ solution "feature-viz"
             path.join("$(CUDA_PATH)", "include"),
             path.join(OPENCV_PATH, "include")
         }
-        debugdir "../bin"        
+        debugdir "../bin"
         files { 
             "src/**",
             "../src/**",
             "../modules/minitrace/**",
-            "../modules/PDollar/**",
         }
         configuration "Debug"
             links {
