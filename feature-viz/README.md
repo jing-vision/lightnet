@@ -13,5 +13,5 @@ feature-viz.exe -cfg=..\..\openpose\models\pose\body_25\body_25.cfg -weights=..\
 ```
 
 
-![](https://github.com/jing-viz/lightnet/raw/master/feature-viz/doc/yolo9000-viz.jpg)
+![](https://github.com/jing-vision/lightnet/raw/master/feature-viz/doc/yolo9000-viz.jpg)
 
