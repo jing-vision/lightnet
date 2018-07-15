@@ -114,14 +114,14 @@ static float get_pixel(image m, int x, int y, int c)
 
 static Mat image_to_mat(image im)
 {
-    Mat frame(im.h, im.w, CV_8UC(im.c));
+    Mat frame(im.h, im.w, CV_32FC(im.c));
     int step = frame.step;
-    uint8_t *data = (uint8_t*)(frame.data);
+    float *data = (float*)(frame.data);
 
     for (int y = 0; y < im.h; ++y) {
         for (int x = 0; x < im.w; ++x) {
             for (int k = 0; k < im.c; ++k) {
-                data[y*step + x*im.c + k] = (uint8_t)(get_pixel(im, x, y, k) * 255);
+                data[y*step / sizeof(data[0]) + x*im.c + k] = get_pixel(im, x, y, k);
             }
         }
     }
@@ -155,26 +155,26 @@ vector<Mat> get_layer_activations(int layer_idx)
     vector<Mat> activations;
 
     layer* l = get_network_layer(net, layer_idx);
-    if (l->type != REGION)
+    if (l->type == REGION) return {};
+
+    CV_Assert(l->batch == 1 && "TODO: support non-one batch");
+    cuda_pull_array(l->output_gpu, l->output, l->outputs*l->batch);
+
+    if (l->type == SOFTMAX)
     {
-        CV_Assert(l->batch == 1 && "TODO: support non-one batch");
-        cuda_pull_array(l->output_gpu, l->output, l->outputs*l->batch);
-        if (l->type == SOFTMAX)
+        activations.resize(l->outputs);
+        //activations[i] = Mat(l, 1, CV_32F, l->output);
+        for (int i = 0; i < l->outputs; i++)
         {
-            activations.resize(l->outputs);
-            //activations[i] = Mat(l, 1, CV_32F, l->output);
-            for (int i = 0; i < l->outputs; i++)
-            {
-                activations[i] = float_to_mat(1, 1, 1, l->output + i);
-            }
+            activations[i] = float_to_mat(1, 1, 1, l->output + i);
         }
-        else
+    }
+    else
+    {
+        activations.resize(l->out_c);
+        for (int i = 0; i < l->out_c; i++)
         {
-            activations.resize(l->out_c);
-            for (int i = 0; i < l->out_c; i++)
-            {
-                activations[i] = float_to_mat(l->out_w, l->out_h, 1, l->output + l->out_w * l->out_h * i);
-            }
+            activations[i] = float_to_mat(l->out_w, l->out_h, 1, l->output + l->out_w * l->out_h * i);
         }
     }
 
@@ -187,15 +187,16 @@ vector<Mat> get_layer_weights(int layer_idx)
     vector<Mat> weights;
 
     layer* l = get_network_layer(net, layer_idx);
-    if (l->type != REGION)
+    if (l->type == REGION) return {};
+
+    weights.resize(l->n);
+    int h = l->size;
+    int w = l->size;
+    int c = l->c;
+    if (c > 10) c = 10;
+    for (int i = 0; i < l->n; i++)
     {
-        weights.resize(l->n);
-        for (int i = 0; i < l->n; i++)
-        {
-            int h = l->size;
-            int w = l->size;
-            weights[i] = float_to_mat(w, h, 1, l->weights + w * h * i);
-        }
+        weights[i] = float_to_mat(w, h, c, l->weights + w * h * c * i);
     }
 
     return weights;

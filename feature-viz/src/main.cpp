@@ -36,7 +36,7 @@ bool is_fullscreen = false;
 #define APP_NAME "feature-viz"
 #define VER_MAJOR 0
 #define VER_MINOR 1
-#define VER_PATCH 3
+#define VER_PATCH 4
 
 #define TITLE APP_NAME " " CVAUX_STR(VER_MAJOR) "." CVAUX_STR(VER_MINOR) "." CVAUX_STR(VER_PATCH)
 
@@ -160,7 +160,7 @@ int main(int argc, char **argv)
                 return left > right;
             });
             tick.stop();
-            cout << "forward fee: " << tick.getTimeMilli() << "ms" << endl;
+            //cout << "forward fee: " << tick.getTimeMilli() << "ms" << endl;
         }
 
         {
@@ -169,12 +169,27 @@ int main(int argc, char **argv)
                 MTR_SCOPE(__FILE__, "imshow");
 
                 int x = 30;
-                int y = 30;
+                int y = 10;
                 int dy_small = 16;
                 int dy_large = 50;
                 int width = 300;
                 panel.canvas = cv::Scalar(49, 52, 49);
 
+                // UGLY!!!
+                cvui::beginColumn(panel.canvas, x, y, width, dy_large);
+                {
+                    cvui::beginRow();
+                    cvui::text(cfg_path);
+                    cvui::endRow();
+                    cvui::beginRow();
+                    cvui::text(weights_path);
+                    cvui::endRow();
+                }
+                cvui::endColumn();
+
+                y += dy_large;
+
+                // draw buttons
                 int layer = 0;
                 const int btn_width = 100;
                 const int btn_height = 30;
@@ -183,53 +198,104 @@ int main(int argc, char **argv)
                 {
                     int btn_y = layer / btn_cols;
                     int btn_x = layer % btn_cols;
-                    if (cvui::button(panel.canvas, x + btn_width * btn_x, y + btn_height * btn_y, layer_name))
+                    int xx = x + btn_width * btn_x;
+                    int yy = y + btn_height * btn_y;
+                    if (cvui::button(panel.canvas, xx, yy, layer_name))
                     {
                         current_viz_layer = layer;
                     }
                     layer++;
                 }
-                circle(panel.canvas, { x + int(btn_width * (current_viz_layer + 0.5f)), y }, 5, { 0, 0, 255 }, -1);
 
-                vector<Mat> tensors;
-                if (is_weights_mode)
                 {
-                    tensors = get_layer_weights(current_viz_layer);
+                    // draw red circle
+                    int layer = current_viz_layer;
+                    int btn_y = layer / btn_cols;
+                    int btn_x = layer % btn_cols;
+                    int xx = x + btn_width * btn_x;
+                    int yy = y + btn_height * btn_y;
+                    circle(panel.canvas, { xx + int(btn_width * 0.5f), yy }, 5, { 0, 0, 255 }, -1);
                 }
-                else
+                bool is_weights_modes[] = { true, false };
+                for (bool mode : is_weights_modes)
                 {
-                    tensors = get_layer_activations(current_viz_layer);
-                }
-                int channel_count = tensors.size();
-                int tensor_cols = sqrt(channel_count);
-                int tensor_rows = ceil(channel_count / (float)tensor_cols);
-                const int cell_x0 = 30;
-                const int cell_y0 = 100;
-
-                {
-                    const int cell_spc = 10;
-                    const int cell_w = (panel.width - cell_x0) * 0.9f / tensor_cols - cell_spc;
-                    const int cell_h = (panel.height - cell_y0) * 0.9f / tensor_rows - cell_spc;
-
-                    for (int i = 0; i < tensors.size(); i++)
+                    vector<Mat> tensors;
+                    if (mode)
                     {
-                        int cell_y = i / tensor_cols;
-                        int cell_x = i % tensor_cols;
+                        tensors = get_layer_weights(current_viz_layer);
+                    }
+                    else
+                    {
+                        tensors = get_layer_activations(current_viz_layer);
+                    }
+                    int channel_count = tensors.size();
+                    int tensor_cols = sqrt(channel_count);
+                    int tensor_rows = ceil(channel_count / (float)tensor_cols);
+                    int cell_x0 = 30;
+                    if (!mode) cell_x0 += panel.width / 2;
+                    const int cell_y0 = y + 30 + btn_height * ((layer_names.size() - 1) / btn_cols + 1);
 
-                        Rect dst_area(cell_x0 + cell_x * (cell_w + cell_spc),
-                            cell_y0 + cell_y * (cell_h + cell_spc),
-                            cell_w,
-                            cell_h);
+                    {
+                        const int cell_spc = 10;
+                        int cell_w = (panel.width - cell_x0) * 0.9f / tensor_cols - cell_spc;
+                        int cell_h = (panel.height - cell_y0) * 0.9f / tensor_rows - cell_spc;
+                        if (cell_w > cell_h) cell_w = cell_h;
+                        else cell_h = cell_w;
 
-                        Mat tensor = tensors[i];
-                        if (tensor.channels() == 1)
+                        for (int i = 0; i < tensors.size(); i++)
                         {
-                            cvtColor(tensor, tensor, COLOR_GRAY2BGR);
+                            int cell_y = i / tensor_cols;
+                            int cell_x = i % tensor_cols;
+
+                            Rect dst_area(cell_x0 + cell_x * (cell_w + cell_spc),
+                                cell_y0 + cell_y * (cell_h + cell_spc),
+                                cell_w,
+                                cell_h);
+
+                            Mat tensor_ = tensors[i];
+                            Mat tensor_c0;
+                            bool is_rgb = tensor_.channels() == 3;
+                            extractChannel(tensor_, tensor_c0, 0);
+                            cv::Point min_loc, max_loc;
+                            double min_value, max_value;
+                            cv::minMaxLoc(tensor_c0, &min_value, &max_value, &min_loc, &max_loc);
+
+                            float convert_a = 255 / (max_value - min_value);
+                            float convert_b = -convert_a * min_value;
+
+                            if (!is_rgb)
+                            {
+                                if (false && min_loc == max_loc)
+                                {
+                                    tensor_c0.convertTo(tensor_c0, CV_8UC1, 255, 0);
+                                }
+                                else
+                                {
+                                    tensor_c0.convertTo(tensor_c0, CV_8UC1, convert_a, convert_b);
+                                }
+                                tensor_c0.convertTo(tensor_c0, CV_8UC1, convert_a, convert_b);
+                                cvtColor(tensor_c0, tensor_, COLOR_GRAY2BGR);
+                            }
+                            else
+                            {
+                                Mat tensor_c1, tensor_c2;
+                                extractChannel(tensor_, tensor_c1, 1);
+                                extractChannel(tensor_, tensor_c2, 2);
+
+                                tensor_c0.convertTo(tensor_c0, CV_8UC1, convert_a, convert_b);
+                                tensor_c1.convertTo(tensor_c1, CV_8UC1, convert_a, convert_b);
+                                tensor_c2.convertTo(tensor_c2, CV_8UC1, convert_a, convert_b);
+
+                                Mat channels[] = { tensor_c0, tensor_c1, tensor_c2 };
+                                cv::merge(channels, 3, tensor_);
+                            }
+
+                            resize(tensor_, panel.canvas(dst_area), Size(cell_w, cell_h), 0, 0, INTER_NEAREST);
+                            //imshow(title, channel);
                         }
-                        resize(tensor, panel.canvas(dst_area), Size(cell_w, cell_h), 0, 0, INTER_NEAREST);
-                        //imshow(title, channel);
                     }
                 }
+
                 //cvui::trackbar(canvas, x, y += dy_small, width, &max_layer, 1, 13);
 
                 cvui::imshow(TITLE, panel.canvas);
@@ -242,6 +308,16 @@ int main(int argc, char **argv)
                 if (key == 'f') is_fullscreen = !is_fullscreen;
                 if (key == 'g') is_gui_visible = !is_gui_visible;
                 if (key == 'w') is_weights_mode = !is_weights_mode;
+                if (key == 'a')
+                {
+                    current_viz_layer--;
+                    if (current_viz_layer < 0) current_viz_layer = layer_names.size() - 1;
+                }
+                if (key == 'd')
+                {
+                    current_viz_layer++;
+                    if (current_viz_layer > layer_names.size() - 1) current_viz_layer = 0;
+                }
             }
         }
 
