@@ -21,23 +21,23 @@ void init_net(const char *cfgfile, const char *weightfile,
     }
     for (int i = net->n - 1; i > 0; i--)
     {
-        layer* lay = get_network_layer(net, i);
-        if (lay->type == CONVOLUTIONAL)
+        layer* l = get_network_layer(net, i);
+        if (l->type == CONVOLUTIONAL)
         {
-            *outw = lay->out_w;
-            *outh = lay->out_h;
+            *outw = l->out_w;
+            *outh = l->out_h;
             break;
         }
     }
 }
 
-vector<string> get_layer_names()
+vector<LayerMeta> get_layer_metas()
 {
-    vector<string> layerNames;
+    vector<LayerMeta> layer_metas;
     for (int i = 0; i < net->n; i++)
     {
-        layer* lay = get_network_layer(net, i);
-        LAYER_TYPE type = lay->type;
+        layer* l = get_network_layer(net, i);
+        LAYER_TYPE type = l->type;
         string layerName;
         if (type == CONVOLUTIONAL) layerName = "Conv";
         else if (type == DECONVOLUTIONAL) layerName = "Deconv";
@@ -69,10 +69,19 @@ vector<string> get_layer_names()
         else layerName = "Unknown";
         char info[100];
         sprintf(info, "%s %d", layerName.c_str(), i);
-        layerNames.push_back(info);
+        LayerMeta meta = {};
+        meta.name = info;
+        meta.input_dim = { l->w, l->h, l->c };
+        meta.output_dim = { l->out_w, l->out_h, l->out_c };
+        if (l->type == SOFTMAX)
+            meta.output_dim = { 1, 1, l->outputs };
+
+        meta.filter_dim = { l->size, l->size, l->c };
+        meta.filter_count = l->n;
+        layer_metas.push_back(meta);
     }
 
-    return layerNames;
+    return layer_metas;
 }
 
 float* run_net(float* indata)
@@ -156,6 +165,7 @@ vector<Mat> get_layer_activations(int layer_idx)
 
     layer* l = get_network_layer(net, layer_idx);
     if (l->type == REGION) return {};
+    if (l->type == ROUTE) return{};
 
     CV_Assert(l->batch == 1 && "TODO: support non-one batch");
     cuda_pull_array(l->output_gpu, l->output, l->outputs*l->batch);
@@ -187,7 +197,8 @@ vector<Mat> get_layer_weights(int layer_idx)
     vector<Mat> weights;
 
     layer* l = get_network_layer(net, layer_idx);
-    if (l->type == REGION) return {};
+    if (l->type == REGION) return{};
+    if (l->type == ROUTE) return {};
 
     if (l->type == CONNECTED)
     {
@@ -203,10 +214,10 @@ vector<Mat> get_layer_weights(int layer_idx)
     int h = l->size;
     int w = l->size;
     int c = l->c;
-    if (c > 10) c = 10;
+    //if (c > 999) c = 999;
     for (int i = 0; i < l->n; i++)
     {
-        weights[i] = float_to_mat(w, h, c, l->weights + w * h * c * i);
+        weights[i] = float_to_mat(w, h, c == 3 ? c : min(c, 800), l->weights + w * h * c * i);
     }
 
     return weights;
