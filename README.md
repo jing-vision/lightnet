@@ -28,7 +28,7 @@ Install NVIDIA SDK
 ----
 
 - CUDA 9.1: https://developer.nvidia.com/cuda-91-download-archive
-- cuDNN v7.x for CUDA: https://developer.nvidia.com/rdp/cudnn-download
+- cuDNN v7.x for CUDA 9.1: https://developer.nvidia.com/rdp/cudnn-archive
 
     -  Extract to the same folder as CUDA SDK
     -  e.g. `c:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\`
