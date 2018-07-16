@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <filesystem>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -21,7 +22,7 @@ const char* params =
 "{ help ?       | false             | print usage          }"
 "{ cfg          | cfg/darknet.cfg   | file contains model configuration }"
 "{ weights      | darknet.weights   | file contains model weights }"
-"{ names        | obj.names         | file contains a list of label names, will be displayer in softmax layer }"
+"{ names        | cfg/imagenet.shortnames.list | file contains a list of label names, will be displayer in softmax layer }"
 "{@source       | 0                 | source for processing   }"
 "{ w width      | 0                 | width of video or camera device}"
 "{ h height     | 0                 | height of video or camera device}"
@@ -102,6 +103,7 @@ int main(int argc, char **argv)
 
     auto cfg_path = parser.get<string>("cfg");
     auto weights_path = parser.get<string>("weights");
+    auto names_path = parser.get<string>("names");
 
     if (!fs::exists(cfg_path))
     {
@@ -114,6 +116,17 @@ int main(int argc, char **argv)
         cout << weights_path << " can't be found." << endl;
         parser.printMessage();
         return 0;
+    }
+
+    vector<string> obj_names;
+    if (fs::exists(names_path))
+    {
+        ifstream infile(names_path);
+        string line;
+        while (infile >> line)
+        {
+            obj_names.push_back(line);
+        }
     }
 
     Mat frame;
@@ -314,7 +327,6 @@ int main(int argc, char **argv)
                             Mat channels[] = { tensor_c0, tensor_c1, tensor_c2 };
                             cv::merge(channels, 3, tensor_rgb);
                         }
-
                         resize(tensor_rgb, panel.canvas(dst_area), dst_area.size(), 0, 0, INTER_NEAREST);
                     }
                 }
@@ -351,7 +363,6 @@ int main(int argc, char **argv)
                         current_filter_index++;
                         if (current_filter_index > int(layer_metas[current_layer_index].filter_dim[2] - 1)) current_filter_index = 0;
                     }
-
                 }
             }
         }

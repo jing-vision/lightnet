@@ -1,6 +1,10 @@
 #include "lightnet.h"
 #include <network.h>
 
+extern "C" {
+#include <utils.h>
+}
+
 using namespace std;
 using namespace cv;
 
@@ -164,7 +168,7 @@ vector<Mat> get_layer_activations(int layer_idx)
     vector<Mat> activations;
 
     layer* l = get_network_layer(net, layer_idx);
-    if (l->type == REGION) return {};
+    if (l->type == REGION) return{};
     if (l->type == ROUTE) return{};
 
     CV_Assert(l->batch == 1 && "TODO: support non-one batch");
@@ -199,7 +203,7 @@ vector<Mat> get_layer_weights(int layer_idx)
     layer* l = get_network_layer(net, layer_idx);
     if (l->type == REGION) return{};
     if (l->type == ROUTE) return{};
-    if (l->type == YOLO) return {};
+    if (l->type == YOLO) return{};
 
     if (l->type == CONNECTED)
     {
@@ -221,4 +225,12 @@ vector<Mat> get_layer_weights(int layer_idx)
     }
 
     return weights;
+}
+
+vector<int> top_k_indices(float *a, int n, int k)
+{
+    vector<int> indices(k);
+    top_k(a, n, k, indices.data());
+
+    return indices;
 }

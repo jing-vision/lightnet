@@ -29,3 +29,5 @@ struct LayerMeta
 std::vector<LayerMeta> get_layer_metas();
 std::vector<cv::Mat> get_layer_activations(int layer_idx);
 std::vector<cv::Mat> get_layer_weights(int layer_idx);
+
+std::vector<int> top_k_indices(float *a, int n, int k);
