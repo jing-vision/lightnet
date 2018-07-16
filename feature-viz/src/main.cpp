@@ -19,9 +19,9 @@ using namespace cv;
 
 const char* params =
 "{ help ?       | false             | print usage          }"
-"{ cfg          | cfg/darknet.cfg   | model configuration }"
-"{ weights      | darknet.weights   | model weights }"
-"{ names        | obj.names         | list of the object names }"
+"{ cfg          | cfg/darknet.cfg   | file contains model configuration }"
+"{ weights      | darknet.weights   | file contains model weights }"
+"{ names        | obj.names         | file contains a list of label names, will be displayer in softmax layer }"
 "{@source       | 0                 | source for processing   }"
 "{ w width      | 0                 | width of video or camera device}"
 "{ h height     | 0                 | height of video or camera device}"
