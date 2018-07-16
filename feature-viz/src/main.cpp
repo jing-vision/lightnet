@@ -40,7 +40,7 @@ bool is_fullscreen = false;
 #define APP_NAME "feature-viz"
 #define VER_MAJOR 0
 #define VER_MINOR 1
-#define VER_PATCH 6
+#define VER_PATCH 7
 
 #define TITLE APP_NAME " " CVAUX_STR(VER_MAJOR) "." CVAUX_STR(VER_MINOR) "." CVAUX_STR(VER_PATCH)
 
@@ -184,11 +184,6 @@ int main(int argc, char **argv)
             MTR_SCOPE(__FILE__, "run_net");
             tick.start();
             netoutdata = run_net(input_blob);
-            vector<float> result = { netoutdata, netoutdata + net_output_count };
-            int top_k = 5;
-            partial_sort(result.begin(), result.begin() + top_k, result.end(), [](float left, float right) -> bool {
-                return left > right;
-            });
             tick.stop();
             //cout << "forward fee: " << tick.getTimeMilli() << "ms" << endl;
         }
@@ -209,12 +204,12 @@ int main(int argc, char **argv)
                 const int btn_height = 30;
                 const int btn_cols = (panel.width - x) / btn_width;
 
+                const auto& meta = layer_metas[current_layer_index];
                 {
                     // meta data
                     char info[100];
                     cvui::text(panel.canvas, x, y+= dy_small, cfg_path);
                     cvui::text(panel.canvas, x, y += dy_small, weights_path);
-                    const auto& meta = layer_metas[current_layer_index];
                     sprintf(info, "%d filter(s) : %d x %d x %d", meta.filter_count, meta.filter_dim[0], meta.filter_dim[1], meta.filter_dim[2]);
                     cvui::text(panel.canvas, x, y += dy_small, info);
                     sprintf(info, "output: %d x %d x %d", meta.output_dim[0], meta.output_dim[1], meta.output_dim[2]);
@@ -260,6 +255,7 @@ int main(int argc, char **argv)
                         tensors = get_layer_activations(current_layer_index);
                     }
                     int channel_count = tensors.size();
+
                     int tensor_cols = sqrt(channel_count);
                     int tensor_rows = ceil(channel_count / (float)tensor_cols);
                     int cell_x0 = 30;
@@ -271,6 +267,31 @@ int main(int argc, char **argv)
                     if (cell_w > cell_h) cell_w = cell_h;
                     else cell_h = cell_w;
                     const int cell_spc = min(10, cell_w / 4);
+
+                    if (!mode && meta.name.find("Softmax") != string::npos)
+                    {
+                        vector<float> scores(channel_count);
+                        for (int i = 0; i < channel_count; i++)
+                        {
+                            scores[i] = tensors[i].at<float>(0);
+                        }
+                        int K = 5;
+                        top_indices = top_k_indices(scores.data(), channel_count, K);
+
+                        char info[100];
+                        for (int i = 0; i < K; i++)
+                        {
+                            if (K > obj_names.size() - 1)
+                            {
+                                sprintf(info, "%d: %.2f", top_indices[i], scores[top_indices[i]]);
+                            }
+                            else
+                            {
+                                sprintf(info, "%s: %.2f", obj_names[top_indices[i]].c_str(), scores[top_indices[i]]);
+                            }
+                            cvui::text(panel.canvas, 100, cell_y0 + 20 * i, info);
+                        }
+                    }
 
                     for (int i = 0; i < tensors.size(); i++)
                     {
@@ -332,7 +353,6 @@ int main(int argc, char **argv)
                 }
 
                 cvui::imshow(TITLE, panel.canvas);
-
                 {
                     MTR_SCOPE(__FILE__, "waitkey");
                     int key = waitKey(1);
@@ -356,12 +376,12 @@ int main(int argc, char **argv)
                     if (key == 'w')
                     {
                         current_filter_index--;
-                        if (current_filter_index < 0) current_filter_index = layer_metas[current_layer_index].filter_dim[2] - 1;
+                        if (current_filter_index < 0) current_filter_index = meta.filter_dim[2] - 1;
                     }
                     else if (key == 's')
                     {
                         current_filter_index++;
-                        if (current_filter_index > int(layer_metas[current_layer_index].filter_dim[2] - 1)) current_filter_index = 0;
+                        if (current_filter_index > int(meta.filter_dim[2] - 1)) current_filter_index = 0;
                     }
                 }
             }
