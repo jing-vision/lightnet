@@ -1,4 +1,5 @@
 #include <iostream>
+#include <filesystem>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -7,6 +8,8 @@
 #include "lightnet.h"
 #include "MiniTraceHelper.h"
 #include "VideoHelper.h"
+
+namespace fs = std::experimental::filesystem;
 
 #define CVUI_IMPLEMENTATION
 #include "cvui/cvui.h"
@@ -99,6 +102,19 @@ int main(int argc, char **argv)
 
     auto cfg_path = parser.get<string>("cfg");
     auto weights_path = parser.get<string>("weights");
+
+    if (!fs::exists(cfg_path))
+    {
+        cout << cfg_path << " can't be found." << endl;
+        parser.printMessage();
+        return 0;
+    }
+    if (!fs::exists(weights_path))
+    {
+        cout << weights_path << " can't be found." << endl;
+        parser.printMessage();
+        return 0;
+    }
 
     Mat frame;
 
