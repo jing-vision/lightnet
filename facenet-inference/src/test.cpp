@@ -3,21 +3,16 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
-#include <dlib/opencv.h>
-#include <dlib/image_processing.h>
-#include <dlib/image_processing/frontal_face_detector.h>
-#include "run_darknet.h"
+#include "lightnet.h"
 #include "face_io.h"
 #define CVUI_IMPLEMENTATION
-#include "cvui.h"
+#include "cvui/cvui.h"
 #include <pthread.h>
 #include <unistd.h>
 
 #define WINDOW_NAME "demo"
 
 cv::CascadeClassifier face_cascade;
-dlib::shape_predictor predictor;
-dlib::full_object_detection shape;
 int netinw = 0;
 int netinh = 0;
 int netinarea = 0;
@@ -48,7 +43,6 @@ double last_euler_angle[3];
 int savepic_idx;
 float *to_be_saved_embeddings;
 
-dlib::cv_image<unsigned char> dkgray;
 int puttext_countdown;
 char text_to_put[64];
 
@@ -223,7 +217,7 @@ void *convnet_thread_func
             {
             //size_t num_face = faces.size();
             //std::cout << std::endl << "[conv] num face:" << num_face << std::endl << std::endl;
-            usleep(1);
+            //usleep(1);
             //if (face_num > 0)
             if (is_start_calc_embeddings)
                 {
@@ -245,7 +239,7 @@ void *convnet_thread_func
             }
         else
             {
-            usleep(1);
+            //usleep(1);
             }
         }
     return 0;
@@ -258,8 +252,8 @@ void *main_thread_func
 {
     // 1. loading files
     face_cascade.load("weights/haarcascade_frontalface_alt2.xml");
-    dlib::deserialize("weights/shape_predictor_68_face_landmarks.dat") >> predictor;
-    init_net("weights/facenet.cfg", "weights/facenet.weights", &netinw, &netinh, &netoutc);
+    int netoutw, netouth;
+    init_net("weights/facenet.cfg", "weights/facenet.weights", &netinw, &netinh, &netoutw, &netouth, &netoutc);
     load_embeddings(netoutc);
 
     std::cout << "netinw: " << netinw << " netinh: " << netinh << " netoutc: " << netoutc << std::endl;
@@ -333,16 +327,18 @@ void *main_thread_func
         {
         cap >> im;
         cv::cvtColor(im, gray, CV_BGR2GRAY);
-        dkgray = dlib::cv_image<unsigned char>(gray);
+        //dkgray = dlib::cv_image<unsigned char>(gray);
         face_cascade.detectMultiScale(gray, faces, 1.2, 3, CV_HAAR_SCALE_IMAGE | CV_HAAR_FIND_BIGGEST_OBJECT, cv::Size(160, 160), cv::Size(400, 400));
         face_num = faces.size();
         if (face_num > 0)
             {
+#if 0
             dlib::rectangle dkrect(faces[0].x, faces[0].y, faces[0].x + faces[0].width, faces[0].y + faces[0].height);
             shape = predictor(dkgray, dkrect);
             currentface_pts[0] = cv::Point2f(shape.part(39).x(), shape.part(39).y());       // left inner eye corner
             currentface_pts[1] = cv::Point2f(shape.part(42).x(), shape.part(42).y());       // right inner eye corner
             currentface_pts[2] = cv::Point2f(shape.part(57).x(), shape.part(57).y());       // bottom mouth corner
+#endif
             cv::Mat tofront_H = cv::getAffineTransform(currentface_pts, frontface_pts);
             cv::warpAffine(gray, warped_gray, tofront_H, cv::Size(netinw, netinw));
             is_start_calc_embeddings = 1;
@@ -442,7 +438,7 @@ void *main_thread_func
 
     is_run_convnet_thread = 0;
     face_num = 0;
-    free_net();
+    //free_net();
     free_embedddings();
     delete [] netsrc;
     delete [] embeddings;

@@ -3,8 +3,8 @@
 #include <string.h>
 #include <math.h>
 #include <sys/stat.h>
+#include <direct.h>
 #include "face_io.h"
-
 
 static int num_user;
 static char **user_names;
@@ -70,12 +70,11 @@ unsigned char add_newuser
     FILE *fp;
     char namebuf[BUFLEN] = {'\0'};
     char dirbuf[BUFLEN] = {'\0'};
-    int namelen = 0;
     int i = 0;
-    fp = popen("zenity --entry --text \"Please enter user name\"", "r");
+    fp = fopen("zenity --entry --text \"Please enter user name\"", "r");
     fgets(namebuf, BUFLEN, fp);
-    pclose(fp);
-    namelen = strlen(namebuf);
+    fclose(fp);
+    size_t namelen = strlen(namebuf);
     namebuf[namelen - 1] = '\0';
     for (i = 0; i < num_user; ++i)
         {
@@ -93,7 +92,7 @@ unsigned char add_newuser
     memcpy(user_names[num_user], namebuf, namelen * sizeof(char));
     ++num_user;
     sprintf(dirbuf, "data/%s", namebuf);
-    mkdir(dirbuf, 0755);
+    mkdir(dirbuf);
     return 1;
 }
 
