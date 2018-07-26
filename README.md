@@ -109,12 +109,7 @@ Object Detection - train yolo v2 network
 
 3. Run `my-yolo-net/train.cmd`
 
-Object Detection - explanation of training output
-===
-
-https://github.com/rafaelpadilla/darknet#faq_yolo
-
-Object detection - train yolo v3 network
+Object Detection - train yolo v3 network
 ====
 
 0. Fork `__template-yolov3` to `my-yolo-net`
@@ -196,3 +191,10 @@ How to fine tune a existing network?
 https://github.com/pjreddie/darknet/wiki/YOLO:-Real-Time-Object-Detection
 
 darknet.exe partial cfg/darknet19_448.cfg darknet19_448.weights darknet19_448.conv.23 23
+
+Explanation of yolo training output
+----
+
+https://github.com/rafaelpadilla/darknet#faq_yolo
+
+
