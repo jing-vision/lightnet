@@ -109,6 +109,11 @@ Object Detection - train yolo v2 network
 
 3. Run `my-yolo-net/train.cmd`
 
+Object Detection - explanation of training output
+===
+
+https://github.com/rafaelpadilla/darknet#faq_yolo
+
 Object detection - train yolo v3 network
 ====
 
