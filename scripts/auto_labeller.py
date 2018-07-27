@@ -70,14 +70,12 @@ def main():
     config._sections['net1']['subdivisions'] = 4
     config._sections['net1']['max_batches'] = 10000
 
-    if 'cost28' in config._sections:
-        # darknet-19
-        config._sections['convolutional25']['filters'] = num_classes
-    elif 'cost80' in config._sections:
-        # darknet-53
-        config._sections['convolutional78']['filters'] = num_classes
-    else:
-        raise Exception("Unknow classifier network")
+    for key in reversed(config._sections):
+        # find the last CONV layer
+        if 'convolutional' in key:
+            # modify its filters field
+            config._sections[key]['filters'] = num_classes
+            break
 
     with open(obj_cfg, 'w') as configfile:
         for key in config._sections:
