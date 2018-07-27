@@ -7,9 +7,6 @@
 [submodule "modules/yolo2_light"]
 	path = modules/yolo2_light
 	url = https://github.com/jing-vision/yolo2_light.git
-[submodule "modules/Augmentor"]
-	path = modules/Augmentor
-	url = https://github.com/jing-vision/Augmentor.git
 [submodule "modules/darknet"]
 	path = modules/darknet
 	url = https://github.com/jing-vision/darknet.git

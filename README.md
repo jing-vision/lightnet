@@ -15,7 +15,6 @@ How to read the source code
 
 This project is dependent on a few open-source projects:
 - modules/darknet - the main engine for training & inferencing.
-- modules/Augmentor - image augmentation library in Python.
 - modules/Yolo_mark - the toolkit to prepare training data for object detection.
 - modules/yolo2_light - lightweighted inferencing engine [optional].
 - modules/cvui - lightweighted GUI based purely on OpenCV.
