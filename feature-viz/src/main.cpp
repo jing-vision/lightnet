@@ -281,9 +281,9 @@ int main(int argc, char **argv)
                         char info[100];
                         for (int i = 0; i < K; i++)
                         {
-                            if (K > obj_names.size() - 1)
+                            if (obj_names.empty() || K > obj_names.size() - 1)
                             {
-                                sprintf(info, "%d: %.2f", top_indices[i], scores[top_indices[i]]);
+                                sprintf(info, "#%d: %.2f", top_indices[i], scores[top_indices[i]]);
                             }
                             else
                             {
