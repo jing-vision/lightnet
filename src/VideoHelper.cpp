@@ -45,7 +45,7 @@ VideoCapture safe_open_video(const CommandLineParser &parser, const String &sour
 
         if (parser.has("video_pos"))
         {
-            auto video_pos = parser.has("video_pos");
+            auto video_pos = parser.get<int>("video_pos");
             if (video_pos > 0)
             {
                 if (!cap.set(CAP_PROP_POS_MSEC, video_pos))
