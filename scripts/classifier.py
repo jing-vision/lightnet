@@ -26,16 +26,15 @@ if __name__ == "__main__":
 
     if args.image is not None:
         if True:
-            frame = cv.imread(lightnet.to_str(
-                'test.jpg'))
+            frame = cv.imread(lightnet.to_str(args.image))
             im, arr = darknet.array_to_image(frame)
             darknet.rgbgr_image(im)
         else:
-            im = darknet.load_image(lightnet.to_str(
-                'test.jpg', True), 0, 0)
+            im = darknet.load_image(lightnet.to_str(args.image, True), 0, 0)
 
         r = darknet.classify(net, meta, im)
-        print(r)
+        for label, score in r[:args.top_k]:
+            print(label, score)
     else:
         cap = cv.VideoCapture(args.camera)
         if not cap.isOpened():

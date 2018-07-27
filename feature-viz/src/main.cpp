@@ -275,7 +275,7 @@ int main(int argc, char **argv)
                         {
                             scores[i] = tensors[i].at<float>(0);
                         }
-                        int K = 5;
+                        int K = 10;
                         top_indices = top_k_indices(scores.data(), channel_count, K);
 
                         char info[100];
