@@ -7,46 +7,22 @@
 #define KNN_NUM 10              // KNN's K
 #define MAX_NUM_RECOGNITION 3   // max number of face to recognize simultaneously
 
-int get_num_user
-    (
-    void
-    );
+int get_num_user();
 
-const char *get_username_by_idx
-    (
-    const int idx
-    );
+const char *get_username_by_idx(const int idx);
 
-const char *get_new_username
-    (
-    void
-    );
+const char *get_new_username();
 
-unsigned char add_newuser
-    (
-    void
-    );
+unsigned char add_newuser();
 
-void save_embeddings
-    (
-    const char *usrname,
+void save_embeddings(const char *usrname,
     const float *alldata,
-    const int LEN
-    );
+    const int LEN);
 
-void load_embeddings
-    (
-    const int LEN
-    );
+void load_embeddings(const int LEN);
 
-int run_embeddings_knn
-    (
-    const float *src,
+int run_embeddings_knn(const float *src,
     const int LEN,
-    float *confidence
-    );
+    float *confidence);
 
-void free_embedddings
-    (
-    void
-    );
+void free_embedddings();

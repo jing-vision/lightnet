@@ -51,7 +51,7 @@ solution "native-app"
 
     project "native-app"
         kind "ConsoleApp"
-        debugdir "../bin"        
+        debugdir "../bin"
         includedirs {
             "../modules",
             "../modules/darknet/3rdparty/include",

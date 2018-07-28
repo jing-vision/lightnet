@@ -24,6 +24,7 @@ solution "facenet"
     configuration "x64"
         libdirs {
             "../bin",
+            "../modules/darknet/3rdparty/lib/x64",
             path.join(OPENCV_PATH, "x64/vc14/lib")
         }
         targetdir ("../bin/")
@@ -51,6 +52,7 @@ solution "facenet"
 
     project "facenet"
         kind "ConsoleApp"
+        debugdir "../bin"
         includedirs {
             "../modules",
             "../modules/darknet/3rdparty/include",
@@ -65,6 +67,9 @@ solution "facenet"
             "../src/**",
             "../modules/minitrace/**",
             "../modules/PDollar/**",
+        }
+        links {
+            "pthreadVC2"
         }
         configuration "Debug"
             links {
