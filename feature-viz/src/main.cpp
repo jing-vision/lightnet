@@ -275,13 +275,13 @@ int main(int argc, char **argv)
                         {
                             scores[i] = tensors[i].at<float>(0);
                         }
-                        int K = 10;
+                        int K = min(channel_count, 10);
                         top_indices = top_k_indices(scores.data(), channel_count, K);
 
                         char info[100];
                         for (int i = 0; i < K; i++)
                         {
-                            if (obj_names.empty() || K > obj_names.size() - 1)
+                            if (obj_names.empty() || K > obj_names.size())
                             {
                                 sprintf(info, "#%d: %.2f", top_indices[i], scores[top_indices[i]]);
                             }
