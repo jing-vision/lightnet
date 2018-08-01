@@ -44,10 +44,14 @@ if __name__ == "__main__":
         im, arr = darknet.array_to_image(frame)
         darknet.rgbgr_image(im)
         results = darknet.classify(net, meta, im)
+
+        top_k = args.top_k
+        if top_k >= len(results):
+            top_k = len(results)
         # print(r[0])
 
         if results[0][1] > args.display_confidence:
-            for rank in range(0, args.top_k):
+            for rank in range(0, top_k):
                 left = 10
                 top = 20 + rank * 20
                 (label, score) = results[rank]
