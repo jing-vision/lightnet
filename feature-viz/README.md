@@ -1,15 +1,14 @@
 How to build
 ====
 
-- Execute `build.bat`, making sure there is no error.
+- Execute `build.bat` in the root folder, make sure there is no error.
 - Download `premake` from https://premake.github.io/download.html
-- enter `feature-viz` folder, execute `premake5 vs2015`
-- open `feature-viz\vs2015\feature-viz.sln` and build
+- Enter `feature-viz` folder, execute `premake5 vs2015`
+- Open `feature-viz\vs2015\feature-viz.sln` and build
 - Read `feature-viz\README.md` for usages
 
 How to use
 ====
-
 ```
 feature-viz.exe -cfg=cfg\alexnet.cfg -weights=alexnet.weights
 feature-viz.exe -cfg=cfg\darknet.cfg -weights=darknet.weights
