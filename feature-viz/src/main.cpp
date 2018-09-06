@@ -9,6 +9,7 @@
 #include "lightnet.h"
 #include "MiniTraceHelper.h"
 #include "VideoHelper.h"
+#include "os_hal.h"
 
 namespace fs = std::experimental::filesystem;
 
@@ -19,13 +20,13 @@ using namespace std;
 using namespace cv;
 
 const char* params =
-"{ help ?       | false             | print usage          }"
+"{ h help ?     | false             | print usage          }"
 "{ cfg          | cfg/darknet.cfg   | file contains model configuration }"
 "{ weights      | darknet.weights   | file contains model weights }"
 "{ names        | cfg/imagenet.shortnames.list | file contains a list of label names, will be displayer in softmax layer }"
 "{@source       | 0                 | source for processing   }"
-"{ w width      | 0                 | width of video or camera device}"
-"{ h height     | 0                 | height of video or camera device}"
+"{ width        | 0                 | width of video or camera device}"
+"{ height       | 0                 | height of video or camera device}"
 "{ g gui        | true              | show gui, press g to toggle }"
 "{ f fullscreen | false             | show in fullscreen, press f to toggle }"
 "{ fps          | 0                 | fps of video or camera device }"
@@ -50,15 +51,22 @@ struct ControlPanel
     ControlPanel()
     {
         cvui::init(TITLE);
+
+        getScreenResolution(width, height);
+        width -= 100;
+        height -= 50;
+        canvas = cv::Mat(height, width, CV_8UC3);
     }
 
     void update()
     {
+        // DEPRECATED
         int x = 10;
         int y = 0;
         int dy_small = 16;
         int dy_large = 50;
         int width = 300;
+
         canvas = cv::Scalar(49, 52, 49);
 
         cvui::button(canvas, x, y += dy_large, "max_layer");
@@ -67,9 +75,9 @@ struct ControlPanel
         cvui::imshow(TITLE, canvas);
     }
 
-    const int width = 1800;
-    const int height = 1080;
-    cv::Mat canvas = cv::Mat(height, width, CV_8UC3);
+    cv::Mat canvas;
+    int width = 1024;
+    int height = 768;
 
     // param
     bool dream = false;
@@ -99,6 +107,7 @@ int main(int argc, char **argv)
     }
 
     ControlPanel panel;
+
     MiniTraceHelper _;
 
     auto cfg_path = parser.get<string>("cfg");
