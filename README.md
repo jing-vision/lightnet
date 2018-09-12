@@ -178,6 +178,10 @@ Image Classification - train darknet19_448 network
 Human Pose Estimation - inference w/ pre-trained weights
 ====
 
+This project lives in [DancingGaga](https://github.com/jing-interactive/DancingGaga)
+
+For more details, please check the README there.
+
 <b>[Weight file] (darknet version openpose.weight)</b><p>
 https://drive.google.com/open?id=1BfY0Hx2d2nm3I4JFh0W1cK2aHD1FSGea
   
