@@ -1,4 +1,4 @@
-# openpose-darknet
+# jing-pose
 Openpose implementation using darknet framework
 
 <b>[Openpose]</b><p>
@@ -17,9 +17,9 @@ https://drive.google.com/open?id=1BfY0Hx2d2nm3I4JFh0W1cK2aHD1FSGea
   
 <b>[Usage] in bin/ folder</b><p>
 ```Bash
-openpose.exe [image file] [cfg file] [weight file]
+jing-pose.exe -cfg=[image file] -weights=[cfg file] [weight file]
 #example
-openpose.exe openpose.cfg openpose.weight data/person.jpg
+jing-pose.exe -cfg=openpose.cfg -weights=openpose.weight data/person.jpg
 ```
 
 <b>[note]</b><p>
