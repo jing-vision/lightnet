@@ -57,7 +57,7 @@ solution "feature-viz"
             "../modules/darknet/3rdparty/include",
             "../modules/darknet/src",
             "src",
-            "../src",
+            "../include",
             path.join("$(CUDA_PATH)", "include"),
             path.join(OPENCV_PATH, "include")
         }
