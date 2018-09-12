@@ -1,0 +1,14 @@
+{
+	"files.exclude": {
+		"**/img": true,
+		"**/img_raw": true,
+		"**/weights": true,
+		"**/x64": true,
+	},
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {}
+}
