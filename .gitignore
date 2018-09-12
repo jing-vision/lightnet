@@ -36,7 +36,6 @@
 
 /darknet_vs/x64/
 /darknet_vs/bin/
-/scripts/img/
 
 *.suo
 *.user
@@ -56,4 +55,15 @@
 */vs2015/
 
 ==*/
+
+# scripts folder
 /scripts/darknet.py
+/scripts/*.gif
+/scripts/*.png
+/scripts/*.jpg
+/scripts/*.mp4
+/scripts/img/
+
+obj.data
+obj.names
+train.txt
