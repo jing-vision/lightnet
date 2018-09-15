@@ -18,7 +18,10 @@ This project is dependent on a few open-source projects:
 - modules/Yolo_mark - the toolkit to prepare training data for object detection.
 - modules/yolo2_light - lightweighted inferencing engine [optional].
 - modules/cvui - lightweighted GUI based purely on OpenCV.
-- jing-pose - Openpose implementation using darknet framework.
+- moudles/pytorch-caffe-darknet-convert - DL framework model converter
+- modules/minitrace - library to generate tracing logs for Chrome "about:tracing"
+- modules/readerwriterqueue - single-producer, single-consumer lock-free queue for C++
+- modules/bhtsne - Barnes-Hut implementation of the t-SNE algorithm
 
 How to build from Visual Studio 2015
 ====
