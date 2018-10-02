@@ -169,7 +169,19 @@ vector<Mat> get_layer_activations(int layer_idx)
 
     layer* l = get_network_layer(net, layer_idx);
     if (l->type == REGION) return{};
-    if (l->type == ROUTE) return{};
+    if (l->type == ROUTE)
+    {
+        for (int i = 0; i < l->n; i++)
+        {
+            int index = l->input_layers[i];
+            int input_size = l->input_sizes[i];
+            auto acts = get_layer_activations(index);
+            for (auto& act : acts)
+            {
+                activations.emplace_back(act);
+            }
+        }
+    }
 
     CV_Assert(l->batch == 1 && "TODO: support non-one batch");
     cuda_pull_array(l->output_gpu, l->output, l->outputs*l->batch);
