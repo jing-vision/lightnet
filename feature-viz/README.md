@@ -17,11 +17,16 @@ feature-viz.exe -cfg=cfg\darknet19_448.cfg -weights=darknet19_448.weights
 feature-viz.exe -cfg=cfg\extraction.cfg -weights=extraction.weights
 feature-viz.exe -cfg=cfg\vgg-conv.cfg -weights=vgg-conv.weights
 feature-viz.exe -cfg=cfg\vgg-16.cfg -weights=vgg-16.weights
-feature-viz.exe -cfg=..\jing-pose\openpose.cfg -weights=openpose.weight
+
 feature-viz.exe -cfg=cfg\yolo9000.cfg -weights=yolo9000.weights -names=cfg\9k.names
 feature-viz.exe -cfg=cfg\yolov2.cfg -weights=yolov2.weights
 feature-viz.exe -cfg=cfg\yolov3.cfg -weights=yolov3.weights -names=cfg\coco.names
-feature-viz.exe -cfg=..\..\openpose\models\pose\body_25\body_25.cfg -weights=..\..\openpose\models\pose\body_25\body_25.weights
+
+feature-viz.exe -cfg=..\..\DancingGaga\bin\openpose.cfg -weights=..\..\DancingGaga\bin\openpose.weight
+feature-viz.exe -cfg=..\..\DancingGaga\coco.cfg -weights=..\..\DancingGaga\coco.weight
+feature-viz.exe -cfg=..\..\DancingGaga\mpi.cfg -weights=..\..\DancingGaga\mpi.weight
+feature-viz.exe -cfg=..\..\DancingGaga\body_25.cfg -weights=..\..\DancingGaga\body_25.weight
+
 feature-viz.exe -cfg=..\==nike_darknet19_448\obj.cfg -weights=..\==nike_darknet19_448\weights\obj_300.weights ..\==nike_darknet19_448\test.jpg
 ```
 
