@@ -38,17 +38,12 @@
   <ItemGroup>
     <ClCompile Include="..\modules\darknet\src\activations.c" />
     <ClCompile Include="..\modules\darknet\src\activation_layer.c" />
-    <ClCompile Include="..\modules\darknet\src\art.c" />
     <ClCompile Include="..\modules\darknet\src\avgpool_layer.c" />
     <ClCompile Include="..\modules\darknet\src\batchnorm_layer.c" />
     <ClCompile Include="..\modules\darknet\src\blas.c" />
     <ClCompile Include="..\modules\darknet\src\box.c" />
-    <ClCompile Include="..\modules\darknet\src\captcha.c" />
-    <ClCompile Include="..\modules\darknet\src\cifar.c" />
     <ClCompile Include="..\modules\darknet\src\classifier.c" />
-    <ClCompile Include="..\modules\darknet\src\coco.c" />
     <ClCompile Include="..\modules\darknet\src\col2im.c" />
-    <ClCompile Include="..\modules\darknet\src\compare.c" />
     <ClCompile Include="..\modules\darknet\src\connected_layer.c" />
     <ClCompile Include="..\modules\darknet\src\convolutional_layer.c" />
     <ClCompile Include="..\modules\darknet\src\cost_layer.c" />
@@ -56,18 +51,13 @@
     <ClCompile Include="..\modules\darknet\src\crnn_layer.c" />
     <ClCompile Include="..\modules\darknet\src\crop_layer.c" />
     <ClCompile Include="..\modules\darknet\src\cuda.c" />
-    <ClCompile Include="..\modules\darknet\src\darknet.c" />
     <ClCompile Include="..\modules\darknet\src\data.c" />
     <ClCompile Include="..\modules\darknet\src\deconvolutional_layer.c" />
-    <ClCompile Include="..\modules\darknet\src\demo.c" />
     <ClCompile Include="..\modules\darknet\src\detection_layer.c" />
-    <ClCompile Include="..\modules\darknet\src\detector.c" />
-    <ClCompile Include="..\modules\darknet\src\dice.c" />
     <ClCompile Include="..\modules\darknet\src\dropout_layer.c" />
     <ClCompile Include="..\modules\darknet\src\gemm.c" />
     <ClCompile Include="..\modules\darknet\src\getopt.c" />
     <ClCompile Include="..\modules\darknet\src\gettimeofday.c" />
-    <ClCompile Include="..\modules\darknet\src\go.c" />
     <ClCompile Include="..\modules\darknet\src\gru_layer.c" />
     <ClCompile Include="..\modules\darknet\src\http_stream.cpp" />
     <ClCompile Include="..\modules\darknet\src\im2col.c" />
@@ -78,31 +68,79 @@
     <ClCompile Include="..\modules\darknet\src\matrix.c" />
     <ClCompile Include="..\modules\darknet\src\maxpool_layer.c" />
     <ClCompile Include="..\modules\darknet\src\network.c" />
-    <ClCompile Include="..\modules\darknet\src\nightmare.c" />
     <ClCompile Include="..\modules\darknet\src\normalization_layer.c" />
     <ClCompile Include="..\modules\darknet\src\option_list.c" />
     <ClCompile Include="..\modules\darknet\src\parser.c" />
     <ClCompile Include="..\modules\darknet\src\region_layer.c" />
     <ClCompile Include="..\modules\darknet\src\reorg_layer.c" />
     <ClCompile Include="..\modules\darknet\src\reorg_old_layer.c" />
-    <ClCompile Include="..\modules\darknet\src\rnn.c" />
     <ClCompile Include="..\modules\darknet\src\rnn_layer.c" />
-    <ClCompile Include="..\modules\darknet\src\rnn_vid.c" />
     <ClCompile Include="..\modules\darknet\src\route_layer.c" />
     <ClCompile Include="..\modules\darknet\src\shortcut_layer.c" />
     <ClCompile Include="..\modules\darknet\src\softmax_layer.c" />
-    <ClCompile Include="..\modules\darknet\src\super.c" />
-    <ClCompile Include="..\modules\darknet\src\swag.c" />
-    <ClCompile Include="..\modules\darknet\src\tag.c" />
     <ClCompile Include="..\modules\darknet\src\tree.c" />
     <ClCompile Include="..\modules\darknet\src\upsample_layer.c" />
     <ClCompile Include="..\modules\darknet\src\utils.c" />
-    <ClCompile Include="..\modules\darknet\src\voxel.c" />
-    <ClCompile Include="..\modules\darknet\src\writing.c" />
-    <ClCompile Include="..\modules\darknet\src\yolo.c" />
     <ClCompile Include="..\modules\darknet\src\yolo_layer.c" />
     <ClCompile Include="..\modules\darknet\src\yolo_v2_class.cpp" />
     <ClCompile Include="..\modules\darknet\src\yolo_v2_class.hpp" />
+    <ClCompile Include="..\modules\darknet\src\captcha.c">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\darknet\src\art.c">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\darknet\src\cifar.c">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\darknet\src\coco.c">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\darknet\src\compare.c">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\darknet\src\darknet.c">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\darknet\src\demo.c">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\darknet\src\detector.c">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\darknet\src\dice.c">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\darknet\src\go.c">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\darknet\src\nightmare.c">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\darknet\src\rnn.c">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\darknet\src\super.c">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\darknet\src\swag.c">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\darknet\src\voxel.c">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\darknet\src\writing.c">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\darknet\src\yolo.c">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\darknet\src\rnn_vid.c">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\darknet\src\tag.c">
+      <Filter>app</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\modules\darknet\src\activations.h" />
@@ -121,7 +159,6 @@
     <ClInclude Include="..\modules\darknet\src\cuda.h" />
     <ClInclude Include="..\modules\darknet\src\data.h" />
     <ClInclude Include="..\modules\darknet\src\deconvolutional_layer.h" />
-    <ClInclude Include="..\modules\darknet\src\demo.h" />
     <ClInclude Include="..\modules\darknet\src\detection_layer.h" />
     <ClInclude Include="..\modules\darknet\src\dropout_layer.h" />
     <ClInclude Include="..\modules\darknet\src\gemm.h" />
@@ -154,10 +191,16 @@
     <ClInclude Include="..\modules\darknet\src\upsample_layer.h" />
     <ClInclude Include="..\modules\darknet\src\utils.h" />
     <ClInclude Include="..\modules\darknet\src\yolo_layer.h" />
+    <ClInclude Include="..\modules\darknet\src\demo.h">
+      <Filter>app</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="cuda">
       <UniqueIdentifier>{fc9fee3f-57ba-4239-ae26-213e9a768442}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="app">
+      <UniqueIdentifier>{65a1b480-58d7-4f93-9e32-842c6c2d6b87}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
