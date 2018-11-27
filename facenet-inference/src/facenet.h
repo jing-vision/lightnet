@@ -1,5 +1,8 @@
 #pragma once
 
+#include "lightnet.h"
+#include <opencv2/core.hpp>
+
 #define MAX_NUM_USER 100
 #define DISTANCE_TH 0.7f
 #define BUFLEN 64               // limit of name length, nothing special
@@ -26,3 +29,5 @@ int run_embeddings_knn(const float *src,
     float *confidence);
 
 void free_embedddings();
+
+void calc_embeddings(cv::Mat& aligned_im, float* netsrc, int netinarea, int netoutc, double epislon, float* embeddings);

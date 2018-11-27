@@ -64,6 +64,7 @@ solution "facenet"
         }
         files { 
             "src/**",
+            "../include/**",
             "../src/**",
             "../modules/minitrace/**",
             "../modules/PDollar/**",
