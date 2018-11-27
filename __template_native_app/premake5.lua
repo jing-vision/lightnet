@@ -63,6 +63,7 @@ solution "native-app"
         }
         files { 
             "src/**",
+            "../include/**",
             "../src/**",
             "../modules/minitrace/**",
             "../modules/PDollar/**",
