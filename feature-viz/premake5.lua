@@ -54,8 +54,9 @@ solution "feature-viz"
         kind "ConsoleApp"
         includedirs {
             "../modules",
+            "../modules/darknet/include",
             "../modules/darknet/3rdparty/include",
-            "../modules/darknet/src",
+            -- "../modules/darknet/src",
             "src",
             "../include",
             path.join("$(CUDA_PATH)", "include"),

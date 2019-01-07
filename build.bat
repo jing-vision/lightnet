@@ -1,16 +1,17 @@
+set msbuild_exe="c:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin\amd64\MSBuild.exe"
 REM =========================
 REM Build
 REM =========================
 
-msbuild darknet_vs\darknet.sln /p:Configuration=Release /p:Platform=x64 /v:minimal /m
-REM msbuild darknet_vs\darknet.sln /p:Configuration=Release-CPU /p:Platform=x64 /v:minimal /m
+%msbuild_exe% darknet_vs\darknet.sln /p:Configuration=Release /p:Platform=x64 /v:minimal /m
+REM %msbuild_exe% darknet_vs\darknet.sln /p:Configuration=Release-CPU /p:Platform=x64 /v:minimal /m
 
-msbuild darknet_vs\yolo_cpp_dll.sln /p:Configuration=Release /p:Platform=x64 /v:minimal /m
-msbuild darknet_vs\yolo_cpp_dll.sln /p:Configuration=Debug /p:Platform=x64 /v:minimal /m
-REM msbuild darknet_vs\yolo_cpp_dll.sln /p:Configuration=Release-CPU /p:Platform=x64 /v:minimal /m
+%msbuild_exe% darknet_vs\yolo_cpp_dll.sln /p:Configuration=Release /p:Platform=x64 /v:minimal /m
+%msbuild_exe% darknet_vs\yolo_cpp_dll.sln /p:Configuration=Debug /p:Platform=x64 /v:minimal /m
+REM %msbuild_exe% darknet_vs\yolo_cpp_dll.sln /p:Configuration=Release-CPU /p:Platform=x64 /v:minimal /m
 
-msbuild modules\Yolo_mark\yolo_mark.sln /p:Configuration=Release /p:Platform=x64 /v:minimal /m
-REM msbuild modules\yolo2_light\yolo_gpu.sln /p:Configuration=Release /p:Platform=x64 /v:minimal /m
+%msbuild_exe% modules\Yolo_mark\yolo_mark.sln /p:Configuration=Release /p:Platform=x64 /v:minimal /m
+REM %msbuild_exe% modules\yolo2_light\yolo_gpu.sln /p:Configuration=Release /p:Platform=x64 /v:minimal /m
 
 REM =========================
 REM Deploy to bin/

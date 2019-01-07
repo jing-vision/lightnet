@@ -54,7 +54,7 @@ solution "deep-dream"
         includedirs {
             "../modules",
             "../modules/darknet/3rdparty/include",
-            "../modules/darknet/src",
+            "../modules/darknet/include",
             "src",
             "../include",
             path.join("$(CUDA_PATH)", "include"),

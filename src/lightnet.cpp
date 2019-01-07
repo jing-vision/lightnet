@@ -1,9 +1,5 @@
 #include "lightnet.h"
-#include <network.h>
-
-extern "C" {
-#include <utils.h>
-}
+#include <darknet.h>
 
 using namespace std;
 using namespace cv;

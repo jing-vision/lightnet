@@ -54,8 +54,8 @@ solution "native-app"
         debugdir "../bin"
         includedirs {
             "../modules",
+            "../modules/darknet/include",
             "../modules/darknet/3rdparty/include",
-            "../modules/darknet/src",
             "src",
             "../include",
             path.join("$(CUDA_PATH)", "include"),
