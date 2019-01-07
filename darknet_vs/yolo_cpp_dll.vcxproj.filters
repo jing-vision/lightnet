@@ -83,7 +83,6 @@
     <ClCompile Include="..\modules\darknet\src\utils.c" />
     <ClCompile Include="..\modules\darknet\src\yolo_layer.c" />
     <ClCompile Include="..\modules\darknet\src\yolo_v2_class.cpp" />
-    <ClCompile Include="..\modules\darknet\src\yolo_v2_class.hpp" />
     <ClCompile Include="..\modules\darknet\src\captcha.c">
       <Filter>app</Filter>
     </ClCompile>

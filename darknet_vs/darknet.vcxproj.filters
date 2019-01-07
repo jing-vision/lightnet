@@ -177,9 +177,6 @@
     <ClCompile Include="..\modules\darknet\src\yolo.c">
       <Filter>examples</Filter>
     </ClCompile>
-    <ClCompile Include="..\modules\darknet\src\yolo_v2_class.cpp">
-      <Filter>examples</Filter>
-    </ClCompile>
     <ClCompile Include="..\modules\darknet\src\rnn.c">
       <Filter>examples</Filter>
     </ClCompile>
