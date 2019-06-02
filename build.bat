@@ -21,7 +21,7 @@ REM =========================
 REM robocopy darknet_vs\bin\ bin\ *.exe
 REM robocopy darknet_vs\bin\ bin\ *.lib
 
-robocopy modules\darknet\build\darknet\x64\ bin\ pthreadVC2.dll
+robocopy modules\darknet\3rdparty\pthreads\bin\ bin\ pthreadVC2.dll
 
 robocopy modules\darknet\cfg bin\cfg /E
 robocopy modules\darknet\data bin\data /E

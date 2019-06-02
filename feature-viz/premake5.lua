@@ -55,7 +55,8 @@ solution "feature-viz"
         includedirs {
             "../modules",
             "../modules/darknet/include",
-            "../modules/darknet/3rdparty/include",
+            "../modules/darknet/3rdparty/pthreads/include",
+            "../modules/darknet/3rdparty/stb/include",
             -- "../modules/darknet/src",
             "src",
             "../include",
