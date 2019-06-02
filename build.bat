@@ -1,4 +1,5 @@
-set msbuild_exe="c:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin\amd64\MSBuild.exe"
+REM set msbuild_exe="c:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin\amd64\MSBuild.exe"
+set msbuild_exe="C:\Program Files (x86)\MSBuild\14.0\Bin\amd64\MSBuild.exe"
 REM =========================
 REM Build
 REM =========================
