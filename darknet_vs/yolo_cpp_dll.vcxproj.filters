@@ -50,7 +50,6 @@
     <ClCompile Include="..\modules\darknet\src\cpu_gemm.c" />
     <ClCompile Include="..\modules\darknet\src\crnn_layer.c" />
     <ClCompile Include="..\modules\darknet\src\crop_layer.c" />
-    <ClCompile Include="..\modules\darknet\src\cuda.c" />
     <ClCompile Include="..\modules\darknet\src\data.c" />
     <ClCompile Include="..\modules\darknet\src\deconvolutional_layer.c" />
     <ClCompile Include="..\modules\darknet\src\detection_layer.c" />
@@ -82,7 +81,6 @@
     <ClCompile Include="..\modules\darknet\src\upsample_layer.c" />
     <ClCompile Include="..\modules\darknet\src\utils.c" />
     <ClCompile Include="..\modules\darknet\src\yolo_layer.c" />
-    <ClCompile Include="..\modules\darknet\src\yolo_v2_class.cpp" />
     <ClCompile Include="..\modules\darknet\src\captcha.c">
       <Filter>app</Filter>
     </ClCompile>
@@ -140,6 +138,10 @@
     <ClCompile Include="..\modules\darknet\src\tag.c">
       <Filter>app</Filter>
     </ClCompile>
+    <ClCompile Include="..\modules\darknet\src\lstm_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\conv_lstm_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\dark_cuda.c" />
+    <ClCompile Include="..\modules\darknet\src\image_opencv.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\modules\darknet\src\activations.h" />
@@ -155,7 +157,6 @@
     <ClInclude Include="..\modules\darknet\src\cost_layer.h" />
     <ClInclude Include="..\modules\darknet\src\crnn_layer.h" />
     <ClInclude Include="..\modules\darknet\src\crop_layer.h" />
-    <ClInclude Include="..\modules\darknet\src\cuda.h" />
     <ClInclude Include="..\modules\darknet\src\data.h" />
     <ClInclude Include="..\modules\darknet\src\deconvolutional_layer.h" />
     <ClInclude Include="..\modules\darknet\src\detection_layer.h" />
@@ -183,8 +184,6 @@
     <ClInclude Include="..\modules\darknet\src\route_layer.h" />
     <ClInclude Include="..\modules\darknet\src\shortcut_layer.h" />
     <ClInclude Include="..\modules\darknet\src\softmax_layer.h" />
-    <ClInclude Include="..\modules\darknet\src\stb_image.h" />
-    <ClInclude Include="..\modules\darknet\src\stb_image_write.h" />
     <ClInclude Include="..\modules\darknet\src\tree.h" />
     <ClInclude Include="..\modules\darknet\src\unistd.h" />
     <ClInclude Include="..\modules\darknet\src\upsample_layer.h" />
@@ -193,6 +192,8 @@
     <ClInclude Include="..\modules\darknet\src\demo.h">
       <Filter>app</Filter>
     </ClInclude>
+    <ClInclude Include="..\modules\darknet\src\dark_cuda.h" />
+    <ClInclude Include="..\modules\darknet\src\image_opencv.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="cuda">

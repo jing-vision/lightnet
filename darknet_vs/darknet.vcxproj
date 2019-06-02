@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug-CPU|x64">
       <Configuration>Debug-CPU</Configuration>
@@ -21,32 +21,32 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{4CF5694F-12A5-4012-8D94-9A0915E9FEB5}</ProjectGuid>
     <RootNamespace>darknet</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-CPU|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-CPU|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -87,7 +87,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\opencv\build\include;..\modules\darknet\include;..\modules\darknet\3rdparty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\opencv\build\include;..\modules\darknet\include;..\modules\darknet\3rdparty\stb\include;..\modules\darknet\3rdparty\pthreads\include;%(AdditionalIncludeDirectories);$(CudaToolkitIncludeDir);</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>CV_IGNORE_DEBUG_BUILD_GUARD;YOLODLL_EXPORTS;CUDNN;_MBCS;OPENCV;_TIMESPEC_DEFINED;_CRT_SECURE_NO_WARNINGS;_CRT_RAND_S;GPU;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
@@ -99,7 +99,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>D:\opencv\build\x64\vc14\lib;$(CUDA_PATH)lib\$(PlatformName);$(cudnn)\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)\$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalDependencies>..\modules\darknet\3rdparty\lib\x64\pthreadVC2.lib;cublas.lib;curand.lib;cudart.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\modules\darknet\3rdparty\pthreads\lib\pthreadVC2.lib;cublas.lib;curand.lib;cudart.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AssemblyDebug>true</AssemblyDebug>
     </Link>
     <CudaCompile>
@@ -112,7 +112,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\opencv\build\include;..\modules\darknet\include;..\modules\darknet\3rdparty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\opencv\build\include;..\modules\darknet\include;..\modules\darknet\3rdparty\stb\include;..\modules\darknet\3rdparty\pthreads\include;%(AdditionalIncludeDirectories);$(CudaToolkitIncludeDir);</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>CV_IGNORE_DEBUG_BUILD_GUARD;YOLODLL_EXPORTS;_MBCS;OPENCV;_TIMESPEC_DEFINED;_CRT_SECURE_NO_WARNINGS;_CRT_RAND_S;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
@@ -124,7 +124,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>D:\opencv\build\x64\vc14\lib;$(CUDA_PATH)lib\$(PlatformName);$(cudnn)\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)\$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalDependencies>..\modules\darknet\3rdparty\lib\x64\pthreadVC2.lib;cublas.lib;curand.lib;cudart.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\modules\darknet\3rdparty\pthreads\lib\pthreadVC2.lib;cublas.lib;curand.lib;cudart.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AssemblyDebug>true</AssemblyDebug>
     </Link>
     <CudaCompile>
@@ -139,7 +139,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\opencv\build\include;..\modules\darknet\include;..\modules\darknet\3rdparty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\opencv\build\include;..\modules\darknet\include;..\modules\darknet\3rdparty\stb\include;..\modules\darknet\3rdparty\pthreads\include;%(AdditionalIncludeDirectories);$(CudaToolkitIncludeDir);</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>CV_IGNORE_DEBUG_BUILD_GUARD;YOLODLL_EXPORTS;CUDNN;OPENCV;_TIMESPEC_DEFINED;_CRT_SECURE_NO_WARNINGS;_CRT_RAND_S;GPU;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CLanguageStandard>c11</CLanguageStandard>
       <CppLanguageStandard>c++1y</CppLanguageStandard>
@@ -155,7 +155,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>D:\opencv\build\x64\vc14\lib;$(CUDA_PATH)lib\$(PlatformName);$(cudnn)\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>..\modules\darknet\3rdparty\lib\x64\pthreadVC2.lib;cublas.lib;curand.lib;cudart.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\modules\darknet\3rdparty\pthreads\lib\pthreadVC2.lib;cublas.lib;curand.lib;cudart.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)\$(TargetName)$(TargetExt)</OutputFile>
     </Link>
     <CudaCompile>
@@ -170,7 +170,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\opencv\build\include;..\modules\darknet\include;..\modules\darknet\3rdparty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\opencv\build\include;..\modules\darknet\include;..\modules\darknet\3rdparty\stb\include;..\modules\darknet\3rdparty\pthreads\include;%(AdditionalIncludeDirectories);$(CudaToolkitIncludeDir);</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>CV_IGNORE_DEBUG_BUILD_GUARD;YOLODLL_EXPORTS;OPENCV;_TIMESPEC_DEFINED;_CRT_SECURE_NO_WARNINGS;_CRT_RAND_S;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CLanguageStandard>c11</CLanguageStandard>
       <CppLanguageStandard>c++1y</CppLanguageStandard>
@@ -186,7 +186,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>D:\opencv\build\x64\vc14\lib;$(CUDA_PATH)lib\$(PlatformName);$(cudnn)\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>..\modules\darknet\3rdparty\lib\x64\pthreadVC2.lib;cublas.lib;curand.lib;cudart.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\modules\darknet\3rdparty\pthreads\lib\pthreadVC2.lib;cublas.lib;curand.lib;cudart.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)\$(TargetName)$(TargetExt)</OutputFile>
     </Link>
     <CudaCompile>
@@ -256,15 +256,13 @@
     <ClCompile Include="..\modules\darknet\src\compare.c" />
     <ClCompile Include="..\modules\darknet\src\connected_layer.c" />
     <ClCompile Include="..\modules\darknet\src\convolutional_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\conv_lstm_layer.c" />
     <ClCompile Include="..\modules\darknet\src\cost_layer.c" />
     <ClCompile Include="..\modules\darknet\src\cpu_gemm.c" />
     <ClCompile Include="..\modules\darknet\src\crnn_layer.c" />
     <ClCompile Include="..\modules\darknet\src\crop_layer.c" />
-    <ClCompile Include="..\modules\darknet\src\cuda.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-CPU|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-CPU|x64'">false</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\modules\darknet\src\darknet.c" />
+    <ClCompile Include="..\modules\darknet\src\dark_cuda.c" />
     <ClCompile Include="..\modules\darknet\src\data.c" />
     <ClCompile Include="..\modules\darknet\src\deconvolutional_layer.c" />
     <ClCompile Include="..\modules\darknet\src\demo.c">
@@ -290,9 +288,11 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-CPU|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\modules\darknet\src\image_opencv.cpp" />
     <ClCompile Include="..\modules\darknet\src\layer.c" />
     <ClCompile Include="..\modules\darknet\src\list.c" />
     <ClCompile Include="..\modules\darknet\src\local_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\lstm_layer.c" />
     <ClCompile Include="..\modules\darknet\src\matrix.c" />
     <ClCompile Include="..\modules\darknet\src\maxpool_layer.c" />
     <ClCompile Include="..\modules\darknet\src\network.c" />
@@ -334,10 +334,7 @@
     <ClInclude Include="..\modules\darknet\src\cost_layer.h" />
     <ClInclude Include="..\modules\darknet\src\crnn_layer.h" />
     <ClInclude Include="..\modules\darknet\src\crop_layer.h" />
-    <ClInclude Include="..\modules\darknet\src\cuda.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-CPU|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-CPU|x64'">false</ExcludedFromBuild>
-    </ClInclude>
+    <ClInclude Include="..\modules\darknet\src\dark_cuda.h" />
     <ClInclude Include="..\modules\darknet\src\data.h" />
     <ClInclude Include="..\modules\darknet\src\deconvolutional_layer.h" />
     <ClInclude Include="..\modules\darknet\src\demo.h" />
