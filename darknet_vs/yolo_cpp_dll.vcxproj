@@ -296,6 +296,7 @@
     <ClCompile Include="..\modules\darknet\src\rnn_layer.c" />
     <ClCompile Include="..\modules\darknet\src\rnn_vid.c" />
     <ClCompile Include="..\modules\darknet\src\route_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\scale_channels_layer.c" />
     <ClCompile Include="..\modules\darknet\src\shortcut_layer.c" />
     <ClCompile Include="..\modules\darknet\src\softmax_layer.c" />
     <ClCompile Include="..\modules\darknet\src\super.c" />

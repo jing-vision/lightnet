@@ -240,6 +240,9 @@
     <ClCompile Include="..\modules\darknet\src\conv_lstm_layer.c">
       <Filter>lib</Filter>
     </ClCompile>
+    <ClCompile Include="..\modules\darknet\src\scale_channels_layer.c">
+      <Filter>lib</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\modules\darknet\src\activation_layer.h">

@@ -142,6 +142,7 @@
     <ClCompile Include="..\modules\darknet\src\conv_lstm_layer.c" />
     <ClCompile Include="..\modules\darknet\src\dark_cuda.c" />
     <ClCompile Include="..\modules\darknet\src\image_opencv.cpp" />
+    <ClCompile Include="..\modules\darknet\src\scale_channels_layer.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\modules\darknet\src\activations.h" />
