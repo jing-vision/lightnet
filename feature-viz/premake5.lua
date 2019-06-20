@@ -65,9 +65,10 @@ solution "feature-viz"
         }
         debugdir "../bin"
         files { 
-            "src/**",
+            "../include/**",
             "../src/**",
             "../modules/minitrace/**",
+            "src/**",
         }
         configuration "Debug"
             links {
