@@ -53,18 +53,25 @@ vector<LayerMeta> get_layer_metas()
         else if (type == AVGPOOL) layerName = "AvgPool";
         else if (type == LOCAL) layerName = "Local";
         else if (type == SHORTCUT) layerName = "Shortcut";
+        else if (type == SCALE_CHANNELS) layerName = "SCALE_CHANNELS";
         else if (type == ACTIVE) layerName = "Active";
         else if (type == RNN) layerName = "RNN";
         else if (type == GRU) layerName = "GRU";
+        else if (type == LSTM) layerName = "LSTM";
+        else if (type == CONV_LSTM) layerName = "CONV_LSTM";
         else if (type == CRNN) layerName = "CRNN";
         else if (type == BATCHNORM) layerName = "Batchnorm";
         else if (type == NETWORK) layerName = "Network";
         else if (type == XNOR) layerName = "XNOR";
         else if (type == REGION) layerName = "Region";
         else if (type == YOLO) layerName = "Yolo";
+        else if (type == ISEG) layerName = "ISEG";
         else if (type == REORG) layerName = "Reorg";
+        else if (type == REORG_OLD) layerName = "Reorg_Old";
         else if (type == UPSAMPLE) layerName = "Upsample";
-        else if (type == REORG_OLD) layerName = "Reorg_old";
+        else if (type == LOGXENT) layerName = "LOGXENT";
+        else if (type == L2NORM) layerName = "L2NORM";
+        else if (type == EMPTY) layerName = "Empty";
         else if (type == BLANK) layerName = "Blank";
         else layerName = "Unknown";
         char info[100];
@@ -180,7 +187,10 @@ vector<Mat> get_layer_activations(int layer_idx)
     }
 
     CV_Assert(l->batch == 1 && "TODO: support non-one batch");
+#define GPU 1
+#if GPU // very hacky
     cuda_pull_array(l->output_gpu, l->output, l->outputs*l->batch);
+#endif
 
     if (l->type == SOFTMAX)
     {
