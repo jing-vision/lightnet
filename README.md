@@ -204,3 +204,7 @@ Explanation of yolo training output
 https://github.com/rafaelpadilla/darknet#faq_yolo
 
 
+CFG Parameters
+----
+- [in net section](https://github.com/AlexeyAB/darknet/wiki/CFG-Parameters-in-the-%5Bnet%5D-section)
+- [in layer section](https://github.com/AlexeyAB/darknet/wiki/CFG-Parameters-in-the-different-layers)
