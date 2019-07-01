@@ -196,7 +196,10 @@ How to fine tune a existing network?
 
 https://github.com/pjreddie/darknet/wiki/YOLO:-Real-Time-Object-Detection
 
-darknet.exe partial cfg/darknet19_448.cfg darknet19_448.weights darknet19_448.conv.23 23
+> darknet.exe partial cfg/darknet.cfg darknet.weights darknet.conv.13 13
+> darknet.exe partial cfg/extraction.cfg extraction.weights extraction.conv.23 23
+> darknet.exe partial cfg/darknet19.cfg darknet19.weights darknet19.conv.23 23
+> darknet.exe partial cfg/darknet19_448.cfg darknet19_448.weights darknet19_448.conv.23 23
 
 Explanation of yolo training output
 ----
