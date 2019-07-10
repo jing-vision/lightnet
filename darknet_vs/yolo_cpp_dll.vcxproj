@@ -106,7 +106,7 @@
       <AssemblyDebug>true</AssemblyDebug>
     </Link>
     <CudaCompile>
-      <CodeGeneration>compute_52,sm_52</CodeGeneration>
+      <CodeGeneration>compute_61,sm_61</CodeGeneration>
       <TargetMachinePlatform>64</TargetMachinePlatform>
     </CudaCompile>
   </ItemDefinitionGroup>
@@ -128,10 +128,6 @@
       <AdditionalDependencies>..\modules\darknet\3rdparty\pthreads\lib\pthreadVC2.lib;cublas.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AssemblyDebug>true</AssemblyDebug>
     </Link>
-    <CudaCompile>
-      <CodeGeneration>compute_52,sm_52</CodeGeneration>
-      <TargetMachinePlatform>64</TargetMachinePlatform>
-    </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -160,7 +156,7 @@
     </Link>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
-      <CodeGeneration>compute_52,sm_52</CodeGeneration>
+      <CodeGeneration>compute_61,sm_61</CodeGeneration>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-CPU|x64'">
@@ -188,10 +184,6 @@
       <AdditionalDependencies>..\modules\darknet\3rdparty\pthreads\lib\pthreadVC2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)\$(TargetName)$(TargetExt)</OutputFile>
     </Link>
-    <CudaCompile>
-      <TargetMachinePlatform>64</TargetMachinePlatform>
-      <CodeGeneration>compute_52,sm_52</CodeGeneration>
-    </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <CudaCompile Include="..\modules\darknet\src\activation_kernels.cu">
