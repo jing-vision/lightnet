@@ -19,5 +19,5 @@ robocopy scripts %OUTPUT%/scripts pthreadVC2.dll
 robocopy scripts %OUTPUT%/scripts yolo_cpp_dll.dll
 robocopy scripts/bat %OUTPUT%/scripts/bat
 
-robocopy __template-darknet19_224 %OUTPUT%/__template-darknet19_224 /MIR
+robocopy __template-darknet %OUTPUT%/__template-darknet /MIR
 robocopy __template-darknet19_448 %OUTPUT%/__template-darknet19_448 /MIR
