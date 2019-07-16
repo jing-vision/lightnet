@@ -1,1 +1,0 @@
-..\bin\feature-viz.exe --cfg=obj.cfg --weights=weights\obj_last.weights --names=obj.names %*
