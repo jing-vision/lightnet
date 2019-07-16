@@ -22,3 +22,5 @@ network layout
   16 cost                                               1000
 Total BFLOPS 0.807
 ```
+
+> mklink /D img /path/to/real/img

@@ -32,3 +32,6 @@ layer     filters    size              input                output
   26 cost                                             10
 Total BFLOPS 21.943
 ```
+
+> mklink /D img /path/to/real/img
+
