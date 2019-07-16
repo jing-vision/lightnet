@@ -70,6 +70,7 @@ def main():
     config._sections['net1']['batch'] = 32
     config._sections['net1']['subdivisions'] = 4
     config._sections['net1']['max_batches'] = 10000
+    config._sections['net1']['learning_rate'] = 0.001
 
     for key in reversed(config._sections):
         # find the last CONV layer

@@ -18,4 +18,5 @@ robocopy scripts %OUTPUT%/scripts *.py
 robocopy scripts %OUTPUT%/scripts pthreadVC2.dll
 robocopy scripts %OUTPUT%/scripts yolo_cpp_dll.dll
 
+robocopy __template-darknet19_224 %OUTPUT%/__template-darknet19_224 /MIR
 robocopy __template-darknet19_448 %OUTPUT%/__template-darknet19_448 /MIR
