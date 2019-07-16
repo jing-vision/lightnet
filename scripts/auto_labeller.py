@@ -48,6 +48,7 @@ def main():
         obj_names_fp.write(category)
         obj_names_fp.write('\n')
         image_filenames = glob.glob(category + '/**/*.jpg', recursive=True)
+        image_filenames.extend(glob.glob(category + '/**/*.png', recursive=True))
 
         for image_filename in image_filenames:
             train_txt_fp.write(os.path.abspath(image_filename))
