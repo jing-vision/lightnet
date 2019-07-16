@@ -10,6 +10,7 @@ robocopy bin %OUTPUT%/bin opencv_world340.dll
 robocopy bin %OUTPUT%/bin pthreadVC2.dll
 robocopy bin %OUTPUT%/bin yolo_cpp_dll.dll
 robocopy bin %OUTPUT%/bin darknet.exe
+robocopy bin %OUTPUT%/bin darknet.conv.13
 robocopy bin %OUTPUT%/bin darknet19_448.conv.23
 robocopy bin/cfg %OUTPUT%/bin/cfg
 robocopy bin/data %OUTPUT%/bin/data
