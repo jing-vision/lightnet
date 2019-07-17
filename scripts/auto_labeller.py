@@ -21,6 +21,7 @@ from collections import OrderedDict
 # file names config
 category_folders = glob.glob('img/*')
 train_txt = 'train.txt'
+valid_txt = 'valid.txt'
 obj_data = 'obj.data'
 obj_names = 'obj.names'
 obj_cfg = 'obj.cfg'
@@ -34,16 +35,18 @@ def main():
 
     with open(obj_data, 'w') as obj_data_fp:
         obj_data_fp.write('classes=%d\n' % num_classes)
-        obj_data_fp.write('train=%s/train.txt\n' % (cwd))
-        obj_data_fp.write('valid=%s/train.txt\n' % (cwd))
+        obj_data_fp.write('train=%s/%s\n' % (cwd, train_txt))
+        obj_data_fp.write('valid=%s/%s\n' % (cwd, valid_txt))
         obj_data_fp.write('labels=%s/obj.names\n' % (cwd))
         obj_data_fp.write('names=%s/obj.names\n' % (cwd))
         obj_data_fp.write('backup=%s/weights/\n' % (cwd))
         obj_data_fp.write('top=5\n')
 
     train_txt_fp = open(train_txt, 'w')
+    valid_txt_fp = open(valid_txt, 'w')
     obj_names_fp = open(obj_names, 'w')
 
+    idx = 0
     for category in category_folders:
         obj_names_fp.write(category)
         obj_names_fp.write('\n')
@@ -51,8 +54,13 @@ def main():
         image_filenames.extend(glob.glob(category + '/**/*.png', recursive=True))
 
         for image_filename in image_filenames:
-            train_txt_fp.write(os.path.abspath(image_filename))
-            train_txt_fp.write('\n')
+            if idx % 10 < 1: # 10% for validation
+                valid_txt_fp.write(os.path.abspath(image_filename))
+                valid_txt_fp.write('\n')
+            else:
+                train_txt_fp.write(os.path.abspath(image_filename))
+                train_txt_fp.write('\n')
+            idx = idx + 1
 
     class multidict(OrderedDict):
         _unique = 0   # class variable
