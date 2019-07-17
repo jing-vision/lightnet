@@ -22,6 +22,11 @@ import darknet
 import flask
 app = flask.Flask(__name__)
 
+@app.route("/", methods=["GET"])
+def home():
+    data = vars(args)
+    return flask.jsonify(data)
+
 @app.route("/predict", methods=["POST"])
 def predict():
     import numpy as np
@@ -124,7 +129,7 @@ if __name__ == "__main__":
 
     if args.socket:
         # flask routine
-        app.run(port=args.socket)
+        app.run(host='0.0.0.0', port=args.socket, debug=True)
         exit(0)
 
     if args.video or args.image:
