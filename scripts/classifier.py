@@ -23,12 +23,12 @@ import flask
 app = flask.Flask(__name__)
 
 @app.route("/", methods=["GET"])
-def home():
+def index_get():
     data = vars(args)
     return flask.jsonify(data)
 
 @app.route("/predict", methods=["POST"])
-def predict():
+def predict_post():
     import numpy as np
     import io
 
@@ -49,6 +49,7 @@ def predict():
             # classify the input image and then initialize the list
             # of predictions to return to the client
             results = slave_labor(frame)
+            print(results)
             data["predictions"] = []
 
             # loop over the results and add them to the list of
@@ -129,7 +130,7 @@ if __name__ == "__main__":
 
     if args.socket:
         # flask routine
-        app.run(host='0.0.0.0', port=args.socket, debug=True)
+        app.run(host='0.0.0.0', port=args.socket, debug=False)
         exit(0)
 
     if args.video or args.image:
