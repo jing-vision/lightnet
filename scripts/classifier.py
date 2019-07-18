@@ -9,7 +9,7 @@ https://gist.github.com/kylehounslow/767fb72fde2ebdd010a0bf4242371594
 
 ''' Usage
 python ..\scripts\classifier.py --socket=5000 --weights=weights\obj_last.weights
-curl -X POST -F image=@dog.png 'http://localhost:5000/predict'
+curl -X POST -F image=@dog.png http://localhost:5000/predict
 '''
 
 import sys
@@ -19,12 +19,25 @@ import argparse
 
 import lightnet
 import darknet
+import socket 
 import flask
 app = flask.Flask(__name__)
+
+host_ip = 'localhost'
+def get_Host_name_IP(): 
+    try:
+        global host_ip
+        host_name = socket.gethostname()
+        host_ip = socket.gethostbyname(host_name)
+        print("Hostname:",host_name)
+        print("IP:",host_ip)
+    except: 
+        print("Unable to get Hostname and IP")
 
 @app.route("/", methods=["GET"])
 def index_get():
     data = vars(args)
+    data['usage'] = "curl -X POST -F image=@dog.png http://%s:5000/predict" % (host_ip)
     return flask.jsonify(data)
 
 @app.route("/predict", methods=["POST"])
@@ -80,18 +93,18 @@ def slave_labor(frame):
             left = 10
             top = 20 + rank * 20
             (label, score) = results[rank]
-            preds.append((label, score))
+            preds.append((label[4:], score))
 
-            label = '%s %.2f%%' % (label[4:], score * 100)
+            text = '%s %.2f%%' % (label, score * 100)
             labelSize, baseLine = cv.getTextSize(
-                label, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+                text, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
             back_clr = (222, 222, 222)
             if score > args.gold_confidence:
                 back_clr = (122, 122, 255)
             cv.rectangle(frame, (left, top - labelSize[1]), (left + labelSize[
                 0], top + baseLine), back_clr, cv.FILLED)
 
-            cv.putText(frame, label, (left, top),
+            cv.putText(frame, text, (left, top),
                     cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
 
     cv.imshow("output", frame)
@@ -130,6 +143,9 @@ if __name__ == "__main__":
 
     if args.socket:
         # flask routine
+        print('=========================================')
+        get_Host_name_IP()
+        print('=========================================')
         app.run(host='0.0.0.0', port=args.socket, debug=False)
         exit(0)
 
