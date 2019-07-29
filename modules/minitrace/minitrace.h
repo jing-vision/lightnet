@@ -18,6 +18,9 @@
 // More:
 // http://www.altdevblogaday.com/2012/08/21/using-chrometracing-to-view-your-inline-profiling-data/
 
+#ifndef MINITRACE_H
+#define MINITRACE_H
+
 #include <inttypes.h>
 
 // If MTR_ENABLED is not defined, Minitrace does nothing and has near zero overhead.
@@ -34,27 +37,31 @@ extern "C" {
 #endif
 
 // Initializes Minitrace. Must be called very early during startup of your executable,
-// before any MTR_ statements..
+// before any MTR_ statements.
 void mtr_init(const char *json_file);
+// Same as above, but allows passing in a custom stream (FILE *), as returned by
+// fopen(). It should be opened for writing, preferably in binary mode to avoid
+// processing of line endings (i.e. the "wb" mode).
+void mtr_init_from_stream(void *stream);
 
 // Shuts down minitrace cleanly, flushing the trace buffer.
-void mtr_shutdown();
+void mtr_shutdown(void);
 
 // Lets you enable and disable Minitrace at runtime.
 // May cause strange discontinuities in the output.
 // Minitrace is enabled on startup by default.
-void mtr_start();
-void mtr_stop();
+void mtr_start(void);
+void mtr_stop(void);
 
 // Flushes the collected data to disk, clearing the buffer for new data.
-void mtr_flush();
+void mtr_flush(void);
 
 // Returns the current time in seconds. Used internally by Minitrace. No caching.
-double mtr_time_s();
+double mtr_time_s(void);
 
 // Registers a handler that will flush the trace on Ctrl+C.
 // Works on Linux and MacOSX, and in Win32 console applications.
-void mtr_register_sigint_handler();
+void mtr_register_sigint_handler(void);
 
 // Utility function that should rarely be used.
 // If str is semi dynamic, store it permanently in a small pool so we don't need to malloc it.
@@ -124,8 +131,8 @@ void internal_mtr_raw_event_arg(const char *category, const char *name, char ph,
 
 // Instant events. For things with no duration.
 #define MTR_INSTANT(c, n) internal_mtr_raw_event(c, n, 'I', 0)
-#define MTR_INSTANT_C(c, n, aname, astrval) internal_mtr_raw_event(c, n, 'I', 0, MTR_ARG_TYPE_STRING_CONST, aname, (void *)(astrval))
-#define MTR_INSTANT_I(c, n, aname, aintval) internal_mtr_raw_event(c, n, 'I', 0, MTR_ARG_TYPE_INT, aname, (void *)(aintval))
+#define MTR_INSTANT_C(c, n, aname, astrval) internal_mtr_raw_event_arg(c, n, 'I', 0, MTR_ARG_TYPE_STRING_CONST, aname, (void *)(astrval))
+#define MTR_INSTANT_I(c, n, aname, aintval) internal_mtr_raw_event_arg(c, n, 'I', 0, MTR_ARG_TYPE_INT, aname, (void *)(aintval))
 
 // Counters (can't do multi-value counters yet)
 #define MTR_COUNTER(c, n, val) internal_mtr_raw_event_arg(c, n, 'C', 0, MTR_ARG_TYPE_INT, n, (void *)(intptr_t)(val))
@@ -256,6 +263,8 @@ private:
 	const char *category_;
 	const char *name_;
 };
+#endif
+
 #endif
 
 #endif
