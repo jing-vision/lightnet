@@ -47,7 +47,7 @@ def predict_post():
 
     # initialize the data dictionary that will be returned from the
     # view
-    data = {"success": False}
+    data = []
 
     # ensure an image was properly uploaded to our endpoint
     if flask.request.method == "POST":
@@ -63,16 +63,12 @@ def predict_post():
             # of predictions to return to the client
             results = slave_labor(frame)
             print(results)
-            data["predictions"] = []
 
             # loop over the results and add them to the list of
             # returned predictions
             for (label, prob) in results:
-                r = {"label": label, "probability": float(prob)}
-                data["predictions"].append(r)
-
-            # indicate that the request was a success
-            data["success"] = True
+                r = {"label": label, "score": float(prob)}
+                data.append(r)
 
     # return the data dictionary as a JSON response
     return flask.jsonify(data)
@@ -108,6 +104,7 @@ def slave_labor(frame):
                     cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
 
     cv.imshow("output", frame)
+    cv.imwrite("socket_output.jpg", frame)
 
     return preds
 
@@ -136,6 +133,7 @@ if __name__ == "__main__":
     parser.add_argument('--top_k', type=int, default=5)
     parser.add_argument('--gold_confidence', type=float, default=0.95)
     parser.add_argument('--display_confidence', type=float, default=0.5)
+    parser.add_argument('--debug', type=bool, default=False)
     args = parser.parse_args()
 
     net, meta = lightnet.load_network_meta(
@@ -146,7 +144,7 @@ if __name__ == "__main__":
         print('=========================================')
         get_Host_name_IP()
         print('=========================================')
-        app.run(host='0.0.0.0', port=args.socket, debug=False)
+        app.run(host='0.0.0.0', port=args.socket, debug=args.debug)
         exit(0)
 
     if args.video or args.image:
