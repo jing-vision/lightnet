@@ -18,7 +18,6 @@ robocopy bin/cfg %OUTPUT%/bin/cfg
 robocopy bin/data %OUTPUT%/bin/data
 
 robocopy scripts %OUTPUT%/scripts *.py
-robocopy scripts %OUTPUT%/scripts pthreadVC2.dll
 robocopy scripts %OUTPUT%/scripts yolo_cpp_dll.dll
 robocopy scripts/bat %OUTPUT%/scripts/bat
 
