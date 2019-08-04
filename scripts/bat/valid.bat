@@ -1,1 +1,1 @@
-..\bin\darknet.exe classifier valid obj.data obj.cfg weights\obj_last.weights
+..\bin\darknet.exe classifier valid obj.data obj.cfg weights\obj_last.weights %*

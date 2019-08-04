@@ -125,6 +125,12 @@ def local_app_run():
 if __name__ == "__main__":
     # lightnet.set_cwd(dir)
 
+    def add_bool_arg(parser, name, default=False):
+        group = parser.add_mutually_exclusive_group(required=False)
+        group.add_argument('--' + name, dest=name, action='store_true')
+        group.add_argument('--no-' + name, dest=name, action='store_false')
+        parser.set_defaults(**{name:default})
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--cfg', default='obj.cfg')
     parser.add_argument('--weights', default='weights/obj_last.weights')
@@ -136,7 +142,8 @@ if __name__ == "__main__":
     parser.add_argument('--top_k', type=int, default=5)
     parser.add_argument('--gold_confidence', type=float, default=0.95)
     parser.add_argument('--display_confidence', type=float, default=0.5)
-    parser.add_argument('--debug', type=bool, default=False)
+    add_bool_arg(parser, 'debug')
+
     args = parser.parse_args()
 
     net, meta = lightnet.load_network_meta(
