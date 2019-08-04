@@ -46,15 +46,15 @@ def main():
     valid_txt_fp = open(valid_txt, 'w')
     obj_names_fp = open(obj_names, 'w')
 
-    idx = 0
     for category in category_folders:
         obj_names_fp.write(category)
         obj_names_fp.write('\n')
         image_filenames = glob.glob(category + '/**/*.jpg', recursive=True)
         image_filenames.extend(glob.glob(category + '/**/*.png', recursive=True))
 
+        idx = 0
         for image_filename in image_filenames:
-            if idx % 10 < 1: # 10% for validation
+            if idx == 0 or idx == len(image_filenames) - 1: # Pick two images
                 valid_txt_fp.write(os.path.abspath(image_filename))
                 valid_txt_fp.write('\n')
             else:
