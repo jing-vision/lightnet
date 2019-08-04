@@ -29,7 +29,7 @@ obj_cfg = 'obj.cfg'
 def main():
     print(__doc__)
 
-    cwd = os.getcwd()
+    cwd = '.' #os.getcwd()
 
     num_classes = len(category_folders)
 

@@ -103,8 +103,10 @@ def slave_labor(frame):
             cv.putText(frame, text, (left, top),
                     cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
 
-    if args.debug:
+    if not args.socket:
         cv.imshow("output", frame)
+
+    if args.debug:
         cv.imwrite("socket_output.jpg", frame)
 
     return preds
