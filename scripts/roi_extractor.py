@@ -21,6 +21,7 @@ H = 448
 
 def process(category):
     image_filenames = glob.glob('%s/*.png' % (category), recursive=True)
+    image_filenames.extend(glob.glob('%s/*.jpg' % (category), recursive=True))
     # print("Start category: %s" % (category))
     for filename in image_filenames:
         # load the input image
@@ -69,7 +70,7 @@ def process(category):
         x2 = (int)(cX + W/2)
         y2 = (int)(cY + H/2)
 
-        filename = filename.replace(args.images, 'img_roi')
+        filename = filename.replace(args.images, 'img_roi').replace('.png', '.jpg')
         # print(filename)
         os.makedirs(os.path.dirname(filename), exist_ok=True)
         cv.imwrite(filename, image[y1:y2, x1:x2])
