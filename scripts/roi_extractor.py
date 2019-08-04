@@ -37,6 +37,7 @@ def process(category):
             print(w,h)
         (success, saliencyMap) = saliency.computeSaliency(image)
 
+        '''
         # if we would like a *binary* map that we could process for contours,
         # compute convex hull's, extract bounding boxes, etc., we can
         # additionally threshold the saliency map
@@ -45,13 +46,16 @@ def process(category):
         else:
             threshMap = cv.adaptiveThreshold(saliencyMap.astype("uint8"), 255, cv.ADAPTIVE_THRESH_MEAN_C, cv.THRESH_BINARY_INV, 3, 5)
         
-        '''
         M = cv.moments(threshMap.astype("uint8"))
         
         # calculate x,y coordinate of center
         cX = int(M["m10"] / M["m00"])
         cY = int(M["m01"] / M["m00"])
         cv.circle(image, (cX, cY), 10, (255, 0, 0), 1)
+
+        if args.debug:
+            cv.imshow("Thresh", threshMap)
+        
         '''
         M = cv.moments(saliencyMap.astype("uint8"))
         
@@ -76,11 +80,10 @@ def process(category):
         cv.imwrite(filename, image[y1:y2, x1:x2])
 
         if args.debug:
-        # show the images
+            # show the images
             cv.rectangle(saliencyMap, (x1,y1), (x2,y2), (255, 255, 255), 1)
             cv.imshow("Image", image)
             cv.imshow("Output", saliencyMap)
-            cv.imshow("Thresh", threshMap)
 
             key = cv.waitKey(0)
             if key == ord('q'):

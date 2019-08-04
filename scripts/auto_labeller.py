@@ -80,12 +80,18 @@ def main():
     config._sections['net1']['max_batches'] = 10000
     config._sections['net1']['learning_rate'] = 0.001
 
+    conv_reverse_id = 0
     for key in reversed(config._sections):
-        # find the last CONV layer
         if 'convolutional' in key:
-            # modify its filters field
-            config._sections[key]['filters'] = num_classes
-            break
+            if conv_reverse_id is 0:
+                # The last CONV layer specify filters numbers
+                config._sections[key]['filters'] = num_classes
+            elif conv_reverse_id is 1:
+                # Freeze penultimate CONV layer for fine-tuning
+                # https://github.com/AlexeyAB/darknet/issues/1061#issuecomment-399083012
+                config._sections[key]['stopbackward'] = 1
+
+            conv_reverse_id += 1
 
     with open(obj_cfg, 'w') as configfile:
         for key in config._sections:
