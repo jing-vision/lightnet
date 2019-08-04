@@ -165,7 +165,6 @@ def main():
     from itertools import repeat
     from functools import partial
 
-    total_counter = 0
     with Pool(4) as pool:
         for category_id in xrange(len(category_folders)):
             if single_category_mode and category_id != g_category_id:
