@@ -52,13 +52,15 @@ Object Detection - inference w/ pre-trained weights
 
 First you need to download the weights. You can read more details on [darknet website](https://pjreddie.com/darknet/yolo/).
 
-cfg|weights
----|-------
-cfg/yolov2.cfg|https://pjreddie.com/media/files/yolov2.weights
-cfg/yolov2-tiny.cfg|https://pjreddie.com/media/files/yolov2-tiny.weights
-cfg/yolo9000.cfg|http://pjreddie.com/media/files/yolo9000.weights
-cfg/yolov3.cfg|https://pjreddie.com/media/files/yolov3.weights
-cfg/yolov3-tiny.cfg|https://pjreddie.com/media/files/yolov3-tiny.weights
+cfg|weights|names
+---|-------|-----
+cfg/yolov2.cfg|https://pjreddie.com/media/files/yolov2.weights|data/coco.names
+cfg/yolov2-tiny.cfg|https://pjreddie.com/media/files/yolov2-tiny.weights|coco.names
+cfg/yolo9000.cfg|http://pjreddie.com/media/files/yolo9000.weights|cfg/9k.names
+cfg/yolov3.cfg|https://pjreddie.com/media/files/yolov3.weights|cfg/coco.names
+cfg/yolov3-openimages.cfg|https://pjreddie.com/media/files/yolov3-openimages.weights|data/openimages.names
+cfg/yolov3-tiny.cfg|https://pjreddie.com/media/files/yolov3-tiny.weights|cfg/coco.names
+[cfg/yolov2_shoe.cfg](https://raw.githubusercontent.com/B1SA/smbmkt/master/detector/yolo/cfg/)|https://drive.google.com/file/d/1UDwKu1OSr0XkDLlO3K8Fv4KOLrTeS-ym/edit|[obj.names](https://github.com/B1SA/smbmkt/blob/master/detector/yolo/cfg/custom.names)
 
 Syntax for object detection
 ----
