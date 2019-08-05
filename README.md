@@ -70,7 +70,7 @@ darknet.exe detector test <data> <cfg> <weights> <img_filename> -i <gpu_idx>
 
 Default launch device combination is `-i 0 -c 0`.
 
-Run yolov3
+Run yolov3 on camera #0
 ----
 ```
 darknet.exe detector demo cfg/coco.data cfg/yolov3.cfg yolov3.weights
@@ -80,6 +80,12 @@ Run yolo9000 on camera #0
 ----
 ```
 darknet.exe detector demo cfg/combine9k.data cfg/yolo9000.cfg yolo9000.weights
+```
+
+Run yolo9000 on images
+----
+```
+darknet.exe detector test cfg/combine9k.data cfg/yolo9000.cfg yolo9000.weights
 ```
 
 Run yolo9000 CPU on camera #0
