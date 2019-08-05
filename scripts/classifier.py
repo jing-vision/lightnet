@@ -123,7 +123,8 @@ def slave_labor(frame):
     results = []
     for roi in roi_array:
         frame_roi = frame[roi[1] : roi[3], roi[0]:roi[2]]
-        cv.imshow("frame_roi", frame_roi)
+        if not args.interactive:
+            cv.imshow("frame_roi", frame_roi)
         im, _ = darknet.array_to_image(frame_roi)
         darknet.rgbgr_image(im)
         r = darknet.classify(net, meta, im)
@@ -136,7 +137,7 @@ def slave_labor(frame):
     # print(r[0])
 
     preds = []
-    if results[0][1] > args.display_confidence:
+    if results[0][1] > args.threshold:
         for rank in range(0, top_k):
             left = 10
             top = 20 + rank * 20
@@ -158,10 +159,21 @@ def slave_labor(frame):
     if args.socket:
         if args.debug:
             cv.imwrite("socket_output.jpg", frame)
+    elif args.interactive:
+        pass
     else:
         cv.imshow("output", frame)
 
     return preds
+
+def interactive_run():
+    while True:
+        filename = input("Input image path:")
+        frame = cv.imread(filename)
+        results = slave_labor(frame)
+        for r in results:
+            print("%s: %.3f" % (r[0], r[1]))
+        # key = cv.waitKey(1)
 
 def local_app_run():
     while True:
@@ -194,9 +206,10 @@ if __name__ == "__main__":
     parser.add_argument('--camera', type=int, default=0)
     parser.add_argument('--top_k', type=int, default=5)
     parser.add_argument('--gold_confidence', type=float, default=0.95)
-    parser.add_argument('--display_confidence', type=float, default=0.5)
+    parser.add_argument('--threshold', type=float, default=0.001)
     add_bool_arg(parser, 'debug')
     add_bool_arg(parser, 'yolo')
+    add_bool_arg(parser, 'interactive')
     parser.add_argument('--yolo_cfg', default='yolo/obj.cfg')
     parser.add_argument('--yolo_weights', default='yolo/obj_last.weights')
 
@@ -214,7 +227,9 @@ if __name__ == "__main__":
         app.run(host='0.0.0.0', port=args.socket, debug=args.debug)
         exit(0)
 
-    if args.video or args.image:
+    if args.interactive:
+        interactive_run()
+    elif args.video or args.image:
         media = args.image
         if not media:
             media = args.video
