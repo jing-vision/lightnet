@@ -120,12 +120,19 @@ def detect_from_memory(net, meta, im, thresh=.5, hier_thresh=.5, nms=.45, debug=
         print("freed detections")
     return res
 
+
 def load_network_meta(cfg_path, weights_path, meta_path = None):
     net = darknet.load_net_custom(
         to_str(cfg_path, True), to_str(weights_path, True), 0, 1)  # batch size = 1
     if meta_path:
         meta = darknet.load_meta(to_str(meta_path, True))
         darknet.altNames = load_name_list(to_str(meta_path))
+    else:
+        class FakeMeta:
+            def __init__(self):
+                self.classes = 1
+                self.names = ['obj']
+        meta = FakeMeta()        
 
     return net, meta
 

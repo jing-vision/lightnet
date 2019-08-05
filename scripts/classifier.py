@@ -73,15 +73,63 @@ def predict_post():
     # return the data dictionary as a JSON response
     return flask.jsonify(data)
 
-def slave_labor(frame):
-    im, arr = darknet.array_to_image(frame)
-    darknet.rgbgr_image(im)
+def convertBack(x, y, w, h):
+    xmin = int(round(x - (w / 2)))
+    if xmin < 0: xmin = 0
+    xmax = int(round(x + (w / 2)))
+    ymin = int(round(y - (h / 2)))
+    if ymin < 0: ymin = 0
+    ymax = int(round(y + (h / 2)))
+    return xmin, ymin, xmax, ymax
 
+def cvDrawBoxes(detections, img):
+    roi_array = []
+    for detection in detections:
+        x, y, w, h = detection[2][0],\
+            detection[2][1],\
+            detection[2][2],\
+            detection[2][3]
+        xmin, ymin, xmax, ymax = convertBack(
+            float(x), float(y), float(w), float(h))
+        pt1 = (xmin, ymin)
+        pt2 = (xmax, ymax)
+        roi_array.append((xmin, ymin, xmax, ymax))
+
+        if args.debug:
+            cv.rectangle(img, pt1, pt2, (0, 255, 0), 1)
+            cv.putText(img,
+                        # detection[0] +
+                        " [" + str(round(detection[1] * 100, 2)) + "]",
+                        (pt1[0], pt1[1] - 5), cv.FONT_HERSHEY_SIMPLEX, 0.5,
+                        [0, 255, 0], 2)
+    return roi_array
+
+def slave_labor(frame):
+    h, w, _ = frame.shape
+    roi_array = []
+    full_im, _ = darknet.array_to_image(frame)
+    darknet.rgbgr_image(full_im)    
     if args.yolo:
         #
+        r = lightnet.detect_from_memory(
+            yolo_net, yolo_meta, full_im, thresh=0.75, debug=False)
+        if args.debug:
+            print(r)
+        roi_array = cvDrawBoxes(r, frame)
 
-    results = darknet.classify(net, meta, im)
+    if not roi_array:
+        roi_array = [(0,0, w, h)]
 
+    results = []
+    for roi in roi_array:
+        frame_roi = frame[roi[1] : roi[3], roi[0]:roi[2]]
+        cv.imshow("frame_roi", frame_roi)
+        im, _ = darknet.array_to_image(frame_roi)
+        darknet.rgbgr_image(im)
+        r = darknet.classify(net, meta, im)
+        results.extend(r)
+
+    results = sorted(results, key=lambda x: -x[1])
     top_k = args.top_k
     if top_k >= len(results):
         top_k = len(results)
@@ -107,11 +155,11 @@ def slave_labor(frame):
             cv.putText(frame, text, (left, top),
                     cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
 
-    if not args.socket:
+    if args.socket:
+        if args.debug:
+            cv.imwrite("socket_output.jpg", frame)
+    else:
         cv.imshow("output", frame)
-
-    if args.debug:
-        cv.imwrite("socket_output.jpg", frame)
 
     return preds
 
@@ -123,7 +171,8 @@ def local_app_run():
             break
 
         slave_labor(frame)
-        if cv.waitKey(1) != -1:
+        key = cv.waitKey(1)
+        if key == 27:
             break
 
 if __name__ == "__main__":
@@ -148,14 +197,14 @@ if __name__ == "__main__":
     parser.add_argument('--display_confidence', type=float, default=0.5)
     add_bool_arg(parser, 'debug')
     add_bool_arg(parser, 'yolo')
-    parser.add_argument('--yolo_cfg', default='yolo.cfg')
-    parser.add_argument('--yolo_weights', default='weights/yolo.weights')
+    parser.add_argument('--yolo_cfg', default='yolo/obj.cfg')
+    parser.add_argument('--yolo_weights', default='yolo/obj_last.weights')
 
     args = parser.parse_args()
     net, meta = lightnet.load_network_meta(args.cfg, args.weights, args.data)
 
     if args.yolo:
-        yolo_net, _ = lightnet.load_network_meta(args.yolo_cfg, args.yolo_weights)
+        yolo_net, yolo_meta = lightnet.load_network_meta(args.yolo_cfg, args.yolo_weights)
 
     if args.socket:
         # flask routine

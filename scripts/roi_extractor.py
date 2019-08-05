@@ -86,7 +86,7 @@ def process(category):
             cv.imshow("Output", saliencyMap)
 
             key = cv.waitKey(0)
-            if key == ord('q'):
+            if key == 27:
                 break
 
     print("Finish category: %s" % (category))
