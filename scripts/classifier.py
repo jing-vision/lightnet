@@ -169,6 +169,7 @@ def slave_labor(frame):
 def interactive_run():
     while True:
         filename = input("Input image path:")
+        if not filename: continue
         frame = cv.imread(filename)
         results = slave_labor(frame)
         for r in results:
