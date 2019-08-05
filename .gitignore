@@ -52,7 +52,8 @@
 !/networks/yolov2-template/
 !/networks/yolov3-template/
 
-*/vs2015/
+vs201*/
+.vs
 
 ==*/
 

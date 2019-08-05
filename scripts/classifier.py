@@ -76,6 +76,10 @@ def predict_post():
 def slave_labor(frame):
     im, arr = darknet.array_to_image(frame)
     darknet.rgbgr_image(im)
+
+    if args.yolo:
+        #
+
     results = darknet.classify(net, meta, im)
 
     top_k = args.top_k
@@ -143,11 +147,15 @@ if __name__ == "__main__":
     parser.add_argument('--gold_confidence', type=float, default=0.95)
     parser.add_argument('--display_confidence', type=float, default=0.5)
     add_bool_arg(parser, 'debug')
+    add_bool_arg(parser, 'yolo')
+    parser.add_argument('--yolo_cfg', default='yolo.cfg')
+    parser.add_argument('--yolo_weights', default='weights/yolo.weights')
 
     args = parser.parse_args()
+    net, meta = lightnet.load_network_meta(args.cfg, args.weights, args.data)
 
-    net, meta = lightnet.load_network_meta(
-        args.cfg, args.weights, args.data)
+    if args.yolo:
+        yolo_net, _ = lightnet.load_network_meta(args.yolo_cfg, args.yolo_weights)
 
     if args.socket:
         # flask routine
