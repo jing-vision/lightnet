@@ -122,9 +122,12 @@ def slave_labor(frame):
 
     results = []
     for roi in roi_array:
-        frame_roi = frame[roi[1] : roi[3], roi[0]:roi[2]]
-        if not args.interactive:
-            cv.imshow("frame_roi", frame_roi)
+        if args.yolo:
+            frame_roi = frame[roi[1] : roi[3], roi[0]:roi[2]]
+            if not args.interactive:
+                cv.imshow("frame_roi", frame_roi)
+        else:
+            frame_roi = frame
         im, _ = darknet.array_to_image(frame_roi)
         darknet.rgbgr_image(im)
         r = darknet.classify(net, meta, im)
@@ -137,24 +140,25 @@ def slave_labor(frame):
     # print(r[0])
 
     preds = []
-    if results[0][1] > args.threshold:
-        for rank in range(0, top_k):
-            left = 10
-            top = 20 + rank * 20
-            (label, score) = results[rank]
-            preds.append((label[4:], score))
+    for rank in range(0, top_k):
+        left = 10
+        top = 20 + rank * 20
+        (label, score) = results[rank]
+        if score < args.threshold:
+            break
+        preds.append((label[4:], score))
 
-            text = '%s %.2f%%' % (label, score * 100)
-            labelSize, baseLine = cv.getTextSize(
-                text, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
-            back_clr = (222, 222, 222)
-            if score > args.gold_confidence:
-                back_clr = (122, 122, 255)
-            cv.rectangle(frame, (left, top - labelSize[1]), (left + labelSize[
-                0], top + baseLine), back_clr, cv.FILLED)
+        text = '%s %.2f%%' % (label, score * 100)
+        labelSize, baseLine = cv.getTextSize(
+            text, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+        back_clr = (222, 222, 222)
+        if score > args.gold_confidence:
+            back_clr = (122, 122, 255)
+        cv.rectangle(frame, (left, top - labelSize[1]), (left + labelSize[
+            0], top + baseLine), back_clr, cv.FILLED)
 
-            cv.putText(frame, text, (left, top),
-                    cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
+        cv.putText(frame, text, (left, top),
+                cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
 
     if args.socket:
         if args.debug:
@@ -207,7 +211,7 @@ if __name__ == "__main__":
     parser.add_argument('--camera', type=int, default=0)
     parser.add_argument('--top_k', type=int, default=5)
     parser.add_argument('--gold_confidence', type=float, default=0.95)
-    parser.add_argument('--threshold', type=float, default=0.001)
+    parser.add_argument('--threshold', type=float, default=0.5)
     add_bool_arg(parser, 'debug')
     add_bool_arg(parser, 'yolo')
     add_bool_arg(parser, 'interactive')
