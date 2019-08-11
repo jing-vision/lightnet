@@ -56,9 +56,11 @@ def main():
     for key in reversed(config._sections):
         if 'region' in key:
             network_name = 'yolov2'
+            config._sections['net1']['subdivisions'] = 8 # workaround for GTX 1060 6G
             break
         if 'yolo' in key:
             network_name = 'yolov3'
+            config._sections['net1']['subdivisions'] = 16 # workaround for GTX 1060 6G
             break
 
     if network_name == 'yolov2':
@@ -71,6 +73,7 @@ def main():
             if 'convolutional' in key:
                 network_name = 'yolov3'
                 config._sections[key]['filters'] = (num_classes + 5) * 5
+                break
     elif network_name == 'yolov3':
         seen_yolo_layer = False
         for key in reversed(config._sections):

@@ -21,6 +21,8 @@ import lightnet
 import darknet
 import socket 
 import flask
+import datetime
+
 app = flask.Flask(__name__)
 
 host_ip = 'localhost'
@@ -144,9 +146,8 @@ def slave_labor(frame):
         left = 10
         top = 20 + rank * 20
         (label, score) = results[rank]
-        if score < args.threshold:
-            break
-        preds.append((label[4:], score))
+        if score >= args.threshold:
+            preds.append((label[4:], score))
 
         text = '%s %.2f%%' % (label, score * 100)
         labelSize, baseLine = cv.getTextSize(
@@ -162,7 +163,12 @@ def slave_labor(frame):
 
     if args.socket:
         if args.debug:
-            cv.imwrite("socket_output.jpg", frame)
+            folder_name = 'socket_debug'
+            if not os.path.exists(folder_name):
+                os.mkdir(folder_name)
+            now = datetime.datetime.now()
+            now_string = now.strftime("%Y-%h-%d-%H-%M-%S-%f")
+            cv.imwrite(folder_name + '/' + now_string + '.jpg', frame)
     elif args.interactive:
         pass
     else:
