@@ -235,7 +235,7 @@ if __name__ == "__main__":
         print('=========================================')
         get_Host_name_IP()
         print('=========================================')
-        app.run(host='0.0.0.0', port=args.socket, debug=args.debug)
+        app.run(host='0.0.0.0', port=args.socket)
         exit(0)
 
     if args.interactive:
