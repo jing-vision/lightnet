@@ -62,6 +62,7 @@ vs201*/
 /scripts/*.gif
 /scripts/*.png
 /scripts/*.jpg
+/scripts/**.jpg
 /scripts/*.mp4
 /scripts/img/
 
