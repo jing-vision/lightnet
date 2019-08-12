@@ -5,6 +5,34 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: server multi",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "cwd": "d:/__svn_pool/lightnet/==real-nike-448/",
+            "args": [
+                "--socket=5000",
+                "-cfg=obj.cfg,obj.cfg,obj.cfg",
+                "--weights=weights/obj_last.weights,weights/obj_last.weights,weights/obj_last.weights",
+                "--data=obj.data,obj.data,obj.data",
+                "--threshold=0.1",
+                "--debug"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: server",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "cwd": "d:/__svn_pool/lightnet/==real-nike-448/",
+            "args": [
+                "--socket=5000",
+                "--debug"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Python: yolo marker",
             "type": "python",
             "request": "launch",
@@ -26,7 +54,8 @@
             "program": "${file}",
             "cwd": "d:/__svn_pool/lightnet/==real-nike-448/",
             "args": [
-                "--interactive"
+                "--interactive",
+                "--debug"
             ],
             "console": "integratedTerminal"
         }

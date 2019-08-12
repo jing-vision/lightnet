@@ -22,8 +22,17 @@ import darknet
 import socket 
 import flask
 import datetime
+import csv
 
 app = flask.Flask(__name__)
+
+args = None
+nets = []
+metas = []
+yolo_net = None
+yolo_meta = None
+csv_file = None
+csv_writer = None
 
 host_ip = 'localhost'
 def get_Host_name_IP(): 
@@ -122,30 +131,35 @@ def slave_labor(frame):
     if not roi_array:
         roi_array = [(0,0, w, h)]
 
-    results = []
-    for roi in roi_array:
-        if args.yolo:
-            frame_roi = frame[roi[1] : roi[3], roi[0]:roi[2]]
-            if not args.interactive:
-                cv.imshow("frame_roi", frame_roi)
-        else:
-            frame_roi = frame
-        im, _ = darknet.array_to_image(frame_roi)
-        darknet.rgbgr_image(im)
-        r = darknet.classify(net, meta, im)
-        results.extend(r)
+    results_hier = []
+    results_flat = []
 
-    results = sorted(results, key=lambda x: -x[1])
+    for i, _ in enumerate(nets):
+        results = []
+        for roi in roi_array:
+            if args.yolo:
+                frame_roi = frame[roi[1] : roi[3], roi[0]:roi[2]]
+                if not args.interactive:
+                    cv.imshow("frame_roi", frame_roi)
+            else:
+                frame_roi = frame
+            im, _ = darknet.array_to_image(frame_roi)
+            darknet.rgbgr_image(im)
+            r = darknet.classify(nets[i], metas[i], im)
+            results.extend(r)
+            results_flat.extend(r)
+            # results = sorted(results, key=lambda x: -x[1])
+        results_hier.append(results)
+    results_flat = sorted(results_flat, key=lambda x: -x[1])
     top_k = args.top_k
-    if top_k >= len(results):
-        top_k = len(results)
-    # print(r[0])
+    if top_k >= len(results_flat):
+        top_k = len(results_flat)
 
     preds = []
     for rank in range(0, top_k):
         left = 10
         top = 20 + rank * 20
-        (label, score) = results[rank]
+        (label, score) = results_flat[rank]
         if score >= args.threshold:
             preds.append((label[4:], score))
 
@@ -163,12 +177,19 @@ def slave_labor(frame):
 
     if args.socket:
         if args.debug:
-            folder_name = 'socket_debug'
-            if not os.path.exists(folder_name):
-                os.mkdir(folder_name)
             now = datetime.datetime.now()
             now_string = now.strftime("%Y-%h-%d-%H-%M-%S-%f")
-            cv.imwrite(folder_name + '/' + now_string + '.jpg', frame)
+            image_name = 'socket_debug' + '/' + now_string + '.jpg'
+            cv.imwrite(image_name, frame)
+            csv_file.write(image_name)
+            for results in results_hier:
+                top_k = 3
+                for rank in range(0, top_k):
+                    (label, score) = results[rank]
+                    csv_file.write(',%s,%.3f' % (label[4:],score ))
+            csv_file.write('\n')
+            csv_file.flush()
+
     elif args.interactive:
         pass
     else:
@@ -198,8 +219,9 @@ def local_app_run():
         if key == 27:
             break
 
-if __name__ == "__main__":
+def main():
     # lightnet.set_cwd(dir)
+    global nets, metas, args
 
     def add_bool_arg(parser, name, default=False):
         group = parser.add_mutually_exclusive_group(required=False)
@@ -225,12 +247,34 @@ if __name__ == "__main__":
     parser.add_argument('--yolo_weights', default='yolo/obj_last.weights')
 
     args = parser.parse_args()
-    net, meta = lightnet.load_network_meta(args.cfg, args.weights, args.data)
+    args_cfgs = args.cfg.split(',')
+    args_weights = args.weights.split(',')
+    args_datas = args.data.split(',')
+    for i, _ in enumerate(args_cfgs):
+         net, meta = lightnet.load_network_meta(args_cfgs[i], args_weights[i], args_datas[i])
+         nets.append(net)
+         metas.append(meta)
 
     if args.yolo:
         yolo_net, yolo_meta = lightnet.load_network_meta(args.yolo_cfg, args.yolo_weights)
 
+    if args.debug:
+        folder_name = 'socket_debug'
+        if not os.path.exists(folder_name):
+            os.mkdir(folder_name)
+        global csv_file
+        now = datetime.datetime.now()
+        now_string = now.strftime("%Y-%h-%d-%H-%M-%S-%f")
+        csv_name = 'socket_debug' + '/' + now_string + '.csv'
+        csv_file = open(csv_name, 'w')
+        csv_file.write('image')
+        for i, _ in enumerate(args_cfgs):
+            csv_file.write(',%d_top1,score,%d_top2,score,%d_top3,score' % (i,i,i))
+        csv_file.flush()
+        csv_file.write('\n')
+
     if args.socket:
+
         # flask routine
         print('=========================================')
         get_Host_name_IP()
@@ -253,3 +297,6 @@ if __name__ == "__main__":
             raise Exception('Fail to open camera %d' % args.camera)
 
     local_app_run()
+
+if __name__ == "__main__":
+    main()
