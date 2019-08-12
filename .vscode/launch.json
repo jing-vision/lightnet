@@ -5,125 +5,75 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "auto_labeller",
+            "name": "Python: roi extractor",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/scripts/auto_labeller.py",
-            "cwd": "${workspaceFolder}/__template-darknet53",
-            "args": []
-        },
-        {
-            "name": "dognet",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/scripts/classifier.py",
-            "cwd": "${workspaceFolder}/==dognet",
+            "program": "${workspaceRoot}/scripts/roi_extractor.py",
             "args": [
-                "--image=chi.jpg",
-                "--weights=weights/obj_3700.weights"
-            ]
+                "--images=${workspaceRoot}/==real-nike-448/img/",
+                "--yolo_cfg=${workspaceRoot}/==real-nike-448/yolo/obj.cfg",
+                "--yolo_weights=${workspaceRoot}/==real-nike-448/yolo/obj_last.weights",
+            ],
+            "env": {
+                "PATH": "${env:PATH};${workspaceRoot}/bin"
+            },
+            "console": "integratedTerminal"
         },
         {
-            "name": "Python: Attach",
+            "name": "Python: server multi",
             "type": "python",
-            "request": "attach",
-            "localRoot": "${workspaceFolder}",
-            "remoteRoot": "${workspaceFolder}",
-            "port": 3000,
-            "secret": "my_secret",
-            "host": "localhost"
+            "request": "launch",
+            "program": "${file}",
+            "cwd": "${workspaceRoot}/==real-nike-448/",
+            "args": [
+                "--socket=5000",
+                "-cfg=obj.cfg,obj.cfg,obj.cfg",
+                "--weights=weights/obj_last.weights,weights/obj_last.weights,weights/obj_last.weights",
+                "--data=obj.data,obj.data,obj.data",
+                "--threshold=0.1",
+                "--debug"
+            ],
+            "console": "integratedTerminal"
         },
         {
-            "name": "Python: Terminal (integrated)",
+            "name": "Python: server",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "cwd": "${workspaceRoot}/==real-nike-448/",
+            "args": [
+                "--socket=5000",
+                "--debug"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: yolo marker",
+            "type": "python",
+            "request": "launch",
+            "cwd": "${workspaceRoot}/__template-yolov3/",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: Current File",
             "type": "python",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal"
         },
         {
-            "name": "Python: Terminal (external)",
+            "name": "Python: yolo interactive",
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "console": "externalTerminal"
-        },
-        {
-            "name": "Python: Django",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/scripts/manage.py",
+            "cwd": "${workspaceRoot}/==real-nike-448/",
             "args": [
-                "runserver",
-                "--noreload",
-                "--nothreading"
+                "--interactive",
+                "--yolo",
+                "--debug"
             ],
-            "debugOptions": [
-                "RedirectOutput",
-                "Django"
-            ]
-        },
-        {
-            "name": "Python: Flask (0.11.x or later)",
-            "type": "python",
-            "request": "launch",
-            "module": "flask",
-            "env": {
-                "FLASK_APP": "app.py"
-            },
-            "args": [
-                "run",
-                "--no-debugger",
-                "--no-reload"
-            ]
-        },
-        {
-            "name": "Python: Module",
-            "type": "python",
-            "request": "launch",
-            "module": "module.name"
-        },
-        {
-            "name": "Python: Pyramid",
-            "type": "python",
-            "request": "launch",
-            "args": [
-                "${workspaceFolder}/scripts/development.ini"
-            ],
-            "debugOptions": [
-                "RedirectOutput",
-                "Pyramid"
-            ]
-        },
-        {
-            "name": "Python: Watson",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/scripts/console.py",
-            "args": [
-                "dev",
-                "runserver",
-                "--noreload=True"
-            ]
-        },
-        {
-            "name": "Python: All debug Options",
-            "type": "python",
-            "request": "launch",
-            "pythonPath": "${config:python.pythonPath}",
-            "program": "${file}",
-            "module": "module.name",
-            "env": {
-                "VAR1": "1",
-                "VAR2": "2"
-            },
-            "envFile": "${workspaceFolder}/scripts/.env",
-            "args": [
-                "arg1",
-                "arg2"
-            ],
-            "debugOptions": [
-                "RedirectOutput"
-            ]
+            "console": "integratedTerminal"
         }
     ]
 }

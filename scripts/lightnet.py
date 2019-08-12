@@ -1,4 +1,4 @@
-#pylint: disable=R, W0401, W0614, W0703
+# pylint: disable=R, W0401, W0614, W0703
 from ctypes import *
 import sys
 import os
@@ -6,15 +6,19 @@ import darknet
 
 cwd = os.getcwd()
 
+
 def set_cwd(path):
     global cwd
     cwd = path
 
-def to_str(path, feed_to_darknet = False):
-    path =  os.path.join(cwd, path)
+
+def to_str(path, feed_to_darknet=False):
+    if not os.path.isabs(path):
+        path = os.path.join(cwd, path)
     if feed_to_darknet:
         path = path.encode('ascii')
     return path
+
 
 def load_name_list(names_path):
     if os.path.exists(names_path):
@@ -25,6 +29,8 @@ def load_name_list(names_path):
     return []
 
 USING_DARKNET_IMAGE_IO = True
+
+
 def detect_from_file(net, meta, image_path, thresh=.5, hier_thresh=.5, nms=.45, debug=False):
     #pylint: disable= C0321
     if USING_DARKNET_IMAGE_IO:
@@ -43,6 +49,19 @@ def detect_from_file(net, meta, image_path, thresh=.5, hier_thresh=.5, nms=.45, 
 
     return det
 
+
+def convertBack(x, y, w, h):
+    xmin = int(round(x - (w / 2)))
+    if xmin < 0:
+        xmin = 0
+    xmax = int(round(x + (w / 2)))
+    ymin = int(round(y - (h / 2)))
+    if ymin < 0:
+        ymin = 0
+    ymax = int(round(y + (h / 2)))
+    return xmin, ymin, xmax, ymax
+
+
 def detect_from_memory(net, meta, im, thresh=.5, hier_thresh=.5, nms=.45, debug=False):
     """
     Performs the meat of the detection
@@ -58,7 +77,7 @@ def detect_from_memory(net, meta, im, thresh=.5, hier_thresh=.5, nms=.45, debug=
     if debug:
         print("did prediction")
     dets = darknet.get_network_boxes(net, im.w, im.h, thresh,
-                             hier_thresh, None, 0, pnum, 1)
+                                     hier_thresh, None, 0, pnum, 1)
     if debug:
         print("Got dets")
     num = pnum[0]
@@ -100,8 +119,9 @@ def detect_from_memory(net, meta, im, thresh=.5, hier_thresh=.5, nms=.45, debug=
     return res
 
 
-def load_network_meta(cfg_path, weights_path, meta_path = None):
+def load_network_meta(cfg_path, weights_path, meta_path=None):
     class PyMeta:
+
         def __init__(self):
             self.classes = 0
             self.names = []
@@ -117,13 +137,13 @@ def load_network_meta(cfg_path, weights_path, meta_path = None):
 
     net = darknet.load_net_custom(
         to_str(cfg_path, True), to_str(weights_path, True), 0, 1)  # batch size = 1
-    
+
     return net, py_meta
 
 if __name__ == "__main__":
     net, meta = load_network_meta(
         "obj.cfg", "weights/obj_last.weights", "obj.names")
 
-    r = detect_from_file(net, meta, 
-        "img/air_vapor/air_vapor_original_shot_2018-May-07-22-12-34-237301_3fd9a907-034f-45c0-9a84-f4431945fa7b.jpg", thresh=0.25, debug=False)
+    r = detect_from_file(net, meta,
+                         "img/air_vapor/air_vapor_original_shot_2018-May-07-22-12-34-237301_3fd9a907-034f-45c0-9a84-f4431945fa7b.jpg", thresh=0.25, debug=False)
     print(r)

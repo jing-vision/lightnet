@@ -84,15 +84,6 @@ def predict_post():
     # return the data dictionary as a JSON response
     return flask.jsonify(data)
 
-def convertBack(x, y, w, h):
-    xmin = int(round(x - (w / 2)))
-    if xmin < 0: xmin = 0
-    xmax = int(round(x + (w / 2)))
-    ymin = int(round(y - (h / 2)))
-    if ymin < 0: ymin = 0
-    ymax = int(round(y + (h / 2)))
-    return xmin, ymin, xmax, ymax
-
 def cvDrawBoxes(detections, img):
     roi_array = []
     for detection in detections:
@@ -100,7 +91,7 @@ def cvDrawBoxes(detections, img):
             detection[2][1],\
             detection[2][2],\
             detection[2][3]
-        xmin, ymin, xmax, ymax = convertBack(
+        xmin, ymin, xmax, ymax = lightnet.convertBack(
             float(x), float(y), float(w), float(h))
         pt1 = (xmin, ymin)
         pt2 = (xmax, ymax)
