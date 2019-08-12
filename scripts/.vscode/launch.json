@@ -26,7 +26,6 @@
             "program": "${file}",
             "cwd": "d:/__svn_pool/lightnet/==real-nike-448/",
             "args": [
-                "--yolo",
                 "--interactive"
             ],
             "console": "integratedTerminal"

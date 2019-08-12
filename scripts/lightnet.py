@@ -16,32 +16,6 @@ def to_str(path, feed_to_darknet = False):
         path = path.encode('ascii')
     return path
 
-def load_name_list(metaPath):
-    # In Python 3, the metafile default access craps out on Windows (but not Linux)
-    # Read the names file and create a list to feed to detect
-    try:
-        with open(metaPath) as metaFH:
-            metaContents = metaFH.read()
-            import re
-            match = re.search("names *= *(.*)$", metaContents,
-                                re.IGNORECASE | re.MULTILINE)
-            if match:
-                result = match.group(1)
-            else:
-                result = None
-            try:
-                if os.path.exists(result):
-                    with open(result) as namesFH:
-                        namesList = namesFH.read().strip().split("\n")
-                        altNames = [x.strip() for x in namesList]
-                        return altNames
-            except TypeError:
-                pass
-    except Exception:
-        pass
-    return []
-
-
 USING_DARKNET_IMAGE_IO = True
 def detect_from_file(net, meta, image_path, thresh=.5, hier_thresh=.5, nms=.45, debug=False):
     #pylint: disable= C0321
@@ -100,10 +74,7 @@ def detect_from_memory(net, meta, im, thresh=.5, hier_thresh=.5, nms=.45, debug=
                       str(meta.classes) + "= " + str(dets[j].prob[i]))
             if dets[j].prob[i] > 0:
                 b = dets[j].bbox
-                if darknet.altNames is None:
-                    nameTag = meta.names[i]
-                else:
-                    nameTag = darknet.altNames[i]
+                nameTag = meta.names[i]
                 if debug:
                     print("Got bbox", b)
                     print(nameTag)
@@ -122,23 +93,29 @@ def detect_from_memory(net, meta, im, thresh=.5, hier_thresh=.5, nms=.45, debug=
 
 
 def load_network_meta(cfg_path, weights_path, meta_path = None):
-    net = darknet.load_net_custom(
-        to_str(cfg_path, True), to_str(weights_path, True), 0, 1)  # batch size = 1
+    class PyMeta:
+        def __init__(self):
+            self.classes = 0
+            self.names = []
+    py_meta = PyMeta()
+
     if meta_path:
         meta = darknet.load_meta(to_str(meta_path, True))
-        darknet.altNames = load_name_list(to_str(meta_path))
+        py_meta.classes = meta.classes
+        for i in range(meta.classes):
+            py_meta.names.append(meta.names[i].decode('ascii'))
     else:
-        class FakeMeta:
-            def __init__(self):
-                self.classes = 1
-                self.names = ['obj']
-        meta = FakeMeta()        
+        py_meta.classes = 1
+        py_meta.names = ['obj']
 
-    return net, meta
+    net = darknet.load_net_custom(
+        to_str(cfg_path, True), to_str(weights_path, True), 0, 1)  # batch size = 1
+    
+    return net, py_meta
 
 if __name__ == "__main__":
     net, meta = load_network_meta(
-        "yolo-obj.cfg", "weights/yolo-obj_200.weights", "obj.data")
+        "obj.cfg", "weights/obj_last.weights", "obj.data")
 
     r = detect_from_file(net, meta, 
         "img/air_vapor/air_vapor_original_shot_2018-May-07-22-12-34-237301_3fd9a907-034f-45c0-9a84-f4431945fa7b.jpg", thresh=0.25, debug=False)
