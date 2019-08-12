@@ -232,7 +232,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--cfg', default='obj.cfg')
     parser.add_argument('--weights', default='weights/obj_last.weights')
-    parser.add_argument('--data', default='obj.data')
+    parser.add_argument('--names', default='obj.names')
     parser.add_argument('--image')
     parser.add_argument('--video')
     parser.add_argument('--socket', type=int)
@@ -249,9 +249,9 @@ def main():
     args = parser.parse_args()
     args_cfgs = args.cfg.split(',')
     args_weights = args.weights.split(',')
-    args_datas = args.data.split(',')
+    args_names = args.names.split(',')
     for i, _ in enumerate(args_cfgs):
-         net, meta = lightnet.load_network_meta(args_cfgs[i], args_weights[i], args_datas[i])
+         net, meta = lightnet.load_network_meta(args_cfgs[i], args_weights[i], args_names[i])
          nets.append(net)
          metas.append(meta)
 
@@ -269,7 +269,7 @@ def main():
         csv_file = open(csv_name, 'w')
         csv_file.write('image')
         for i, _ in enumerate(args_cfgs):
-            csv_file.write(',%d_top1,score,%d_top2,score,%d_top3,score' % (i,i,i))
+            csv_file.write(',%d_top1,score,%d_top2,score,%d_top3,score' % (i+1,i+1,i+1))
         csv_file.flush()
         csv_file.write('\n')
 

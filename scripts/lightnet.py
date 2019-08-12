@@ -16,6 +16,14 @@ def to_str(path, feed_to_darknet = False):
         path = path.encode('ascii')
     return path
 
+def load_name_list(names_path):
+    if os.path.exists(names_path):
+        with open(names_path) as namesFH:
+            namesList = namesFH.read().strip().split("\n")
+            altNames = [x.strip() for x in namesList]
+            return altNames
+    return []
+
 USING_DARKNET_IMAGE_IO = True
 def detect_from_file(net, meta, image_path, thresh=.5, hier_thresh=.5, nms=.45, debug=False):
     #pylint: disable= C0321
@@ -100,10 +108,9 @@ def load_network_meta(cfg_path, weights_path, meta_path = None):
     py_meta = PyMeta()
 
     if meta_path:
-        meta = darknet.load_meta(to_str(meta_path, True))
-        py_meta.classes = meta.classes
-        for i in range(meta.classes):
-            py_meta.names.append(meta.names[i].decode('ascii'))
+        names = load_name_list(meta_path)
+        py_meta.classes = len(names)
+        py_meta.names = names
     else:
         py_meta.classes = 1
         py_meta.names = ['obj']
@@ -115,7 +122,7 @@ def load_network_meta(cfg_path, weights_path, meta_path = None):
 
 if __name__ == "__main__":
     net, meta = load_network_meta(
-        "obj.cfg", "weights/obj_last.weights", "obj.data")
+        "obj.cfg", "weights/obj_last.weights", "obj.names")
 
     r = detect_from_file(net, meta, 
         "img/air_vapor/air_vapor_original_shot_2018-May-07-22-12-34-237301_3fd9a907-034f-45c0-9a84-f4431945fa7b.jpg", thresh=0.25, debug=False)
