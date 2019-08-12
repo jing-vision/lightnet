@@ -55,6 +55,7 @@
             "cwd": "d:/__svn_pool/lightnet/==real-nike-448/",
             "args": [
                 "--interactive",
+                "--yolo",
                 "--debug"
             ],
             "console": "integratedTerminal"

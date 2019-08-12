@@ -221,7 +221,7 @@ def local_app_run():
 
 def main():
     # lightnet.set_cwd(dir)
-    global nets, metas, args
+    global nets, metas, args, yolo_net, yolo_meta
 
     def add_bool_arg(parser, name, default=False):
         group = parser.add_mutually_exclusive_group(required=False)
