@@ -38,10 +38,10 @@ host_ip = 'localhost'
 def get_Host_name_IP(): 
     try:
         global host_ip
-        host_name = socket.gethostname()
-        host_ip = socket.gethostbyname(host_name)
-        print("Hostname:",host_name)
-        print("IP:",host_ip)
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect(("baidu.com",80))
+        host_ip, _ = s.getsockname()
+        print("http://%s:5000" % host_ip)
     except: 
         print("Unable to get Hostname and IP")
 
