@@ -23,6 +23,7 @@ import socket
 import flask
 import datetime
 import csv
+import time
 
 app = flask.Flask(__name__)
 
@@ -35,6 +36,13 @@ csv_file = None
 csv_writer = None
 
 host_ip = 'localhost'
+
+def print_timestamp(tag = ''):
+    if args.debug:
+        now = datetime.datetime.now()
+        now_string = now.strftime("%M:%S.%f")
+        print(now_string, tag)
+
 def get_Host_name_IP(): 
     try:
         global host_ip
@@ -54,10 +62,11 @@ def index_get():
 @app.route("/predict", methods=["POST"])
 def predict_post():
     import numpy as np
-    import io
-
     # initialize the data dictionary that will be returned from the
     # view
+
+    print_timestamp("/predict start")
+
     data = []
 
     # ensure an image was properly uploaded to our endpoint
@@ -65,10 +74,14 @@ def predict_post():
         if flask.request.files.get("image"):
             # read the image in PIL format
             image = flask.request.files["image"].read()
+            print_timestamp("flask.request")
             # convert string of image data to uint8
             nparr = np.fromstring(image, np.uint8)
+
             # decode image
             frame = cv.imdecode(nparr, cv.IMREAD_COLOR)
+
+            print_timestamp("cv.imdecode")
 
             # classify the input image and then initialize the list
             # of predictions to return to the client
@@ -80,7 +93,7 @@ def predict_post():
             for (label, prob) in results:
                 r = {"label": label, "score": float(prob)}
                 data.append(r)
-
+    print_timestamp("/predict end")
     # return the data dictionary as a JSON response
     return flask.jsonify(data)
 
@@ -110,7 +123,7 @@ def slave_labor(frame):
     h, w, _ = frame.shape
     roi_array = []
     full_im, _ = darknet.array_to_image(frame)
-    darknet.rgbgr_image(full_im)    
+    darknet.rgbgr_image(full_im)
     if args.yolo:
         #
         r = lightnet.detect_from_memory(
@@ -118,6 +131,9 @@ def slave_labor(frame):
         if args.debug:
             print(r)
         roi_array = cvDrawBoxes(r, frame)
+
+        if args.debug:
+            print_timestamp("yolo")
 
     if not roi_array:
         roi_array = [(0,0, w, h)]
@@ -130,13 +146,16 @@ def slave_labor(frame):
         for roi in roi_array:
             if args.yolo:
                 frame_roi = frame[roi[1] : roi[3], roi[0]:roi[2]]
-                if not args.interactive:
+                if args.socket or not args.interactive:
                     cv.imshow("frame_roi", frame_roi)
             else:
                 frame_roi = frame
             im, _ = darknet.array_to_image(frame_roi)
             darknet.rgbgr_image(im)
             r = darknet.classify(nets[i], metas[i], im)
+
+            print_timestamp("classify")
+
             results.extend(r)
             results_flat.extend(r)
             # results = sorted(results, key=lambda x: -x[1])
@@ -180,6 +199,8 @@ def slave_labor(frame):
                     csv_file.write(',%s,%.3f' % (label[4:],score ))
             csv_file.write('\n')
             csv_file.flush()
+
+            print_timestamp("csv_file")
 
     elif args.interactive:
         pass
