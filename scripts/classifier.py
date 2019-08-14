@@ -24,6 +24,7 @@ import flask
 import datetime
 import csv
 import time
+import threading
 
 app = flask.Flask(__name__)
 
@@ -35,13 +36,15 @@ yolo_meta = None
 csv_file = None
 csv_writer = None
 
+gpu_lock = threading.Lock()
+
 host_ip = 'localhost'
 
 def print_timestamp(tag = ''):
     if args.debug:
         now = datetime.datetime.now()
         now_string = now.strftime("%M:%S.%f")
-        print(now_string, tag)
+        print("TID:", threading.get_ident(), now_string, tag)
 
 def get_Host_name_IP(): 
     try:
@@ -62,6 +65,7 @@ def index_get():
 @app.route("/predict", methods=["POST"])
 def predict_post():
     import numpy as np
+
     # initialize the data dictionary that will be returned from the
     # view
 
@@ -124,6 +128,8 @@ def slave_labor(frame):
     roi_array = []
     full_im, _ = darknet.array_to_image(frame)
     darknet.rgbgr_image(full_im)
+
+    gpu_lock.acquire()
     if args.yolo:
         #
         r = lightnet.detect_from_memory(
@@ -160,6 +166,8 @@ def slave_labor(frame):
             results_flat.extend(r)
             # results = sorted(results, key=lambda x: -x[1])
         results_hier.append(results)
+    gpu_lock.release()
+    
     results_flat = sorted(results_flat, key=lambda x: -x[1])
     top_k = args.top_k
     if top_k >= len(results_flat):
@@ -291,7 +299,7 @@ def main():
         print('=========================================')
         get_Host_name_IP()
         print('=========================================')
-        app.run(host='0.0.0.0', port=args.socket)
+        app.run(host='0.0.0.0', port=args.socket, threaded=True)
         exit(0)
 
     if args.interactive:
