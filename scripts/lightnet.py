@@ -28,6 +28,7 @@ def load_name_list(names_path):
             return altNames
     return []
 
+
 USING_DARKNET_IMAGE_IO = True
 
 
@@ -55,10 +56,14 @@ def convertBack(x, y, w, h):
     if xmin < 0:
         xmin = 0
     xmax = int(round(x + (w / 2)))
+    if xmax > w - 1:
+        xmax = w - 1
     ymin = int(round(y - (h / 2)))
     if ymin < 0:
         ymin = 0
     ymax = int(round(y + (h / 2)))
+    if ymax > h - 1:
+        ymax = h - 1
     return xmin, ymin, xmax, ymax
 
 
@@ -139,6 +144,7 @@ def load_network_meta(cfg_path, weights_path, meta_path=None):
         to_str(cfg_path, True), to_str(weights_path, True), 0, 1)  # batch size = 1
 
     return net, py_meta
+
 
 if __name__ == "__main__":
     net, meta = load_network_meta(
