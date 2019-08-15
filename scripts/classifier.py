@@ -25,6 +25,9 @@ import argparse
 import lightnet
 import darknet
 import socket
+import logging
+logger = logging.getLogger(__name__)
+
 app = flask.Flask(__name__)
 
 args = None
@@ -38,13 +41,6 @@ csv_writer = None
 gpu_lock = threading.Lock()
 
 host_ip = 'localhost'
-
-
-def print_timestamp(tag=''):
-    if args.debug:
-        now = datetime.datetime.now()
-        now_string = now.strftime("%M:%S.%f")
-        print("TID:", threading.get_ident(), now_string, tag)
 
 
 def get_Host_name_IP():
@@ -73,36 +69,40 @@ def predict_post():
     # initialize the data dictionary that will be returned from the
     # view
 
-    print_timestamp("/predict start")
+    logger.info("/predict start")
 
     data = []
 
     # ensure an image was properly uploaded to our endpoint
-    if flask.request.method == "POST":
-        image = flask.request.files.get("image")
-        if image:
-            # read the image in PIL format
-            image = flask.request.files["image"].read()
-            print_timestamp("flask.request")
-            # convert string of image data to uint8
-            nparr = np.fromstring(image, np.uint8)
+    if flask.request.method != "POST":
+        return '[]'
+    image = flask.request.files.get("image")
+    if not image:
+        return '[]'
 
-            # decode image
-            frame = cv.imdecode(nparr, cv.IMREAD_COLOR)
+    try:
+        # read the image in PIL format
+        image = flask.request.files["image"].read()
+        logger.info("|flask.request")
+        # convert string of image data to uint8
+        nparr = np.fromstring(image, np.uint8)
 
-            print_timestamp("cv.imdecode")
+        # decode image
+        frame = cv.imdecode(nparr, cv.IMREAD_COLOR)
 
-            # classify the input image and then initialize the list
-            # of predictions to return to the client
-            results = slave_labor(frame)
-            print(results)
+        logger.info("|cv.imdecode")
+        results = slave_labor(frame)
+        logger.info(results)
+    except:
+        logger.error('|exception', exc_info=True)
+        return "[]"
 
-            # loop over the results and add them to the list of
-            # returned predictions
-            for (label, prob) in results:
-                r = {"label": label, "score": float(prob)}
-                data.append(r)
-    print_timestamp("/predict end")
+    # loop over the results and add them to the list of
+    # returned predictions
+    for (label, prob) in results:
+        r = {"label": label, "score": float(prob)}
+        data.append(r)
+    logger.info("\predict end")
     # return the data dictionary as a JSON response
     return flask.jsonify(data)
 
@@ -141,12 +141,11 @@ def slave_labor(frame):
         #
         r = lightnet.detect_from_memory(
             yolo_net, yolo_meta, full_im, thresh=0.75, debug=False)
-        if args.debug:
-            print(r)
+        logger.debug(r)
         roi_array = cvDrawBoxes(r, frame)
 
         if args.debug:
-            print_timestamp("yolo")
+            logger.info("|yolo")
 
     if not roi_array:
         roi_array = [(0, 0, w, h)]
@@ -157,29 +156,26 @@ def slave_labor(frame):
     frame_rois = []
     im_rois = []
 
-    for roi in roi_array:
-        if args.yolo:
-            print(roi)
-            frame_roi = frame[roi[1]: roi[3], roi[0]:roi[2]]
-            frame_rois.append(frame_roi)
-            if args.socket or not args.interactive:
-                cv.imshow("frame_roi", frame_roi)
-        else:
-            frame_roi = frame
-        im, _ = darknet.array_to_image(frame_roi)
-        darknet.rgbgr_image(im)
-        im_rois.append(im)
-
     for i, _ in enumerate(nets):
         results = []
-        for im in im_rois:
+        for roi in roi_array:
+            if args.yolo:
+                # print(roi)
+                frame_roi = frame[roi[1]: roi[3], roi[0]:roi[2]]
+                frame_rois.append(frame_roi)
+                if not args.socket and not args.interactive:
+                    cv.imshow("frame_roi", frame_roi)
+            else:
+                frame_roi = frame
+            im, _ = darknet.array_to_image(frame_roi)
+            darknet.rgbgr_image(im)
             r = darknet.classify(nets[i], metas[i], im)
 
             results.extend(r)
             results_flat.extend(r)
             # results = sorted(results, key=lambda x: -x[1])
         results_hier.append(results)
-    print_timestamp("classify")
+    logger.info("|darknet.classify")
     gpu_lock.release()
 
     results_flat = sorted(results_flat, key=lambda x: -x[1])
@@ -222,7 +218,7 @@ def slave_labor(frame):
             csv_file.write('\n')
             csv_file.flush()
 
-            print_timestamp("csv_file")
+            logger.info("|csv_file.write")
 
     elif args.interactive:
         pass
@@ -240,7 +236,7 @@ def interactive_run():
         frame = cv.imread(filename)
         results = slave_labor(frame)
         for r in results:
-            print("%s: %.3f" % (r[0], r[1]))
+            logger.debug("%s: %.3f" % (r[0], r[1]))
         # key = cv.waitKey(1)
 
 
@@ -298,10 +294,22 @@ def main():
         yolo_net, yolo_meta = lightnet.load_network_meta(
             args.yolo_cfg, args.yolo_weights)
 
+    logging.basicConfig(level=logging.INFO)
+
     if args.debug:
         folder_name = 'socket_debug'
         if not os.path.exists(folder_name):
             os.mkdir(folder_name)
+
+        # create a file handler
+        handler = logging.FileHandler('socket_debug/debug.log')
+        handler.setLevel(logging.INFO)
+        # create a logging format
+        formatter = logging.Formatter(
+            '%(asctime)s - %(thread)d - %(message)s')
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+
         global csv_file
         now = datetime.datetime.now()
         now_string = now.strftime("%Y-%h-%d-%H-%M-%S-%f")
@@ -310,7 +318,7 @@ def main():
         csv_file.write('image')
         for i, _ in enumerate(args_cfgs):
             csv_file.write(
-                ',%d_top1,score,%d_top2,score,%d_top3,score' % (i+1, i+1, i+1))
+                ',%d_top1,score,%d_top2,score,%d_top3,score' % (i + 1, i + 1, i + 1))
         csv_file.flush()
         csv_file.write('\n')
 
