@@ -79,7 +79,8 @@ def predict_post():
 
     # ensure an image was properly uploaded to our endpoint
     if flask.request.method == "POST":
-        if flask.request.files.get("image"):
+        image = flask.request.files.get("image")
+        if image:
             # read the image in PIL format
             image = flask.request.files["image"].read()
             print_timestamp("flask.request")
@@ -173,12 +174,12 @@ def slave_labor(frame):
         results = []
         for im in im_rois:
             r = darknet.classify(nets[i], metas[i], im)
-            print_timestamp("classify")
 
             results.extend(r)
             results_flat.extend(r)
             # results = sorted(results, key=lambda x: -x[1])
         results_hier.append(results)
+    print_timestamp("classify")
     gpu_lock.release()
 
     results_flat = sorted(results_flat, key=lambda x: -x[1])
