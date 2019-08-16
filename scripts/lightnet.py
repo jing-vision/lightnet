@@ -52,18 +52,18 @@ def detect_from_file(net, meta, image_path, thresh=.5, hier_thresh=.5, nms=.45, 
 
 
 def convertBack(x, y, w, h):
-    xmin = int(round(x - (w / 2)))
+    xmin = round(x - (w / 2))
     if xmin < 0:
         xmin = 0
-    xmax = int(round(x + (w / 2)))
+    xmax = round(x + (w / 2))
     if xmax > w - 1:
-        xmax = w - 1
-    ymin = int(round(y - (h / 2)))
+        xmax = round(w - 1)
+    ymin = round(y - (h / 2))
     if ymin < 0:
         ymin = 0
-    ymax = int(round(y + (h / 2)))
+    ymax = round(y + (h / 2))
     if ymax > h - 1:
-        ymax = h - 1
+        ymax = round(h - 1)
     return xmin, ymin, xmax, ymax
 
 

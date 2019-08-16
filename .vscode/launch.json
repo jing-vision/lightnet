@@ -10,9 +10,9 @@
             "request": "launch",
             "program": "${workspaceRoot}/scripts/roi_extractor.py",
             "args": [
-                "--images=${workspaceRoot}/==real-nike-448/img/",
-                "--yolo_cfg=${workspaceRoot}/==real-nike-448/yolo/obj.cfg",
-                "--yolo_weights=${workspaceRoot}/==real-nike-448/yolo/obj_last.weights",
+                "--images=${workspaceRoot}/==template-darknet19_448/img/",
+                "--yolo_cfg=${workspaceRoot}/==template-darknet19_448/yolo/obj.cfg",
+                "--yolo_weights=${workspaceRoot}/==template-darknet19_448/yolo/obj_last.weights",
             ],
             "env": {
                 "PATH": "${env:PATH};${workspaceRoot}/bin"
@@ -24,12 +24,12 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "cwd": "${workspaceRoot}/==real-nike-448/",
+            "cwd": "${workspaceRoot}/==template-darknet19_448/",
             "args": [
                 "--socket=5000",
                 "-cfg=obj.cfg,obj.cfg,obj.cfg",
                 "--weights=weights/obj_last.weights,weights/obj_last.weights,weights/obj_last.weights",
-                "--data=obj.data,obj.data,obj.data",
+                "--names=obj.names,obj.names,obj.names",
                 "--threshold=0.1",
                 "--debug"
             ],
@@ -40,7 +40,7 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "cwd": "${workspaceRoot}/==real-nike-448/",
+            "cwd": "${workspaceRoot}/==template-darknet19_448/",
             "args": [
                 "--socket=5000",
                 "--debug"
@@ -67,7 +67,7 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "cwd": "${workspaceRoot}/==real-nike-448/",
+            "cwd": "${workspaceRoot}/==template-darknet19_448/",
             "args": [
                 "--interactive",
                 "--yolo",
