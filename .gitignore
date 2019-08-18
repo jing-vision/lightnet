@@ -45,7 +45,7 @@
 # network related
 *.weights
 /bin/*
-!/bin/auto_marker.py
+!/bin/assets/
 
 /networks/*
 !/networks/darknet19_448-template/

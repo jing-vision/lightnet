@@ -41,7 +41,7 @@ bool is_fullscreen = false;
 #define APP_NAME "feature-viz"
 #define VER_MAJOR 0
 #define VER_MINOR 1
-#define VER_PATCH 7
+#define VER_PATCH 8
 
 #define TITLE APP_NAME " " CVAUX_STR(VER_MAJOR) "." CVAUX_STR(VER_MINOR) "." CVAUX_STR(VER_PATCH)
 
@@ -56,6 +56,8 @@ struct ControlPanel
         width -= 100;
         height -= 50;
         canvas = cv::Mat(height, width, CV_8UC3);
+
+        params = imread("assets/params.jpg");
     }
 
     void update()
@@ -76,6 +78,7 @@ struct ControlPanel
     }
 
     cv::Mat canvas;
+    cv::Mat params;
     int width = 1024;
     int height = 768;
 
@@ -204,7 +207,7 @@ int main(int argc, char **argv)
 
                 int x = 30;
                 int y = 10;
-                int dy_small = 18;
+                int dy_small = 20;
                 int dy_large = 50;
                 int width = 300;
 
@@ -213,19 +216,23 @@ int main(int argc, char **argv)
                 const int btn_height = 30;
                 const int btn_cols = (panel.width - x) / btn_width;
 
+                if (!panel.params.empty())
+                    cvui::image(panel.canvas, panel.width / 2, 2, panel.params);
                 const auto& meta = layer_metas[current_layer_index];
                 {
                     // meta data
                     char info[100];
                     cvui::text(panel.canvas, x, y+= dy_small, cfg_path);
                     cvui::text(panel.canvas, x, y += dy_small, weights_path);
+                    sprintf(info, "input tensor: %d x %d x %d", meta.input_dim[0], meta.input_dim[1], meta.input_dim[2]);
+                    cvui::text(panel.canvas, x, y += dy_small, info);
                     sprintf(info, "%d filter(s) : %d x %d x %d", meta.filter_count, meta.filter_dim[0], meta.filter_dim[1], meta.filter_dim[2]);
                     cvui::text(panel.canvas, x, y += dy_small, info);
-                    sprintf(info, "output: %d x %d x %d", meta.output_dim[0], meta.output_dim[1], meta.output_dim[2]);
+                    sprintf(info, "output tensor: %d x %d x %d", meta.output_dim[0], meta.output_dim[1], meta.output_dim[2]);
                     cvui::text(panel.canvas, x, y += dy_small, info);
                 }
 
-                y += dy_small * 2;
+                y += dy_small * 4;
 
                 // draw buttons
                 int layer = 0;
