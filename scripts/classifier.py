@@ -33,7 +33,6 @@ app = flask.Flask(__name__)
 args = None
 nets = []
 metas = []
-args_groups = []
 csv_file = None
 csv_writer = None
 cap = None
@@ -97,9 +96,14 @@ def predict_post():
         logger.error('|exception', exc_info=True)
         return "[]"
 
+    # loop over the results and add them to the list of
+    # returned predictions
+    for (label, prob) in results:
+        r = {"label": label, "score": float(prob)}
+        data.append(r)
     logger.info("\predict end")
     # return the data dictionary as a JSON response
-    return flask.jsonify(results)
+    return flask.jsonify(data)
 
 
 def cvDrawBoxes(detections, img):
@@ -166,12 +170,13 @@ def slave_labor(frame):
     if not roi_array:
         roi_array = [(0, 0, w, h)]
 
-    preds = []
+    results_hier = []
+    results_flat = []
 
     frame_rois = []
 
     for i, _ in enumerate(nets):
-        results = [] # cross all rois
+        results = []
         for roi in roi_array:
             if args.yolo:
                 # print(roi)
@@ -183,65 +188,56 @@ def slave_labor(frame):
                 frame_roi = frame
             im, _ = darknet.array_to_image(frame_roi)
             darknet.rgbgr_image(im)
-            r = lightnet.classify(nets[i], metas[i], im) # for single roi
+            r = lightnet.classify(nets[i], metas[i], im)
 
             results.extend(r)
-        results = sorted(results, key=lambda x: -x[1])
-        for rank in range(0, args.top_k):
-            (label, score) = results[rank]
-            preds.append({
-                'plan': '100XGROUP', # TODO: remove hardcoding
-                'group': args_groups[i], 
-                'predicate_sku': label,
-                'score': score,
-            })
+            results_flat.extend(r)
+            # results = sorted(results, key=lambda x: -x[1])
+        results_hier.append(results)
     logger.info("|lightnet.classify")
     gpu_lock.release()
 
-    return preds
+    results_flat = sorted(results_flat, key=lambda x: -x[1])
+    top_k = args.top_k
+    if top_k >= len(results_flat):
+        top_k = len(results_flat)
 
-    if False:
-        results_flat = sorted(results_flat, key=lambda x: -x[1])
-        top_k = args.top_k
-        if top_k >= len(results_flat):
-            top_k = len(results_flat)
+    preds = []
+    for rank in range(0, top_k):
+        left = 10
+        top = 20 + rank * 20
+        (label, score) = results_flat[rank]
+        if score >= args.threshold:
+            preds.append((label[4:], score))
 
-        preds = []
-        for rank in range(0, top_k):
-            left = 10
-            top = 20 + rank * 20
-            (label, score) = results_flat[rank]
-            if score >= args.threshold:
-                preds.append((label, score))
+        text = '%s %.2f%%' % (label, score * 100)
+        labelSize, baseLine = cv.getTextSize(
+            text, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+        back_clr = (222, 222, 222)
+        if score > args.gold_confidence:
+            back_clr = (122, 122, 255)
+        cv.rectangle(frame, (left, top - labelSize[1]), (left + labelSize[
+            0], top + baseLine), back_clr, cv.FILLED)
 
-            text = '%s %.2f%%' % (label, score * 100)
-            labelSize, baseLine = cv.getTextSize(
-                text, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
-            back_clr = (222, 222, 222)
-            if score > args.gold_confidence:
-                back_clr = (122, 122, 255)
-            cv.rectangle(frame, (left, top - labelSize[1]), (left + labelSize[
-                0], top + baseLine), back_clr, cv.FILLED)
+        cv.putText(frame, text, (left, top),
+                   cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
 
-            cv.putText(frame, text, (left, top),
-                    cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
+    if args.socket:
+        if args.debug:
+            now = datetime.datetime.now()
+            now_string = now.strftime("%Y-%h-%d-%H-%M-%S-%f")
+            image_name = 'socket_debug' + '/' + now_string + '.jpg'
+            cv.imwrite(image_name, frame)
+            csv_file.write(image_name)
+            for results in results_hier:
+                top_k = 3
+                for rank in range(0, top_k):
+                    (label, score) = results[rank]
+                    csv_file.write(',%s,%.3f' % (label[4:], score))
+            csv_file.write('\n')
+            csv_file.flush()
 
-        if args.socket:
-            if args.debug:
-                now = datetime.datetime.now()
-                now_string = now.strftime("%Y-%h-%d-%H-%M-%S-%f")
-                image_name = 'socket_debug' + '/' + now_string + '.jpg'
-                cv.imwrite(image_name, frame)
-                csv_file.write(image_name)
-                for results in results_per_net:
-                    top_k = 3
-                    for rank in range(0, top_k):
-                        (label, score) = results[rank]
-                        csv_file.write(',%s,%.3f' % (label, score))
-                csv_file.write('\n')
-                csv_file.flush()
-
-                logger.info("|csv_file.write")
+            logger.info("|csv_file.write")
 
     elif args.interactive:
         pass
@@ -280,7 +276,7 @@ def local_app_run():
 
 def main():
     # lightnet.set_cwd(dir)
-    global nets, metas, args, cap, args_groups
+    global nets, metas, args, cap
 
     def add_bool_arg(parser, name, default=False):
         group = parser.add_mutually_exclusive_group(required=False)
@@ -289,7 +285,6 @@ def main():
         parser.set_defaults(**{name: default})
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--group', default='default')
     parser.add_argument('--cfg', default='obj.cfg')
     parser.add_argument('--weights', default='weights/obj_last.weights')
     parser.add_argument('--names', default='obj.names')
@@ -309,7 +304,6 @@ def main():
     args_cfgs = args.cfg.split(',')
     args_weights = args.weights.split(',')
     args_names = args.names.split(',')
-    args_groups = args.group.split(',')
     for i, _ in enumerate(args_cfgs):
         net, meta = lightnet.load_network_meta(
             args_cfgs[i], args_weights[i], args_names[i])
