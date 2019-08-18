@@ -257,6 +257,8 @@ def interactive_run():
         if not filename:
             continue
         frame = cv.imread(filename)
+        if frame is None:
+            continue
         results = slave_labor(frame)
         for r in results:
             logger.info("%s: %.3f" % (r[0], r[1]))
