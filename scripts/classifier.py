@@ -130,6 +130,29 @@ def cvDrawBoxes(detections, img):
     return roi_array
 
 
+def validate_run():
+    with open(args.valid_csv) as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        next(csv_reader)
+
+        for row in csv_reader:
+            sku = row['SKU']
+            filename = row['image']
+            # print(filename)
+            frame = cv.imread(filename)
+            if frame is None:
+                continue
+            results = slave_labor(frame)
+            rank = 0
+            score = 0
+            for i, r in enumerate(results):
+                if r[0] == sku:
+                    rank = i + 1
+                    score = r[1]
+                    break
+            print(sku, filename, rank, score)
+
+
 def slave_labor(frame):
     h, w, _ = frame.shape
     roi_array = []
@@ -267,6 +290,7 @@ def main():
     parser.add_argument('--cfg', default='obj.cfg')
     parser.add_argument('--weights', default='weights/obj_last.weights')
     parser.add_argument('--names', default='obj.names')
+    parser.add_argument('--valid_csv')
     parser.add_argument('--image')
     parser.add_argument('--video')
     parser.add_argument('--socket', type=int)
@@ -331,8 +355,12 @@ def main():
         app.run(host='0.0.0.0', port=args.socket, threaded=True)
         exit(0)
 
-    if args.interactive:
+    if args.valid_csv:
+        validate_run()
+        return
+    elif args.interactive:
         interactive_run()
+        return
     elif args.video or args.image:
         media = args.image
         if not media:
