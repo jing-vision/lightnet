@@ -169,13 +169,13 @@ def slave_labor(frame):
                 frame_roi = frame
             im, _ = darknet.array_to_image(frame_roi)
             darknet.rgbgr_image(im)
-            r = darknet.classify(nets[i], metas[i], im)
+            r = lightnet.classify(nets[i], metas[i], im)
 
             results.extend(r)
             results_flat.extend(r)
             # results = sorted(results, key=lambda x: -x[1])
         results_hier.append(results)
-    logger.info("|darknet.classify")
+    logger.info("|lightnet.classify")
     gpu_lock.release()
 
     results_flat = sorted(results_flat, key=lambda x: -x[1])
