@@ -33,10 +33,9 @@ app = flask.Flask(__name__)
 args = None
 nets = []
 metas = []
-yolo_net = None
-yolo_meta = None
 csv_file = None
 csv_writer = None
+cap = None
 
 gpu_lock = threading.Lock()
 
@@ -161,14 +160,12 @@ def slave_labor(frame):
 
     gpu_lock.acquire()
     if args.yolo:
-        #
-        r = lightnet.detect_from_memory(
-            yolo_net, yolo_meta, full_im, thresh=0.75, debug=False)
-        logger.debug(r)
-        roi_array = cvDrawBoxes(r, frame)
-
-        if args.debug:
-            logger.info("|yolo")
+        if w < h:
+            spacing = int((h - w) / 2)
+            roi_array = [(0, spacing, w, h - spacing)]
+        else:
+            spacing = int((w - h) / 2)
+            roi_array = [(spacing, 0, w - spacing, h)]
 
     if not roi_array:
         roi_array = [(0, 0, w, h)]
@@ -177,7 +174,6 @@ def slave_labor(frame):
     results_flat = []
 
     frame_rois = []
-    im_rois = []
 
     for i, _ in enumerate(nets):
         results = []
@@ -280,7 +276,7 @@ def local_app_run():
 
 def main():
     # lightnet.set_cwd(dir)
-    global nets, metas, args, yolo_net, yolo_meta
+    global nets, metas, args, cap
 
     def add_bool_arg(parser, name, default=False):
         group = parser.add_mutually_exclusive_group(required=False)
@@ -303,8 +299,6 @@ def main():
     add_bool_arg(parser, 'debug')
     add_bool_arg(parser, 'yolo')
     add_bool_arg(parser, 'interactive')
-    parser.add_argument('--yolo_cfg', default='yolo/obj.cfg')
-    parser.add_argument('--yolo_weights', default='yolo/obj_last.weights')
 
     args = parser.parse_args()
     args_cfgs = args.cfg.split(',')
@@ -315,10 +309,6 @@ def main():
             args_cfgs[i], args_weights[i], args_names[i])
         nets.append(net)
         metas.append(meta)
-
-    if args.yolo:
-        yolo_net, yolo_meta = lightnet.load_network_meta(
-            args.yolo_cfg, args.yolo_weights)
 
     logging.basicConfig(level=logging.INFO)
 
