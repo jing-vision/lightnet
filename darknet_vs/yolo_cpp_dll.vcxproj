@@ -303,6 +303,8 @@
     <ClCompile Include="..\modules\darknet\src\yolo_layer.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\modules\darknet\include\darknet.h" />
+    <ClInclude Include="..\modules\darknet\include\yolo_v2_class.hpp" />
     <ClInclude Include="..\modules\darknet\src\activations.h" />
     <ClInclude Include="..\modules\darknet\src\activation_layer.h" />
     <ClInclude Include="..\modules\darknet\src\avgpool_layer.h" />

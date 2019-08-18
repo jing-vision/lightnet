@@ -236,7 +236,7 @@ def interactive_run():
         frame = cv.imread(filename)
         results = slave_labor(frame)
         for r in results:
-            logger.debug("%s: %.3f" % (r[0], r[1]))
+            logger.info("%s: %.3f" % (r[0], r[1]))
         # key = cv.waitKey(1)
 
 

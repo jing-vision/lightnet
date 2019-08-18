@@ -63,14 +63,13 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Python: yolo interactive",
+            "name": "Python: interactive",
             "type": "python",
             "request": "launch",
             "program": "${file}",
             "cwd": "${workspaceRoot}/==template-darknet19_448/",
             "args": [
                 "--interactive",
-                "--yolo",
                 "--debug"
             ],
             "console": "integratedTerminal"
