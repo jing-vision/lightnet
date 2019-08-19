@@ -1,78 +1,78 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "Python: roi extractor",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceRoot}/scripts/roi_extractor.py",
-            "args": [
-                "--images=${workspaceRoot}/==template-darknet19_448/img/",
-                "--yolo_cfg=${workspaceRoot}/==template-darknet19_448/yolo/obj.cfg",
-                "--yolo_weights=${workspaceRoot}/==template-darknet19_448/yolo/obj_last.weights",
-            ],
-            "env": {
-                "PATH": "${env:PATH};${workspaceRoot}/bin"
-            },
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Python: server multi",
-            "type": "python",
-            "request": "launch",
-            "program": "${file}",
-            "cwd": "${workspaceRoot}/==template-darknet19_448/",
-            "args": [
-                "--socket=5000",
-                "-cfg=obj.cfg,obj.cfg,obj.cfg",
-                "--weights=weights/obj_last.weights,weights/obj_last.weights,weights/obj_last.weights",
-                "--names=obj.names,obj.names,obj.names",
-                "--threshold=0.1",
-                "--debug"
-            ],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Python: server",
-            "type": "python",
-            "request": "launch",
-            "program": "${file}",
-            "cwd": "${workspaceRoot}/==template-darknet19_448/",
-            "args": [
-                "--socket=5000",
-                "--debug"
-            ],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Python: yolo marker",
-            "type": "python",
-            "request": "launch",
-            "cwd": "${workspaceRoot}/__template-yolov3/",
-            "program": "${file}",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Python: Current File",
-            "type": "python",
-            "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Python: interactive",
-            "type": "python",
-            "request": "launch",
-            "program": "${file}",
-            "cwd": "${workspaceRoot}/==template-darknet19_448/",
-            "args": [
-                "--interactive",
-                "--debug"
-            ],
-            "console": "integratedTerminal"
-        }
-    ]
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: roi extractor",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceRoot}/scripts/roi_extractor.py",
+      "args": [
+        "--images=${workspaceRoot}/==template-darknet19_448/img/",
+        "--yolo_cfg=${workspaceRoot}/==template-darknet19_448/yolo/obj.cfg",
+        "--yolo_weights=${workspaceRoot}/==template-darknet19_448/yolo/obj_last.weights"
+      ],
+      "env": {
+        "PATH": "${env:PATH};${workspaceRoot}/bin"
+      },
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Python: server multi",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "cwd": "${workspaceRoot}/==template-darknet19_448/",
+      "args": [
+        "--socket=5000",
+        "--cfg=obj.cfg,obj.cfg,obj.cfg",
+        "--weights=weights/obj_last.weights,weights/obj_last.weights,weights/obj_last.weights",
+        "--names=obj.names,obj.names,obj.names",
+        "--threshold=0.1",
+        "--debug"
+      ],
+      "env": {
+        "PATH": "${env:PATH};${workspaceRoot}/bin"
+      },
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Python: server",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "cwd": "${workspaceRoot}/==template-darknet19_448/",
+      "args": ["--socket=5000", "--debug"],
+      "env": {
+        "PATH": "${env:PATH};${workspaceRoot}/bin"
+      },
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Python: yolo marker",
+      "type": "python",
+      "request": "launch",
+      "cwd": "${workspaceRoot}/__template-yolov3/",
+      "program": "${file}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Python: Current File",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Python: yolo interactive",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "cwd": "${workspaceRoot}/==template-darknet19_448/",
+      "args": ["--interactive", "--yolo", "--debug"],
+      "console": "integratedTerminal"
+    }
+  ]
 }
