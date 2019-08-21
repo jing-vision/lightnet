@@ -168,6 +168,7 @@ cfg/extraction.cfg|https://pjreddie.com/media/files/extraction.weights
 cfg/darknet.cfg|https://pjreddie.com/media/files/darknet.weights
 cfg/darknet19.cfg|https://pjreddie.com/media/files/darknet19.weights
 cfg/darknet19_448.cfg|https://pjreddie.com/media/files/darknet19_448.weights
+cfg/darknet53.cfg|https://pjreddie.com/media/files/darknet53.weights
 cfg/resnet50.cfg|https://pjreddie.com/media/files/resnet50.weights
 cfg/resnet152.cfg|https://pjreddie.com/media/files/resnet152.weights
 cfg/densenet201.cfg|https://pjreddie.com/media/files/densenet201.weights
@@ -234,6 +235,8 @@ https://github.com/pjreddie/darknet/wiki/YOLO:-Real-Time-Object-Detection
 > darknet.exe partial cfg/extraction.cfg extraction.weights extraction.conv.23 23
 > darknet.exe partial cfg/darknet19.cfg darknet19.weights darknet19.conv.23 23
 > darknet.exe partial cfg/darknet19_448.cfg darknet19_448.weights darknet19_448.conv.23 23
+> darknet.exe partial cfg/darknet53.cfg darknet53.weights darknet53.conv.74 74
+> darknet.exe partial cfg/resnet50.cfg resnet50.weights resnet50.conv.66 66
 
 Explanation of yolo training output
 ----
