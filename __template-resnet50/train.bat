@@ -1,2 +1,2 @@
-..\bin\darknet.exe classifier train obj.data obj.cfg ..\bin\darknet19_448.conv.23 -topk
+..\bin\darknet.exe classifier train obj.data obj.cfg ..\bin\resnet50.conv.66 -topk
 REM ..\bin\darknet.exe classifier train obj.data obj.cfg weights\obj_last.weights -topk
