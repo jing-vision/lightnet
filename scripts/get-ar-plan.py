@@ -28,9 +28,26 @@ url = 'http://localhost:6666/ar/plan'
 response = requests.get(url)
 result = response.json()
 
+train_bat = 'train.bat'
+
+global_train_bat_fp = open(join('.', train_bat), 'w')
 for plan in result:
     mkdir2(plan['plan_name'])
+    global_train_bat_fp.write('pushd ' + plan['plan_name'])
+    global_train_bat_fp.write('\n')
+    global_train_bat_fp.write('call ' + train_bat)
+    global_train_bat_fp.write('\n')
+    global_train_bat_fp.write('popd')
+    global_train_bat_fp.write('\n')
+
+    plan_train_bat_fp = open(join(plan['plan_name'], train_bat), 'w')
     for group in plan['groups']:
+        plan_train_bat_fp.write('pushd ' + group['group_name'])
+        plan_train_bat_fp.write('\n')
+        plan_train_bat_fp.write('call ' + train_bat)
+        plan_train_bat_fp.write('\n')
+        plan_train_bat_fp.write('popd')
+        plan_train_bat_fp.write('\n')
         group_path = join(plan['plan_name'], group['group_name'])
         shutil.copytree(join(lightnet_folder, '__template-darknet19_448'), group_path)
 
@@ -47,15 +64,18 @@ for plan in result:
 
         label_dict = {}
 
+        idx = 0
         for sku in group['skus']:
             label_dict[sku['sku_code']] = ''
             train_txt_fp.write(sku['image_path'])
             train_txt_fp.write('\n')
 
-            # same files as train_txt
-            # since we have limited # of images now....
-            valid_txt_fp.write(sku['image_path'])
-            valid_txt_fp.write('\n')
+            if idx % 5 == 0:
+                # 20%
+                valid_txt_fp.write(sku['image_path'])
+                valid_txt_fp.write('\n')
+
+            idx += 1
 
         num_classes = len(label_dict.keys()) 
         for label in label_dict.keys():
@@ -70,7 +90,7 @@ for plan in result:
             obj_data_fp.write('labels=%s\n' % join('.', obj_names))
             obj_data_fp.write('names=%s\n' % join('.', obj_names))
             obj_data_fp.write('backup=%s/weights/\n' % '.')
-            obj_data_fp.write('top=5\n')
+            obj_data_fp.write('top=3\n')
 
         class multidict(OrderedDict):
             _unique = 0   # class variable
@@ -87,7 +107,7 @@ for plan in result:
         print(config.sections())
         config._sections['net1']['batch'] = 32
         config._sections['net1']['subdivisions'] = 4
-        config._sections['net1']['max_batches'] = 4000
+        config._sections['net1']['max_batches'] = 1500
         config._sections['net1']['learning_rate'] = 0.001
 
         conv_reverse_id = 0
