@@ -208,7 +208,7 @@ def slave_labor(frame):
         top = 20 + rank * 20
         (label, score) = results_flat[rank]
         if score >= args.threshold:
-            preds.append((label[4:], score))
+            preds.append((label, score))
 
         text = '%s %.2f%%' % (label, score * 100)
         labelSize, baseLine = cv.getTextSize(
@@ -233,7 +233,7 @@ def slave_labor(frame):
                 top_k = 3
                 for rank in range(0, top_k):
                     (label, score) = results[rank]
-                    csv_file.write(',%s,%.3f' % (label[4:], score))
+                    csv_file.write(',%s,%.3f' % (label, score))
             csv_file.write('\n')
             csv_file.flush()
 
