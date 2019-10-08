@@ -201,7 +201,13 @@ https://drive.google.com/open?id=1BfY0Hx2d2nm3I4JFh0W1cK2aHD1FSGea
 FAQ
 ====
 
+blobFromImage() vs letterbox_image() vs resize_image()
+----
+
+https://github.com/AlexeyAB/darknet/issues/232#issuecomment-336955485
+
 How to fix `CUDA Error: no kernel image is available for execution on the device`?
+----
 
 ```
 # Tesla V100
