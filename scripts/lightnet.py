@@ -17,22 +17,12 @@ def set_cwd(path):
 
 
 def classify(net, meta, im):
-    out = darknet.predict_image(net, im)
-    res = []
-    for i in range(meta.classes):
-        nameTag = meta.names[i]
-        res.append((nameTag, out[i]))
-    res = sorted(res, key=lambda x: -x[1])
-    print("v1")
-    print(res[0])
-
     out = predict_image_v2(net, im)
     res = []
     for i in range(meta.classes):
         nameTag = meta.names[i]
         res.append((nameTag, out[i]))
     res = sorted(res, key=lambda x: -x[1])
-    print("v2")
     print(res[0])
     return res
 
