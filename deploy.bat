@@ -6,7 +6,7 @@ rmdir /S /Q %OUTPUT%
 mkdir %OUTPUT%
 mkdir %OUTPUT%/bin
 
-robocopy bin %OUTPUT%/bin opencv_world340.dll
+robocopy bin %OUTPUT%/bin opencv_world411.dll
 robocopy bin %OUTPUT%/bin pthreadVC2.dll
 robocopy bin %OUTPUT%/bin yolo_cpp_dll.dll
 robocopy bin %OUTPUT%/bin feature-viz.exe

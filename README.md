@@ -37,7 +37,7 @@ Install NVIDIA SDK
 
 Install OpenCV
 ----
-- OpenCV 3.4.0: https://sourceforge.net/projects/opencvlibrary/files/opencv-win/3.4.0/opencv-3.4.0-vc14_vc15.exe/download
+- Latest OpenCV: e.g. https://github.com/opencv/opencv/releases/tag/4.1.1
 - Extract to `d:\opencv\`
 
 Build it
