@@ -5,28 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: roi extractor",
-            "type": "python",
-            "request": "launch",
-            "args": [
-                "--images=${workspaceRoot}/==real-nike-448/img_for_valid/img_for_valid/img/",
-                "--yolo_cfg=${workspaceRoot}/==real-nike-448/yolo/obj.cfg",
-                "--yolo_weights=${workspaceRoot}/==real-nike-448/yolo/obj_last.weights",
-            ],
-            "program": "${file}",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Python: server multi",
+            "name": "Python: server",
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "cwd": "${workspaceRoot}/==real-nike-448/",
+            "cwd": "${workspaceRoot}",
             "args": [
                 "--socket=5000",
-                "-cfg=obj.cfg,obj.cfg,obj.cfg",
-                "--weights=weights/obj_last.weights,weights/obj_last.weights,weights/obj_last.weights",
-                "--data=obj.data,obj.data,obj.data",
                 "--threshold=0.1",
                 "--debug"
             ],
