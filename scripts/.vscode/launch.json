@@ -18,18 +18,6 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Python: server",
-            "type": "python",
-            "request": "launch",
-            "program": "${file}",
-            "cwd": "${workspaceRoot}/==real-nike-448/",
-            "args": [
-                "--socket=5000",
-                "--debug"
-            ],
-            "console": "integratedTerminal"
-        },
-        {
             "name": "Python: yolo marker",
             "type": "python",
             "request": "launch",

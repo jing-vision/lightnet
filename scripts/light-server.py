@@ -60,6 +60,14 @@ def index_get():
         host_ip)
     return flask.jsonify(data)
 
+@app.route("/training/status", methods=["GET"])
+def training_status():
+    status = {
+        'plan_name': 'testplan',
+        'percentage': 10
+    }
+    return flask.jsonify(status)
+
 @app.route("/training/begin", methods=["GET"])
 def training_begin():
     plan = flask.request.args.get("plan")
@@ -67,7 +75,21 @@ def training_begin():
     url = 'http://localhost:8800/api/Training/plan?plan=%s' % plan
     response = requests.get(url)
     result = response.json()    
-    return result
+    return flask.jsonify(result)
+
+
+@app.route("/testing/load", methods=["GET"])
+def testing_load():
+    plan = flask.request.args.get("plan")
+    print(plan)
+    result = {
+        'errorCode': 'OK', # or 'Error‘
+        'errorMsg': 'OK is OK'
+    }
+    # url = 'http://localhost:8800/api/Training/plan?plan=%s' % plan
+    # response = requests.get(url)
+    # result = response.json()    
+    return flask.jsonify(result)
 
 @app.route("/predict", methods=["POST"])
 def predict_post():
