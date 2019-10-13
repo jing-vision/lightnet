@@ -85,7 +85,17 @@ def testing_load():
 
         for training_meta in training_metas:
             folder = training_meta['folder']
-            net, meta = lightnet.load_network_meta(join(folder, 'obj.cfg'), join(folder, 'weights/obj_final.weights'), join(folder, 'obj.names'))
+            obj_cfg = join(folder, 'obj.cfg')
+            obj_weights = join(folder, 'weights/obj_final.weights')
+            obj_names = join(folder, 'obj.names')
+            if not os.path.exists(obj_cfg):
+                raise Exception('%s missing' % obj_cfg)
+            if not os.path.exists(obj_weights):
+                raise Exception('%s missing' % obj_weights)
+            if not os.path.exists(obj_names):
+                raise Exception('%s missing' % obj_names)
+
+            net, meta = lightnet.load_network_meta(obj_cfg, obj_weights, obj_names)
             server_testing_internal['plans'].append(training_meta['plan'])
             server_testing_internal['groups'].append(training_meta['group'])
             server_testing_internal['nets'].append(net)
@@ -112,8 +122,6 @@ def predict_post():
     # view
 
     logger.info("/predict start")
-
-    data = []
 
     # ensure an image was properly uploaded to our endpoint
     if flask.request.method != "POST":
@@ -161,45 +169,50 @@ def slave_labor(frame):
     if not roi_array:
         roi_array = [(0, 0, w, h)]
 
-    preds = []
-
+    # TODO: remove frame_rois
     frame_rois = []
 
-    for i, _ in enumerate(nets):
-        results = [] # cross all rois
-        for roi in roi_array:
-            if args.yolo:
-                # print(roi)
-                frame_roi = frame[roi[1]: roi[3], roi[0]:roi[2]]
-                frame_rois.append(frame_roi)
-                if not args.socket and not args.interactive:
-                    cv.imshow("frame_roi", frame_roi)
-            else:
-                frame_roi = frame
-            im, _ = darknet.array_to_image(frame_roi)
-            darknet.rgbgr_image(im)
-            r = lightnet.classify(nets[i], metas[i], im) # for single roi
+    nets = server_testing_internal['nets']
+    plans = server_testing_internal['plans']
+    groups = server_testing_internal['groups']
+    metas = server_testing_internal['metas']
 
-            results.extend(r)
-        results = sorted(results, key=lambda x: -x[1])
-        for rank in range(0, args.top_k):
-            (label, score) = results[rank]
-            preds.append({
-                'plan': '100XGROUP', # TODO: remove hardcoding
-                'group': args_groups[i], 
+    results = []
+
+    for i, _ in enumerate(nets):
+        roi = roi_array[0]
+        if args.yolo:
+            # print(roi)
+            frame_roi = frame[roi[1]: roi[3], roi[0]:roi[2]]
+            frame_rois.append(frame_roi)
+            if not args.socket and not args.interactive:
+                cv.imshow("frame_roi", frame_roi)
+        else:
+            frame_roi = frame
+        im, _ = darknet.array_to_image(frame_roi)
+        darknet.rgbgr_image(im)
+        r = lightnet.classify(nets[i], metas[i], im)
+
+        top_k = args.top_k
+        if top_k >= len(r):
+            top_k = len(r)
+
+        for rank in range(0, top_k):
+            (label, score) = r[rank]
+            results.append({
+                'plan': plans[i], 
+                'group': groups[i], 
                 'predicate_sku': label,
                 'score': score,
             })
     logger.info("|lightnet.classify")
     gpu_lock.release()
 
-    return preds
-
+    return results
 
 def main():
     # lightnet.set_cwd(dir)
-    global nets, metas, args, cap, args_groups
-    global server_state
+    global args, server_state
     server_state = server_state_idle
 
     def add_bool_arg(parser, name, default=False):
@@ -209,26 +222,11 @@ def main():
         parser.set_defaults(**{name: default})
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--group', default='default')
-    parser.add_argument('--cfg', default='obj.cfg')
-    parser.add_argument('--weights', default='weights/obj_last.weights')
-    parser.add_argument('--names', default='obj.names')
     parser.add_argument('--socket', type=int, default=5001)
-    parser.add_argument('--top_k', type=int, default=5)
-    parser.add_argument('--gold_confidence', type=float, default=0.95)
-    parser.add_argument('--threshold', type=float, default=0.5)
-    add_bool_arg(parser, 'debug')
+    parser.add_argument('--top_k', type=int, default=3)
+    add_bool_arg(parser, 'yolo')
 
     args = parser.parse_args()
-    # args_cfgs = args.cfg.split(',')
-    # args_weights = args.weights.split(',')
-    # args_names = args.names.split(',')
-    # args_groups = args.group.split(',')
-    # for i, _ in enumerate(args_cfgs):
-    #     net, meta = lightnet.load_network_meta(
-    #         args_cfgs[i], args_weights[i], args_names[i])
-    #     nets.append(net)
-    #     metas.append(meta)
 
     logging.basicConfig(level=logging.INFO)
 

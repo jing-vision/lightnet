@@ -122,7 +122,7 @@ def training_begin():
         response = requests.get(url)
         plan_json = response.json()
         # return flask.jsonify(result)
-        training_folders = get_ar_plan.prepare_training_folders(plan_json, max_batches=20)
+        training_folders = get_ar_plan.prepare_training_folders(plan_json, max_batches=1000)
 
         x = threading.Thread(target=training_thread_function, args=(training_folders,))
         x.start()
@@ -164,15 +164,6 @@ def main():
     add_bool_arg(parser, 'debug')
 
     args = parser.parse_args()
-    # args_cfgs = args.cfg.split(',')
-    # args_weights = args.weights.split(',')
-    # args_names = args.names.split(',')
-    # args_groups = args.group.split(',')
-    # for i, _ in enumerate(args_cfgs):
-    #     net, meta = lightnet.load_network_meta(
-    #         args_cfgs[i], args_weights[i], args_names[i])
-    #     nets.append(net)
-    #     metas.append(meta)
 
     logging.basicConfig(level=logging.INFO)
 
