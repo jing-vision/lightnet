@@ -26,6 +26,7 @@ import lightnet
 import darknet
 import socket
 import requests
+import get_ar_plan
 import logging
 logger = logging.getLogger(__name__)
 app = flask.Flask(__name__)
@@ -42,6 +43,12 @@ gpu_lock = threading.Lock()
 
 host_ip = 'localhost'
 
+#
+server_state_idle = 0
+server_state_training = 1
+server_state_testing_loaded = 2
+
+
 def get_Host_name_IP():
     try:
         global host_ip
@@ -51,7 +58,6 @@ def get_Host_name_IP():
         print("http://%s:5000" % host_ip)
     except:
         print("Unable to get Hostname and IP")
-
 
 @app.route("/", methods=["GET"])
 def index_get():
@@ -70,13 +76,26 @@ def training_status():
 
 @app.route("/training/begin", methods=["GET"])
 def training_begin():
+    if server_state != server_state_idle:
+        result = {
+            'errCode': 'Busy', # 'OK/Busy/Error'
+            'errMsg': 'Server is busy'
+        }
+        return flask.jsonify(result)
+
     plan = flask.request.args.get("plan")
     print(plan)
     url = 'http://localhost:8800/api/Training/plan?plan=%s' % plan
     response = requests.get(url)
-    result = response.json()    
-    return flask.jsonify(result)
+    plan_json = response.json()
+    # return flask.jsonify(result)
+    get_ar_plan.prepare_training_plan(plan_json)
 
+    result = {
+        'errCode': 'OK', # 'OK/Busy/Error'
+        'errMsg': ''
+    }
+    return flask.jsonify(result)
 
 @app.route("/testing/load", methods=["GET"])
 def testing_load():
@@ -129,52 +148,6 @@ def predict_post():
     logger.info("\predict end")
     # return the data dictionary as a JSON response
     return flask.jsonify(results)
-
-def cvDrawBoxes(detections, img):
-    roi_array = []
-    for detection in detections:
-        x, y, w, h = detection[2][0],\
-            detection[2][1],\
-            detection[2][2],\
-            detection[2][3]
-        xmin, ymin, xmax, ymax = lightnet.convertBack(
-            float(x), float(y), float(w), float(h))
-        pt1 = (xmin, ymin)
-        pt2 = (xmax, ymax)
-        roi_array.append((xmin, ymin, xmax, ymax))
-
-        if args.debug:
-            cv.rectangle(img, pt1, pt2, (0, 255, 0), 1)
-            cv.putText(img,
-                       # detection[0] +
-                       " [" + str(round(detection[1] * 100, 2)) + "]",
-                       (pt1[0], pt1[1] - 5), cv.FONT_HERSHEY_SIMPLEX, 0.5,
-                       [0, 255, 0], 2)
-    return roi_array
-
-
-def validate_run():
-    with open(args.valid_csv) as csv_file:
-        csv_reader = csv.DictReader(csv_file)
-        next(csv_reader)
-
-        for row in csv_reader:
-            sku = row['SKU']
-            filename = row['image']
-            # print(filename)
-            frame = cv.imread(filename)
-            if frame is None:
-                continue
-            results = slave_labor(frame)
-            rank = 0
-            score = 0
-            for i, r in enumerate(results):
-                if r[0] == sku:
-                    rank = i + 1
-                    score = r[1]
-                    break
-            print(sku, filename, rank, score)
-
 
 def slave_labor(frame):
     h, w, _ = frame.shape
@@ -232,6 +205,8 @@ def slave_labor(frame):
 def main():
     # lightnet.set_cwd(dir)
     global nets, metas, args, cap, args_groups
+    global server_state
+    server_state = server_state_idle
 
     def add_bool_arg(parser, name, default=False):
         group = parser.add_mutually_exclusive_group(required=False)
