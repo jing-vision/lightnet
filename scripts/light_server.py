@@ -18,6 +18,7 @@ import time
 import csv
 import datetime
 import flask
+import traceback
 import sys
 import os
 import cv2 as cv
@@ -109,26 +110,34 @@ def training_begin():
         }
         return flask.jsonify(result)
 
-    server_state = server_state_training
+    try:
+        server_state = server_state_training
 
-    plan = flask.request.args.get("plan")
-    print(plan)
-    server_training_status['plan_name'] = plan
-    server_training_status['percentage'] = 0
+        plan = flask.request.args.get("plan")
+        print(plan)
+        server_training_status['plan_name'] = plan
+        server_training_status['percentage'] = 0
 
-    url = 'http://localhost:8800/api/Training/plan?plan=%s' % plan
-    response = requests.get(url)
-    plan_json = response.json()
-    # return flask.jsonify(result)
-    training_folders = get_ar_plan.prepare_training_folders(plan_json, max_batches=20)
+        url = 'http://localhost:8800/api/Training/plan?plan=%s' % plan
+        response = requests.get(url)
+        plan_json = response.json()
+        # return flask.jsonify(result)
+        training_folders = get_ar_plan.prepare_training_folders(plan_json, max_batches=20)
 
-    x = threading.Thread(target=training_thread_function, args=(training_folders,))
-    x.start()
+        x = threading.Thread(target=training_thread_function, args=(training_folders,))
+        x.start()
 
-    result = {
-        'errCode': 'OK', # 'OK/Busy/Error'
-        'errMsg': ''
-    }
+        result = {
+            'errCode': 'OK', # 'OK/Busy/Error'
+            'errMsg': ''
+        }
+    except:
+        error_callstack = traceback.format_exc()
+        print(error_callstack)
+        result = {
+            'errCode': 'Error', # or 'Error'
+            'errMsg': error_callstack
+        }        
     return flask.jsonify(result)
 
 def main():

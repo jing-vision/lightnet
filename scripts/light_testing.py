@@ -45,15 +45,7 @@ server_state_testing_loaded = 2
 
 server_state = None
 
-server_testing_status = {
-    'plan_name': '',
-    'percentage': 0,
-}
-
-server_testing_internal = {
-    'nets': [],
-    'metas': []
-}
+server_testing_internal = {}
 
 def get_Host_name_IP():
     try:
@@ -74,31 +66,40 @@ def index_get():
 
 @app.route("/testing/load", methods=["GET"])
 def testing_load():
+    global server_testing_internal
     plan = flask.request.args.get("plan")
     print(plan)
  
+    server_testing_internal = {
+        'plans': [],
+        'groups': [],
+        'nets': [],
+        'metas': []
+    }
+
     try:
         url = 'http://localhost:8800/api/Training/plan?plan=%s' % plan
         response = requests.get(url)
         plan_json = response.json()
-        training_folders = get_ar_plan.get_training_folders(plan_json)
-        server_testing_internal = {
-            'nets': [],
-            'metas': []
-        }
-        for folder in training_folders:
+        training_metas = get_ar_plan.get_training_metas(plan_json)
+
+        for training_meta in training_metas:
+            folder = training_meta['folder']
             net, meta = lightnet.load_network_meta(join(folder, 'obj.cfg'), join(folder, 'weights/obj_final.weights'), join(folder, 'obj.names'))
+            server_testing_internal['plans'].append(training_meta['plan'])
+            server_testing_internal['groups'].append(training_meta['group'])
             server_testing_internal['nets'].append(net)
             server_testing_internal['metas'].append(meta)
         result = {
-                'errorCode': 'OK', # or 'Error'
-                'errorMsg': ''
+                'errCode': 'OK', # or 'Error'
+                'errMsg': ''
             }
     except:
         error_callstack = traceback.format_exc()
+        print(error_callstack)
         result = {
-            'errorCode': 'Error‘', # or 'Error'
-            'errorMsg': error_callstack
+            'errCode': 'Error', # or 'Error'
+            'errMsg': error_callstack
         }
     
     return flask.jsonify(result)
