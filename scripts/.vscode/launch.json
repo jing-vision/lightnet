@@ -21,14 +21,13 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Python: server",
+            "name": "Python: classifier",
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "cwd": "${workspaceRoot}/==real-nike-448/",
+            "cwd": "${workspaceRoot}/../darknet19_448",
             "args": [
-                "--socket=5000",
-                "--debug"
+                "--camera=0"
             ],
             "console": "integratedTerminal"
         },
