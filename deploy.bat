@@ -18,7 +18,8 @@ robocopy bin/cfg %OUTPUT%/bin/cfg
 robocopy bin/data %OUTPUT%/bin/data
 
 robocopy scripts %OUTPUT%/scripts *.py
-robocopy scripts %OUTPUT%/scripts yolo_cpp_dll.dll
+robocopy bin %OUTPUT%/scripts yolo_cpp_dll.dll
+robocopy bin %OUTPUT%/scripts yolo_cpp_dll_nogpu.dll
 robocopy scripts/bat %OUTPUT%/scripts/bat
 
 robocopy __template-darknet %OUTPUT%/__template-darknet /MIR

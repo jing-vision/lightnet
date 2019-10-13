@@ -47,7 +47,6 @@ host_ip = 'localhost'
 #
 server_state_idle = 0
 server_state_training = 1
-server_state_testing_loaded = 2
 
 server_state = None
 
@@ -57,11 +56,6 @@ server_training_status = {
 }
 server_training_status_internal = {
     'folders': [],
-}
-
-server_testing_status = {
-    'plan_name': '',
-    'percentage': 0,
 }
 
 def get_Host_name_IP():
@@ -136,111 +130,6 @@ def training_begin():
         'errMsg': ''
     }
     return flask.jsonify(result)
-
-@app.route("/testing/load", methods=["GET"])
-def testing_load():
-    plan = flask.request.args.get("plan")
-    print(plan)
-    result = {
-        'errorCode': 'OK', # or 'Error‘
-        'errorMsg': 'OK is OK'
-    }
-    # url = 'http://localhost:8800/api/Training/plan?plan=%s' % plan
-    # response = requests.get(url)
-    # result = response.json()    
-    return flask.jsonify(result)
-
-@app.route("/predict", methods=["POST"])
-def predict_post():
-    import numpy as np
-
-    # initialize the data dictionary that will be returned from the
-    # view
-
-    logger.info("/predict start")
-
-    data = []
-
-    # ensure an image was properly uploaded to our endpoint
-    if flask.request.method != "POST":
-        return '[]'
-    image = flask.request.files.get("image")
-    if not image:
-        return '[]'
-
-    try:
-        # read the image in PIL format
-        image = flask.request.files["image"].read()
-        logger.info("|flask.request")
-        # convert string of image data to uint8
-        nparr = np.fromstring(image, np.uint8)
-
-        # decode image
-        frame = cv.imdecode(nparr, cv.IMREAD_COLOR)
-
-        logger.info("|cv.imdecode")
-        results = slave_labor(frame)
-        logger.info(results)
-    except:
-        logger.error('|exception', exc_info=True)
-        return "[]"
-
-    logger.info("\predict end")
-    # return the data dictionary as a JSON response
-    return flask.jsonify(results)
-
-def slave_labor(frame):
-    h, w, _ = frame.shape
-    roi_array = []
-    full_im, _ = darknet.array_to_image(frame)
-    darknet.rgbgr_image(full_im)
-
-    gpu_lock.acquire()
-    if args.yolo:
-        if w < h:
-            spacing = int((h - w) / 2)
-            roi_array = [(0, spacing, w, h - spacing)]
-        else:
-            spacing = int((w - h) / 2)
-            roi_array = [(spacing, 0, w - spacing, h)]
-
-    if not roi_array:
-        roi_array = [(0, 0, w, h)]
-
-    preds = []
-
-    frame_rois = []
-
-    for i, _ in enumerate(nets):
-        results = [] # cross all rois
-        for roi in roi_array:
-            if args.yolo:
-                # print(roi)
-                frame_roi = frame[roi[1]: roi[3], roi[0]:roi[2]]
-                frame_rois.append(frame_roi)
-                if not args.socket and not args.interactive:
-                    cv.imshow("frame_roi", frame_roi)
-            else:
-                frame_roi = frame
-            im, _ = darknet.array_to_image(frame_roi)
-            darknet.rgbgr_image(im)
-            r = lightnet.classify(nets[i], metas[i], im) # for single roi
-
-            results.extend(r)
-        results = sorted(results, key=lambda x: -x[1])
-        for rank in range(0, args.top_k):
-            (label, score) = results[rank]
-            preds.append({
-                'plan': '100XGROUP', # TODO: remove hardcoding
-                'group': args_groups[i], 
-                'predicate_sku': label,
-                'score': score,
-            })
-    logger.info("|lightnet.classify")
-    gpu_lock.release()
-
-    return preds
-
 
 def main():
     # lightnet.set_cwd(dir)
