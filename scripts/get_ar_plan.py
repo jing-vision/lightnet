@@ -28,20 +28,22 @@ def test():
 
     response = requests.get(url)
     plan_json = response.json()
-    prepare_training_plan(plan_json)
+    prepare_training_folders(plan_json)
 
-def prepare_training_plan(plan_json):
+# training_folders: an array of training folders
+def prepare_training_folders(plan_json, subdivisions = 8, max_batches = 1500):
+    training_folders = []
     train_bat = 'train.bat'
 
-    global_train_bat_fp = open(join(lightnet_folder, train_bat), 'w')
+    # global_train_bat_fp = open(join(lightnet_folder, train_bat), 'w')
     for plan in plan_json:
         mkdir2(join(lightnet_folder, plan['plan_name']))
-        global_train_bat_fp.write('pushd ' + plan['plan_name'])
-        global_train_bat_fp.write('\n')
-        global_train_bat_fp.write('call ' + train_bat)
-        global_train_bat_fp.write('\n')
-        global_train_bat_fp.write('popd')
-        global_train_bat_fp.write('\n')
+        # global_train_bat_fp.write('pushd ' + plan['plan_name'])
+        # global_train_bat_fp.write('\n')
+        # global_train_bat_fp.write('call ' + train_bat)
+        # global_train_bat_fp.write('\n')
+        # global_train_bat_fp.write('popd')
+        # global_train_bat_fp.write('\n')
 
         plan_train_bat_fp = open(join(lightnet_folder, plan['plan_name'], train_bat), 'w')
         for group in plan['groups']:
@@ -52,6 +54,8 @@ def prepare_training_plan(plan_json):
             plan_train_bat_fp.write('popd')
             plan_train_bat_fp.write('\n')
             abs_group_path = join(lightnet_folder, plan['plan_name'], group['group_name'])
+            training_folders.append(abs_group_path)
+
             shutil.copytree(join(scripts_folder, 'template-darknet19_448'), abs_group_path)
 
             # file names config
@@ -70,13 +74,14 @@ def prepare_training_plan(plan_json):
             idx = 0
             for sku in group['skus']:
                 label_dict[sku['sku_code']] = ''
-                train_txt_fp.write(sku['image_path'])
-                train_txt_fp.write('\n')
 
-                if idx % 5 == 0:
-                    # 20%
+                if idx % 10 == 0:
+                    # 10%
                     valid_txt_fp.write(sku['image_path'])
                     valid_txt_fp.write('\n')
+                else:
+                    train_txt_fp.write(sku['image_path'])
+                    train_txt_fp.write('\n')                    
 
                 idx += 1
 
@@ -109,8 +114,8 @@ def prepare_training_plan(plan_json):
             config.read(join(abs_group_path, obj_cfg))
             print(config.sections())
             config._sections['net1']['batch'] = 32
-            config._sections['net1']['subdivisions'] = 8
-            config._sections['net1']['max_batches'] = 1500
+            config._sections['net1']['subdivisions'] = subdivisions
+            config._sections['net1']['max_batches'] = max_batches
             config._sections['net1']['learning_rate'] = 0.001
 
             conv_reverse_id = 0
@@ -133,4 +138,5 @@ def prepare_training_plan(plan_json):
                 del section['original_key']
                 for field in section:
                     obj_cfg_fp.write('%s=%s\n' % (field, section[field]))
-                obj_cfg_fp.write('\n')        
+                obj_cfg_fp.write('\n') 
+    return training_folders

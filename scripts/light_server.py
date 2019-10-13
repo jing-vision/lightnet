@@ -30,6 +30,7 @@ import get_ar_plan
 import logging
 logger = logging.getLogger(__name__)
 app = flask.Flask(__name__)
+from os.path import join
 
 args = None
 nets = []
@@ -48,6 +49,20 @@ server_state_idle = 0
 server_state_training = 1
 server_state_testing_loaded = 2
 
+server_state = None
+
+server_training_status = {
+    'plan_name': '',
+    'percentage': 0,
+}
+server_training_status_internal = {
+    'folders': [],
+}
+
+server_testing_status = {
+    'plan_name': '',
+    'percentage': 0,
+}
 
 def get_Host_name_IP():
     try:
@@ -68,28 +83,53 @@ def index_get():
 
 @app.route("/training/status", methods=["GET"])
 def training_status():
-    status = {
-        'plan_name': 'testplan',
-        'percentage': 10
-    }
-    return flask.jsonify(status)
+    return flask.jsonify(server_training_status)
+
+def training_thread_function(training_folders):
+    global server_state, server_training_status, server_training_status_internal
+    server_training_status_internal['folders'] = training_folders
+
+    import subprocess
+    idx = 1 # start from 1
+    for folder in training_folders:
+        bat_file = join(folder, 'train.bat')
+        logging.info("%s: starting", bat_file)
+        p = subprocess.Popen(bat_file, shell=True, stdout = subprocess.PIPE)
+        stdout, stderr = p.communicate()
+        print(p.returncode) # is 0 if success    
+        logging.info("%s: finishing", bat_file)
+        server_training_status['percentage'] = idx * 100 / len(training_folders)
+        idx += 1
+    server_state = server_state_idle
+    server_training_status['plan_name'] = ''
+    server_training_status['percentage'] = 0
+    server_training_status_internal['folders'] = []
 
 @app.route("/training/begin", methods=["GET"])
 def training_begin():
+    global server_state, server_training_status
     if server_state != server_state_idle:
         result = {
             'errCode': 'Busy', # 'OK/Busy/Error'
-            'errMsg': 'Server is busy'
+            'errMsg': 'Server is busy training %s' % server_training_status['plan_name']
         }
         return flask.jsonify(result)
 
+    server_state = server_state_training
+
     plan = flask.request.args.get("plan")
     print(plan)
+    server_training_status['plan_name'] = plan
+    server_training_status['percentage'] = 0
+
     url = 'http://localhost:8800/api/Training/plan?plan=%s' % plan
     response = requests.get(url)
     plan_json = response.json()
     # return flask.jsonify(result)
-    get_ar_plan.prepare_training_plan(plan_json)
+    training_folders = get_ar_plan.prepare_training_folders(plan_json, max_batches=20)
+
+    x = threading.Thread(target=training_thread_function, args=(training_folders,))
+    x.start()
 
     result = {
         'errCode': 'OK', # 'OK/Busy/Error'

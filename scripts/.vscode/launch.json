@@ -15,6 +15,21 @@
                 "--threshold=0.1",
                 "--debug"
             ],
+            "env": {
+                "PATH": "${env:PATH};${workspaceRoot}/../bin"
+            },
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: server",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "cwd": "${workspaceRoot}/==real-nike-448/",
+            "args": [
+                "--socket=5000",
+                "--debug"
+            ],
             "console": "integratedTerminal"
         },
         {
