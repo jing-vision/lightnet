@@ -17,6 +17,9 @@ robocopy bin %OUTPUT%/bin darknet19_448.conv.23
 robocopy bin/cfg %OUTPUT%/bin/cfg
 robocopy bin/data %OUTPUT%/bin/data
 
+robocopy . %OUTPUT%/ testing-server-5001.bat
+robocopy . %OUTPUT%/ training-server-5000.bat
+
 robocopy scripts %OUTPUT%/scripts *.py
 robocopy bin %OUTPUT%/scripts yolo_cpp_dll.dll
 robocopy bin %OUTPUT%/scripts yolo_cpp_dll_nogpu.dll
