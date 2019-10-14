@@ -76,6 +76,13 @@ def index_get():
         host_ip)
     return flask.jsonify(data)
 
+def go_idle():
+    global server_state, server_training_status, server_training_status_internal
+    server_state = server_state_idle
+    server_training_status['plan_name'] = ''
+    server_training_status['percentage'] = 0
+    server_training_status_internal['folders'] = []    
+
 @app.route("/training/status", methods=["GET"])
 def training_status():
     return flask.jsonify(server_training_status)
@@ -95,10 +102,8 @@ def training_thread_function(training_folders):
         logging.info("%s: finishing", bat_file)
         server_training_status['percentage'] = idx * 100 / len(training_folders)
         idx += 1
-    server_state = server_state_idle
-    server_training_status['plan_name'] = ''
-    server_training_status['percentage'] = 0
-    server_training_status_internal['folders'] = []
+
+    go_idle()
 
 @app.route("/training/begin", methods=["GET"])
 def training_begin():
@@ -122,7 +127,7 @@ def training_begin():
         response = requests.get(url)
         plan_json = response.json()
         # return flask.jsonify(result)
-        training_folders = get_ar_plan.prepare_training_folders(plan_json, max_batches=1000)
+        training_folders = get_ar_plan.prepare_training_folders(plan_json, max_batches=20)
 
         x = threading.Thread(target=training_thread_function, args=(training_folders,))
         x.start()
@@ -137,7 +142,8 @@ def training_begin():
         result = {
             'errCode': 'Error', # or 'Error'
             'errMsg': error_callstack
-        }        
+        }
+        go_idle()
     return flask.jsonify(result)
 
 def main():
