@@ -1,5 +1,5 @@
-GET https://localhost:5000/training/status HTTP/1.1
+GET http://localhost:5000/training/status HTTP/1.1
 
 ###
 
-GET https://localhost:5000/training/status HTTP/1.1
+GET http://localhost:5000/training/status HTTP/1.1
