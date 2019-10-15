@@ -30,6 +30,21 @@ def test():
     plan_json = response.json()
     prepare_training_folders(plan_json)
 
+def get_training_metas(plan_json):
+    training_metas = []
+
+    # global_train_bat_fp = open(join(lightnet_folder, train_bat), 'w')
+    for plan in plan_json:
+
+        for group in plan['groups']:
+            abs_group_path = join(lightnet_folder, plan['plan_name'], group['group_name'])
+            training_metas.append({
+                'group': group['group_name'],
+                'plan': plan['plan_name'],
+                'folder': abs_group_path
+            })
+    return training_metas
+
 # training_folders: an array of training folders
 def prepare_training_folders(plan_json, subdivisions = 8, max_batches = 1500):
     training_folders = []

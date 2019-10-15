@@ -7,8 +7,8 @@ GET http://localhost:5000/training/status HTTP/1.1
 
 ###
 
-GET http://localhost:5000/testing/load?plan=testplan HTTP/1.1
+GET http://localhost:5001/testing/load?plan=testplan HTTP/1.1
 
 ###
 
-GET http://localhost:5000/predict HTTP/1.1
+POST http://localhost:5001/predict HTTP/1.1
