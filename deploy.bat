@@ -26,6 +26,4 @@ robocopy bin %OUTPUT%/scripts yolo_cpp_dll_nogpu.dll
 robocopy scripts/bat %OUTPUT%/scripts/bat
 robocopy scripts/template-darknet19_448 %OUTPUT%/scripts/template-darknet19_448
 
-robocopy __template-darknet %OUTPUT%/__template-darknet /MIR
-robocopy __template-darknet19 %OUTPUT%/__template-darknet19 /MIR
 robocopy __template-darknet19_448 %OUTPUT%/__template-darknet19_448 /MIR
