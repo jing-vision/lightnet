@@ -9,7 +9,7 @@ https://gist.github.com/kylehounslow/767fb72fde2ebdd010a0bf4242371594
 
 ''' Usage
 python ..\scripts\classifier.py --socket=5000 --weights=weights\obj_last.weights
-curl -X POST -F image=@dog.png http://localhost:5000/predict
+curl -X POST -F image=@bin/data/dog.jpg http://localhost:5000/predict
 '''
 
 
@@ -208,7 +208,7 @@ def slave_labor(frame):
         top = 20 + rank * 20
         (label, score) = results_flat[rank]
         if score >= args.threshold:
-            preds.append((label[4:], score))
+            preds.append((label, score))
 
         text = '%s %.2f%%' % (label, score * 100)
         labelSize, baseLine = cv.getTextSize(
