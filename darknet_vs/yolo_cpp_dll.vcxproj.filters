@@ -143,6 +143,8 @@
     <ClCompile Include="..\modules\darknet\src\dark_cuda.c" />
     <ClCompile Include="..\modules\darknet\src\image_opencv.cpp" />
     <ClCompile Include="..\modules\darknet\src\scale_channels_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\gaussian_yolo_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\sam_layer.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\modules\darknet\src\activations.h" />

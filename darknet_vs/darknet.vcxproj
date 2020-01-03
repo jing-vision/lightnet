@@ -88,7 +88,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>D:\opencv\build\include;..\modules\darknet\include;..\modules\darknet\3rdparty\stb\include;..\modules\darknet\3rdparty\pthreads\include;%(AdditionalIncludeDirectories);$(CudaToolkitIncludeDir);</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>CV_IGNORE_DEBUG_BUILD_GUARD;YOLODLL_EXPORTS;CUDNN;_MBCS;OPENCV;_TIMESPEC_DEFINED;_CRT_SECURE_NO_WARNINGS;_CRT_RAND_S;GPU;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;CV_IGNORE_DEBUG_BUILD_GUARD;YOLODLL_EXPORTS;CUDNN;_MBCS;OPENCV;_TIMESPEC_DEFINED;_CRT_SECURE_NO_WARNINGS;_CRT_RAND_S;GPU;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -113,7 +113,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>D:\opencv\build\include;..\modules\darknet\include;..\modules\darknet\3rdparty\stb\include;..\modules\darknet\3rdparty\pthreads\include;%(AdditionalIncludeDirectories);$(CudaToolkitIncludeDir);</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>CV_IGNORE_DEBUG_BUILD_GUARD;YOLODLL_EXPORTS;_MBCS;OPENCV;_TIMESPEC_DEFINED;_CRT_SECURE_NO_WARNINGS;_CRT_RAND_S;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;CV_IGNORE_DEBUG_BUILD_GUARD;YOLODLL_EXPORTS;_MBCS;OPENCV;_TIMESPEC_DEFINED;_CRT_SECURE_NO_WARNINGS;_CRT_RAND_S;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -140,7 +140,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>D:\opencv\build\include;..\modules\darknet\include;..\modules\darknet\3rdparty\stb\include;..\modules\darknet\3rdparty\pthreads\include;%(AdditionalIncludeDirectories);$(CudaToolkitIncludeDir);</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>CV_IGNORE_DEBUG_BUILD_GUARD;YOLODLL_EXPORTS;CUDNN;OPENCV;_TIMESPEC_DEFINED;_CRT_SECURE_NO_WARNINGS;_CRT_RAND_S;GPU;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;CV_IGNORE_DEBUG_BUILD_GUARD;YOLODLL_EXPORTS;CUDNN;OPENCV;_TIMESPEC_DEFINED;_CRT_SECURE_NO_WARNINGS;_CRT_RAND_S;GPU;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CLanguageStandard>c11</CLanguageStandard>
       <CppLanguageStandard>c++1y</CppLanguageStandard>
       <PrecompiledHeaderCompileAs>CompileAsCpp</PrecompiledHeaderCompileAs>
@@ -171,7 +171,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>D:\opencv\build\include;..\modules\darknet\include;..\modules\darknet\3rdparty\stb\include;..\modules\darknet\3rdparty\pthreads\include;%(AdditionalIncludeDirectories);$(CudaToolkitIncludeDir);</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>CV_IGNORE_DEBUG_BUILD_GUARD;YOLODLL_EXPORTS;OPENCV;_TIMESPEC_DEFINED;_CRT_SECURE_NO_WARNINGS;_CRT_RAND_S;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;CV_IGNORE_DEBUG_BUILD_GUARD;YOLODLL_EXPORTS;OPENCV;_TIMESPEC_DEFINED;_CRT_SECURE_NO_WARNINGS;_CRT_RAND_S;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CLanguageStandard>c11</CLanguageStandard>
       <CppLanguageStandard>c++1y</CppLanguageStandard>
       <PrecompiledHeaderCompileAs>CompileAsCpp</PrecompiledHeaderCompileAs>
@@ -275,6 +275,7 @@
     <ClCompile Include="..\modules\darknet\src\detector.c" />
     <ClCompile Include="..\modules\darknet\src\dice.c" />
     <ClCompile Include="..\modules\darknet\src\dropout_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\gaussian_yolo_layer.c" />
     <ClCompile Include="..\modules\darknet\src\gemm.c" />
     <ClCompile Include="..\modules\darknet\src\getopt.c" />
     <ClCompile Include="..\modules\darknet\src\gettimeofday.c" />
@@ -307,6 +308,7 @@
     <ClCompile Include="..\modules\darknet\src\rnn_layer.c" />
     <ClCompile Include="..\modules\darknet\src\rnn_vid.c" />
     <ClCompile Include="..\modules\darknet\src\route_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\sam_layer.c" />
     <ClCompile Include="..\modules\darknet\src\scale_channels_layer.c" />
     <ClCompile Include="..\modules\darknet\src\shortcut_layer.c" />
     <ClCompile Include="..\modules\darknet\src\softmax_layer.c" />
@@ -341,6 +343,7 @@
     <ClInclude Include="..\modules\darknet\src\demo.h" />
     <ClInclude Include="..\modules\darknet\src\detection_layer.h" />
     <ClInclude Include="..\modules\darknet\src\dropout_layer.h" />
+    <ClInclude Include="..\modules\darknet\src\gaussian_yolo_layer.h" />
     <ClInclude Include="..\modules\darknet\src\gemm.h" />
     <ClInclude Include="..\modules\darknet\src\getopt.h" />
     <ClInclude Include="..\modules\darknet\src\gettimeofday.h" />
@@ -361,6 +364,7 @@
     <ClInclude Include="..\modules\darknet\src\reorg_old_layer.h" />
     <ClInclude Include="..\modules\darknet\src\rnn_layer.h" />
     <ClInclude Include="..\modules\darknet\src\route_layer.h" />
+    <ClInclude Include="..\modules\darknet\src\sam_layer.h" />
     <ClInclude Include="..\modules\darknet\src\shortcut_layer.h" />
     <ClInclude Include="..\modules\darknet\src\softmax_layer.h" />
     <ClInclude Include="..\modules\darknet\src\stb_image.h" />

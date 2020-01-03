@@ -243,6 +243,12 @@
     <ClCompile Include="..\modules\darknet\src\scale_channels_layer.c">
       <Filter>lib</Filter>
     </ClCompile>
+    <ClCompile Include="..\modules\darknet\src\gaussian_yolo_layer.c">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\modules\darknet\src\sam_layer.c">
+      <Filter>lib</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\modules\darknet\src\activation_layer.h">
@@ -388,6 +394,12 @@
     </ClInclude>
     <ClInclude Include="..\modules\darknet\src\dark_cuda.h">
       <Filter>cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\modules\darknet\src\sam_layer.h">
+      <Filter>lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\modules\darknet\src\gaussian_yolo_layer.h">
+      <Filter>lib</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
