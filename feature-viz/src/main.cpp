@@ -45,6 +45,8 @@ bool is_fullscreen = false;
 
 #define TITLE APP_NAME " " CVAUX_STR(VER_MAJOR) "." CVAUX_STR(VER_MINOR) "." CVAUX_STR(VER_PATCH)
 
+#define OPENCV_VERSION CVAUX_STR(CV_VERSION_MAJOR)"" CVAUX_STR(CV_VERSION_MINOR)"" CVAUX_STR(CV_VERSION_REVISION)
+#pragma comment(lib, "opencv_world" OPENCV_VERSION ".lib") 
 
 struct ControlPanel
 {

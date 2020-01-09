@@ -72,16 +72,13 @@ solution "feature-viz"
         }
         configuration "Debug"
             links {
-                "opencv_world340d.lib",
                 "yolo_cpp_dll-d.lib",
             }
         configuration "Profile"
             links {
-                "opencv_world340.lib",
                 "yolo_cpp_dll.lib",
             }
         configuration "Release"
             links {
-                "opencv_world340.lib",
                 "yolo_cpp_dll.lib",
             }
