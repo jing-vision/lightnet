@@ -6,7 +6,8 @@ import darknet
 
 cwd = os.getcwd()
 
-predict_image_v2 = darknet.lib.network_predict_image_v2
+# predict_image_v2 = darknet.lib.network_predict_image_v2
+predict_image_v2 = darknet.lib.network_predict_image
 predict_image_v2.argtypes = [c_void_p, darknet.IMAGE]
 predict_image_v2.restype = POINTER(c_float)
 
