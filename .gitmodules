@@ -4,9 +4,6 @@
 [submodule "modules/Yolo_mark"]
 	path = modules/Yolo_mark
 	url = https://github.com/jing-vision/Yolo_mark.git
-[submodule "modules/yolo2_light"]
-	path = modules/yolo2_light
-	url = https://github.com/jing-vision/yolo2_light.git
 [submodule "modules/darknet"]
 	path = modules/darknet
 	url = https://github.com/jing-vision/darknet.git
