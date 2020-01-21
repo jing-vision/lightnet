@@ -11,7 +11,11 @@
 #include "VideoHelper.h"
 #include "os_hal.h"
 
+#if (_MSC_VER >= 1923)
+namespace fs = std::filesystem;
+#else
 namespace fs = std::experimental::filesystem;
+#endif
 
 #define CVUI_IMPLEMENTATION
 #include "cvui/cvui.h"

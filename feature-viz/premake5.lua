@@ -21,6 +21,7 @@ solution "feature-viz"
             "GPU",
             -- "CV_IGNORE_DEBUG_BUILD_GUARD",
         }
+        cppdialect "C++17"
 
     configuration "x64"
         libdirs {
