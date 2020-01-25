@@ -8,6 +8,7 @@ from __future__ import print_function
 import glob
 import os
 import sys
+import random
 PY3 = sys.version_info[0] == 3
 
 if PY3:
@@ -54,7 +55,7 @@ def main():
         image_filenames.extend(glob.glob(category + '/**/*.png', recursive=True))
 
         for image_filename in image_filenames:
-            if idx % 100 < 1: # 1% for validation
+            if random.random() < 0.1: # 10% for validation
                 valid_txt_fp.write(os.path.abspath(image_filename))
                 valid_txt_fp.write('\n')
             else:
