@@ -8,7 +8,7 @@ REM =========================
 REM %msbuild_exe% darknet_vs\darknet.sln /p:Configuration=Release-CPU /p:Platform=x64 /v:quiet /m
 
 %msbuild_exe% darknet_vs\yolo_cpp_dll.sln /p:Configuration=Release /p:Platform=x64 /v:quiet /m
-REM %msbuild_exe% darknet_vs\yolo_cpp_dll.sln /p:Configuration=Debug /p:Platform=x64 /v:quiet /m
+%msbuild_exe% darknet_vs\yolo_cpp_dll.sln /p:Configuration=Debug /p:Platform=x64 /v:quiet /m
 %msbuild_exe% darknet_vs\yolo_cpp_dll.sln /p:Configuration=Release-CPU /p:Platform=x64 /v:quiet /m
 
 REM %msbuild_exe% modules\Yolo_mark\yolo_mark.sln /p:Configuration=Release /p:Platform=x64 /v:quiet /m
