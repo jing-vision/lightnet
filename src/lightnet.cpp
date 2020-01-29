@@ -122,6 +122,16 @@ static image mat_to_image(Mat src)
     return out;
 }
 
+float* run_net_classifier(cv::Mat frame)
+{
+    auto img = mat_to_image(frame);
+    rgbgr_image(img);
+    auto output =  network_predict_image(net, img);
+    free_image(img);
+
+    return output;
+}
+
 static float get_pixel(image m, int x, int y, int c)
 {
     assert(x < m.w && y < m.h && c < m.c);

@@ -11,6 +11,7 @@ void init_net(const char *cfgfile,  const char *weightfile,
 
 float* run_net(float* indata);
 float* run_net(cv::Mat frame);
+float* run_net_classifier(cv::Mat frame);
 
 cv::Mat float_to_mat(int w, int h, int c, float *data);
 

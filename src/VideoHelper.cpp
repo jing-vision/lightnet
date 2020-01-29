@@ -25,20 +25,29 @@ struct ImageFilesCapture : cv::VideoCapture
 
     VideoCapture& operator >> (Mat& image) override
     {
-        if (currentIdx >= imageNames.size() - 1)
+        if (currentIdx > imageNames.size() - 1)
         {
             image = {};
             return *this;
         }
 
-        image = imread(imageNames[currentIdx]);
+        currentImageName = imageNames[currentIdx];
+        image = imread(currentImageName);
         currentIdx++;
         return *this;
     }
 
     int currentIdx = 0;
+    String currentImageName;
     vector<String> imageNames;
 };
+
+cv::String get_current_image_name(std::shared_ptr<cv::VideoCapture> cap)
+{
+    auto base = cap.get();
+    auto imageCap = (ImageFilesCapture*)base;
+    return imageCap->currentImageName;
+}
 
 std::shared_ptr<VideoCapture> safe_open_video(const CommandLineParser &parser, const String &source, bool *source_is_camera)
 {
@@ -117,7 +126,6 @@ std::shared_ptr<VideoCapture> safe_open_video(const CommandLineParser &parser, c
     return cap;
 };
 
-
 bool safe_grab_video(std::shared_ptr<VideoCapture> cap, const CommandLineParser &parser, Mat& frame, const String& source, bool source_is_camera)
 {
     if (!cap->isOpened()) return true;
@@ -137,6 +145,7 @@ bool safe_grab_video(std::shared_ptr<VideoCapture> cap, const CommandLineParser 
     {
         if (!parser.has("loop")) return false;
         if (!parser.get<bool>("loop")) return false;
+        if (parser.get<bool>("offline")) return false;
 
         cap = safe_open_video(parser, source);
         *cap >> frame;

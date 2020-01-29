@@ -1,0 +1,1 @@
+call viz train.txt -offline
