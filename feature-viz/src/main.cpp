@@ -1,9 +1,9 @@
 #include <iostream>
 #include <fstream>
 #include <filesystem>
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 #include <opencv2/dnn.hpp>
 
 #include "lightnet.h"
@@ -41,11 +41,12 @@ const char* params =
 
 bool is_gui_visible = false;
 bool is_fullscreen = false;
+bool is_paused = false;
 
 #define APP_NAME "feature-viz"
 #define VER_MAJOR 0
 #define VER_MINOR 1
-#define VER_PATCH 8
+#define VER_PATCH 9
 
 #define TITLE APP_NAME " " CVAUX_STR(VER_MAJOR) "." CVAUX_STR(VER_MINOR) "." CVAUX_STR(VER_PATCH)
 
@@ -55,6 +56,7 @@ bool is_fullscreen = false;
 #else
 #pragma comment(lib, "opencv_world" OPENCV_VERSION ".lib") 
 #endif
+
 struct ControlPanel
 {
     ControlPanel()
@@ -160,7 +162,7 @@ int main(int argc, char **argv)
 
     bool source_is_camera = false;
 
-    VideoCapture capture = safe_open_video(parser, source, &source_is_camera);
+    shared_ptr<VideoCapture> capture = safe_open_video(parser, source, &source_is_camera);
 
     bool is_running = true;
     bool is_weights_mode = false;
@@ -192,11 +194,14 @@ int main(int argc, char **argv)
 
         {
             MTR_SCOPE(__FILE__, "pre process");
-            if (!safe_grab_video(capture, parser, frame, source, source_is_camera))
+            if (!is_paused || frame.empty())
             {
-                is_running = false;
+                if (!safe_grab_video(capture, parser, frame, source, source_is_camera))
+                {
+                    is_running = false;
+                }
+                input_blob = dnn::blobFromImage(frame, 1.0f / 255, Size(net_inw, net_inh), Scalar(), false, true);
             }
-            input_blob = dnn::blobFromImage(frame, 1.0f / 255, Size(net_inw, net_inh), Scalar(), false, true);
         }
 
         float *netoutdata = NULL;
@@ -383,6 +388,7 @@ int main(int argc, char **argv)
                     int key = waitKey(1);
                     if (key == 27) break;
                     if (key == 'f') is_fullscreen = !is_fullscreen;
+                    if (key == 'p') is_paused = !is_paused;
                     if (key == 'g') is_gui_visible = !is_gui_visible;
 
                     if (key == 'a')
