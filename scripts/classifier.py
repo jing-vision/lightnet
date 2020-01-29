@@ -295,7 +295,7 @@ def main():
     parser.add_argument('--gold_confidence', type=float, default=0.95)
     parser.add_argument('--threshold', type=float, default=0.5)
     add_bool_arg(parser, 'debug')
-    add_bool_arg(parser, 'yolo')
+    add_bool_arg(parser, 'yolo', True)
     add_bool_arg(parser, 'interactive')
 
     args = parser.parse_args()

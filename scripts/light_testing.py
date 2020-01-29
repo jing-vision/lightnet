@@ -224,7 +224,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--socket', type=int, default=5001)
     parser.add_argument('--top_k', type=int, default=3)
-    add_bool_arg(parser, 'yolo')
+    add_bool_arg(parser, 'yolo', True)
 
     args = parser.parse_args()
 
