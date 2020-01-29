@@ -155,8 +155,6 @@ def validate_run():
 def slave_labor(frame):
     h, w, _ = frame.shape
     roi_array = []
-    full_im, _ = darknet.array_to_image(frame)
-    darknet.rgbgr_image(full_im)
 
     gpu_lock.acquire()
     if args.yolo:

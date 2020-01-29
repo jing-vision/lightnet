@@ -4,6 +4,9 @@
 using namespace std;
 using namespace cv;
 
+image resize_min(image im, int min);
+image crop_image(image im, int dx, int dy, int w, int h);
+
 static network *net;
 
 void init_net(const char *cfgfile, const char *weightfile,
@@ -126,7 +129,12 @@ float* run_net_classifier(cv::Mat frame)
 {
     auto img = mat_to_image(frame);
     rgbgr_image(img);
-    auto output =  network_predict_image(net, img);
+    image resized = resize_min(img, net->w);
+    image r = crop_image(resized, (resized.w - net->w) / 2, (resized.h - net->h) / 2, net->w, net->h);
+
+    auto output =  network_predict(*net, r.data);
+    free_image(r);
+    free_image(resized);
     free_image(img);
 
     return output;
