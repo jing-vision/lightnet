@@ -53,16 +53,16 @@ std::shared_ptr<VideoCapture> safe_open_video(const CommandLineParser &parser, c
 {
     char info[100];
     sprintf(info, "open: %s", source.c_str());
-    std::shared_ptr<VideoCapture> cap;
 
     if (source.empty())
-        return cap;
+        return {};
 
     if (source.find(".txt") != String::npos)
     {
         return make_shared<ImageFilesCapture>(source);
     }
 
+    auto cap = make_shared<VideoCapture>();
     if (source.size() == 1 && isdigit(source[0]))
     {
         cap->open(source[0] - '0');
