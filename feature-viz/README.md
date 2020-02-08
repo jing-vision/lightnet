@@ -27,7 +27,7 @@ feature-viz.exe -cfg=..\..\DancingGaga\coco.cfg -weights=..\..\DancingGaga\coco.
 feature-viz.exe -cfg=..\..\DancingGaga\mpi.cfg -weights=..\..\DancingGaga\mpi.weights ..\..\DancingGaga\bin\data\person.jpg
 feature-viz.exe -cfg=..\..\DancingGaga\body_25.cfg -weights=..\..\DancingGaga\body_25.weights ..\..\DancingGaga\bin\data\person.jpg
 
-feature-viz.exe -cfg=..\==nike_darknet19_448\obj.cfg -weights=..\==nike_darknet19_448\weights\obj_300.weights ..\==nike_darknet19_448\test.jpg
+feature-viz.exe -cfg=..\darknet19_448\obj.cfg -weights=..\darknet19_448\weights\obj_last.weights ..\darknet19_448\test.jpg
 ```
 
 
