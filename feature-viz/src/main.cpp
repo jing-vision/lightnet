@@ -39,18 +39,20 @@ const char* params =
 //"{ single_step  |                   | single step mode, press any key to move to next frame }"
 "{ l loop       | true              | whether to loop the video}"
 "{ video_pos    | 0                 | current position of the video file in milliseconds. }"
-"{ offline      | false             | offline mode will produce debug.csv. }"
+"{ offline      | false             | offline mode will produce <source>.csv. }"
+"{ encoding     | true              | used with offline mode, will produce <source>.encoding. }"
 ;
 
 bool is_gui_visible = false;
 bool is_fullscreen = false;
 bool is_paused = false;
 bool is_offline = false;
+bool is_encoding = false;
 
 #define APP_NAME "feature-viz"
 #define VER_MAJOR 0
-#define VER_MINOR 1
-#define VER_PATCH 9
+#define VER_MINOR 2
+#define VER_PATCH 0
 
 #define TITLE APP_NAME " " CVAUX_STR(VER_MAJOR) "." CVAUX_STR(VER_MINOR) "." CVAUX_STR(VER_PATCH)
 
@@ -113,7 +115,8 @@ vector<string> obj_names;
 string cfg_path;
 string weights_path;
 string names_path;
-FILE* offline_output_fp;
+FILE* offline_output_fp = nullptr;
+FILE* offline_encoding_fp = nullptr;
 shared_ptr<VideoCapture> capture;
 
 ControlPanel panel;
@@ -123,37 +126,48 @@ vector<LayerMeta> layer_metas;
 
 void offline()
 {
-    static int embeddingLayerIdx = -1;
-    static int softmaxLayerIdx = -1;
-    if (embeddingLayerIdx == -1)
+    static int encoding_layer_idx = -1; // encoding layer is the next to last layer before softmax, we will use it for offline debugging & tsne visualization
+                                        // http://cs231n.github.io/understanding-cnn/
+    static int softmax_layer_idx = -1;
+    if (encoding_layer_idx == -1)
     {
-        fprintf(offline_output_fp, "name,correct_order,correct_prob,1st_name,1st_prob,2nd_name,2nd_prob,3rd_name,3rd_prob,\n");
-
         int idx = 0;
         for (auto& meta : layer_metas)
         {
             if (meta.name.find("Softmax") != string::npos)
             {
-                softmaxLayerIdx = idx;
-                embeddingLayerIdx = idx - 1;
+                softmax_layer_idx = idx;
+                encoding_layer_idx = idx - 2;
                 break;
             }
             idx++;
         }
     }
-    auto embed_tensors = get_layer_activations(embeddingLayerIdx);
-    int channel_count = embed_tensors.size();
     auto name = get_current_image_name(capture);
-    printf("%s\n", name.c_str());
-    fprintf(offline_output_fp, "%s,", name.c_str());
-    for (int i = 0; i < channel_count; i++)
+
+    if (is_encoding)
     {
-        float value = embed_tensors[i].at<float>(0);
+        auto enc_tensors = get_layer_activations(encoding_layer_idx);
+        int channel_count = enc_tensors.size();
+        printf("%s\n", name.c_str());
+        fprintf(offline_encoding_fp, "%s", name.c_str());
+        for (const auto& tensor : enc_tensors)
+        {
+            auto ptr = (float*)(tensor.data);
+            for (int j = 0; j < tensor.rows; j++) {
+                for (int i = 0; i < tensor.cols; i++) {
+                    auto v = ptr[tensor.step * j + i];
+                    fprintf(offline_encoding_fp, ",%f", v);
+                }
+            }
+        }
+        fprintf(offline_encoding_fp, "\n");
     }
     
-    auto softmax_tensors = get_layer_activations(softmaxLayerIdx);
-    int correctResultIdx = -1;
+    auto softmax_tensors = get_layer_activations(softmax_layer_idx);
+    int correct_result_idx = -1;
     {
+        int channel_count = softmax_tensors.size();
         vector<float> scores(channel_count);
         for (int i = 0; i < channel_count; i++)
         {
@@ -167,11 +181,11 @@ void offline()
             auto b = name.c_str();
             if (strstr(b, a))
             {
-                correctResultIdx = i;
+                correct_result_idx = i;
                 break;
             }
         }
-        fprintf(offline_output_fp, "%d,%.3f,", correctResultIdx, correctResultIdx >= 0 ? scores[top_indices[correctResultIdx]] : 0);
+        fprintf(offline_output_fp, "%d,%.3f,", correct_result_idx, correct_result_idx >= 0 ? scores[top_indices[correct_result_idx]] : 0);
 
         for (int i = 0; i < K; i++)
         {
@@ -273,7 +287,7 @@ void viz()
                 int cell_h = (panel.height - cell_y0) * 0.9f / tensor_rows;
                 if (cell_w > cell_h) cell_w = cell_h;
                 else cell_h = cell_w;
-                const int cell_spc = min(10, cell_w / 4);
+                const int cell_spc = min(5, cell_w / 4);
 
                 if (!mode && meta.name.find("Softmax") != string::npos)
                 {
@@ -300,7 +314,7 @@ void viz()
                     }
                 }
 
-                for (int i = 0; i < tensors.size(); i++)
+                for (int i = 0; i < channel_count; i++)
                 {
                     int cell_y = i / tensor_cols;
                     int cell_x = i % tensor_cols;
@@ -413,6 +427,7 @@ int main(int argc, char** argv)
     is_gui_visible = parser.get<bool>("gui");
     is_fullscreen = parser.get<bool>("fullscreen");
     is_offline = parser.get<bool>("offline");
+    is_encoding = parser.get<bool>("encoding");
 
     String source = parser.get<String>("@source");
 
@@ -421,7 +436,23 @@ int main(int argc, char** argv)
         string name = source + ".csv";
         offline_output_fp = fopen(name.c_str(), "w");
         if (!offline_output_fp)
+        {
             printf("Failed to open %s, exiting...\n", name.c_str());
+            return -1;
+        }
+        fprintf(offline_output_fp, "name,correct_order,correct_prob,1st_name,1st_prob,2nd_name,2nd_prob,3rd_name,3rd_prob,\n");
+
+        if (is_encoding)
+        {
+            string name = source + ".enc";
+            offline_encoding_fp = fopen(name.c_str(), "w");
+            if (!offline_encoding_fp)
+            {
+                printf("Failed to open %s, exiting...\n", name.c_str());
+                return -1;
+            }
+            fprintf(offline_encoding_fp, "name,enc0,enc1,enc2,enc3,\n");
+        }
     }
     else
     {
@@ -530,6 +561,8 @@ int main(int argc, char** argv)
     {
         if (offline_output_fp)
             fclose(offline_output_fp);
+        if (offline_encoding_fp)
+            fclose(offline_encoding_fp);
     }
 
     return 0;
