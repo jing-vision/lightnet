@@ -254,3 +254,8 @@ CFG Parameters
 ----
 - [in net section](https://github.com/AlexeyAB/darknet/wiki/CFG-Parameters-in-the-%5Bnet%5D-section)
 - [in layer section](https://github.com/AlexeyAB/darknet/wiki/CFG-Parameters-in-the-different-layers)
+
+How to use scripts folder?
+====
+
+> pip install -r scripts/requirements.txt
