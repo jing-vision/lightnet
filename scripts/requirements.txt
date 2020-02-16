@@ -4,3 +4,5 @@ pandas
 sklearn
 opencv-python
 flask
+lapjv
+pillow
