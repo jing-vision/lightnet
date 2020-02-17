@@ -134,7 +134,7 @@ float* run_net_classifier(cv::Mat frame)
 
     auto output =  network_predict(*net, r.data);
     free_image(r);
-    free_image(resized);
+    if (resized.data != img.data) free_image(resized);
     free_image(img);
 
     return output;

@@ -27,9 +27,9 @@ using namespace cv;
 
 const char* params =
 "{ h help ?     | false             | print usage          }"
-"{ cfg          | cfg/darknet.cfg   | file contains model configuration }"
-"{ weights      | darknet.weights   | file contains model weights }"
-"{ names        | cfg/imagenet.shortnames.list | file contains a list of label names, will be displayer in softmax layer }"
+"{ cfg          | obj.cfg           | file contains model configuration }"
+"{ weights      | weights/obj_last.weights   | file contains model weights }"
+"{ names        | obj.names         | file contains a list of label names, will be displayer in softmax layer }"
 "{@source       | 0                 | source for processing   }"
 "{ width        | 0                 | width of video or camera device}"
 "{ height       | 0                 | height of video or camera device}"
@@ -144,12 +144,12 @@ void offline()
         }
     }
     auto name = get_current_image_name(capture);
+    printf("%s\n", name.c_str());
 
     if (is_encoding)
     {
         auto enc_tensors = get_layer_activations(encoding_layer_idx);
         int channel_count = enc_tensors.size();
-        printf("%s\n", name.c_str());
         fprintf(offline_encoding_fp, "%s", name.c_str());
         for (const auto& tensor : enc_tensors)
         {
@@ -185,6 +185,7 @@ void offline()
                 break;
             }
         }
+        fprintf(offline_output_fp, "%s,", name.c_str());
         fprintf(offline_output_fp, "%d,%.3f,", correct_result_idx, correct_result_idx >= 0 ? scores[top_indices[correct_result_idx]] : 0);
 
         for (int i = 0; i < K; i++)

@@ -13,11 +13,7 @@ import glob
 import os
 import sys
 import random
-PY3 = sys.version_info[0] == 3
-
-if PY3:
-    xrange = range
-
+from pathlib import Path
 
 # file names config
 category_folders = glob.glob('img/*')
@@ -25,6 +21,7 @@ train_txt = 'train.txt'
 valid_txt = 'valid.txt'
 obj_data = 'obj.data'
 obj_names = 'obj.names'
+obj_sku = 'obj.sku'
 obj_cfg = 'obj.cfg'
 
 
@@ -47,6 +44,9 @@ def main():
     train_txt_fp = open(train_txt, 'w')
     valid_txt_fp = open(valid_txt, 'w')
     obj_names_fp = open(obj_names, 'w')
+    obj_sku_fp = open(obj_sku, 'w')
+
+    obj_sku_set = set()
 
     idx = 0
     for category in category_folders:
@@ -57,13 +57,20 @@ def main():
             glob.glob(category + '/**/*.png', recursive=True))
 
         for image_filename in image_filenames:
-            if random.random() < 0.3:  # 10% for validation
+            path = Path(image_filename)
+            obj_sku_set.add(os.path.basename(path.parent))
+
+            if random.random() < 0.1:  # 10% for validation
                 valid_txt_fp.write(os.path.abspath(image_filename))
                 valid_txt_fp.write('\n')
             else:
                 train_txt_fp.write(os.path.abspath(image_filename))
                 train_txt_fp.write('\n')
             idx = idx + 1
+
+    for sku in obj_sku_set:
+        obj_sku_fp.write(str(sku))
+        obj_sku_fp.write('\n')
 
     class multidict(OrderedDict):
         _unique = 0   # class variable
