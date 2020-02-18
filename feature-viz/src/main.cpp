@@ -145,6 +145,7 @@ void offline()
     }
     auto name = get_current_image_name(capture);
     printf("%s\n", name.c_str());
+    string ground_truth = "unknown";
 
     if (is_encoding)
     {
@@ -175,6 +176,16 @@ void offline()
         }
         int K = min(channel_count, 5);
         auto top_indices = top_k_indices(scores.data(), channel_count, K);
+        for (const auto& label : obj_names)
+        {
+            auto a = label.c_str();
+            auto b = name.c_str();
+            if (strstr(b, a))
+            {
+                ground_truth = label;
+                break;
+            }
+        }
         for (int i = 0; i < K; i++)
         {
             auto a = obj_names[top_indices[i]].c_str();
@@ -185,7 +196,7 @@ void offline()
                 break;
             }
         }
-        fprintf(offline_output_fp, "%s,", name.c_str());
+        fprintf(offline_output_fp, "%s,%s,", name.c_str(), ground_truth.c_str());
         fprintf(offline_output_fp, "%d,%.3f,", correct_result_idx, correct_result_idx >= 0 ? scores[top_indices[correct_result_idx]] : 0);
 
         for (int i = 0; i < K; i++)
@@ -441,7 +452,7 @@ int main(int argc, char** argv)
             printf("Failed to open %s, exiting...\n", name.c_str());
             return -1;
         }
-        fprintf(offline_output_fp, "name,correct_order,correct_prob,1st_name,1st_prob,2nd_name,2nd_prob,3rd_name,3rd_prob,\n");
+        fprintf(offline_output_fp, "name,ground_truth,correct_order,correct_prob,1st_name,1st_prob,2nd_name,2nd_prob,3rd_name,3rd_prob,\n");
 
         if (is_encoding)
         {
