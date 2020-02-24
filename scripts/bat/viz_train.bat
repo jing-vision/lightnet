@@ -1,1 +1,1 @@
-call viz train.txt -offline
+call viz train.txt -offline -encoding=false
