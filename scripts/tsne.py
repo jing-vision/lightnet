@@ -3,6 +3,7 @@ import numpy as np
 import re
 import csv
 import os
+import sys
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
@@ -111,7 +112,8 @@ def tsne_plot(labels, tokens):
     plt.show()
 
 if __name__ == '__main__':
-    # enc_filename = 'e:/__svn_pool/lightnet/darknet19_448/tiny.txt.enc'
-    enc_filename = 'e:/__svn_pool/lightnet/darknet19_448/train.txt.enc'
+    enc_filename = 'e:/__svn_pool/lightnet/darknet19_448/valid.txt.enc'
+    if sys.argc > 1:
+        enc_filename = sys.argv[1]
     labels, tokens = read_encodings(enc_filename)
     tsne_plot(labels, tokens)
