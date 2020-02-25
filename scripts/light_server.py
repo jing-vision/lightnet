@@ -127,7 +127,7 @@ def training_begin():
         response = requests.get(url)
         plan_json = response.json()
         # return flask.jsonify(result)
-        training_folders = get_ar_plan.prepare_training_folders(plan_json, max_batches=3000)
+        training_folders = get_ar_plan.prepare_training_folders(plan_json)
 
         x = threading.Thread(target=training_thread_function, args=(training_folders,))
         x.start()

@@ -87,7 +87,7 @@ def main():
     print(config.sections())
     config._sections['net1']['batch'] = 64
     config._sections['net1']['subdivisions'] = 4
-    config._sections['net1']['max_batches'] = 5000
+    config._sections['net1']['max_batches'] = num_classes * 20
     config._sections['net1']['learning_rate'] = 0.001
 
     conv_reverse_id = 0

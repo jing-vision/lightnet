@@ -46,7 +46,7 @@ def get_training_metas(plan_json):
     return training_metas
 
 # training_folders: an array of training folders
-def prepare_training_folders(plan_json, subdivisions = 8, max_batches = 1500):
+def prepare_training_folders(plan_json, subdivisions = 8):
     training_folders = []
     train_bat = 'train.bat'
 
@@ -113,7 +113,7 @@ def prepare_training_folders(plan_json, subdivisions = 8, max_batches = 1500):
                 obj_data_fp.write('labels=%s\n' % join('.', obj_names))
                 obj_data_fp.write('names=%s\n' % join('.', obj_names))
                 obj_data_fp.write('backup=%s/weights/\n' % '.')
-                obj_data_fp.write('top=3\n')
+                obj_data_fp.write('top=5\n')
 
             class multidict(OrderedDict):
                 _unique = 0   # class variable
@@ -130,7 +130,7 @@ def prepare_training_folders(plan_json, subdivisions = 8, max_batches = 1500):
             print(config.sections())
             config._sections['net1']['batch'] = 64
             config._sections['net1']['subdivisions'] = subdivisions
-            config._sections['net1']['max_batches'] = max_batches
+            config._sections['net1']['max_batches'] = num_classes * 20 # vinjn: this is fucking magic
             config._sections['net1']['learning_rate'] = 0.001
 
             conv_reverse_id = 0
