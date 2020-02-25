@@ -96,7 +96,7 @@ def prepare_training_folders(plan_json, subdivisions = 8, max_batches = 1500):
                     valid_txt_fp.write('\n')
                 else:
                     train_txt_fp.write(sku['image_path'])
-                    train_txt_fp.write('\n')                    
+                    train_txt_fp.write('\n')
 
                 idx += 1
 
@@ -128,7 +128,7 @@ def prepare_training_folders(plan_json, subdivisions = 8, max_batches = 1500):
                 defaults=None, dict_type=multidict, strict=False)
             config.read(join(abs_group_path, obj_cfg))
             print(config.sections())
-            config._sections['net1']['batch'] = 32
+            config._sections['net1']['batch'] = 64
             config._sections['net1']['subdivisions'] = subdivisions
             config._sections['net1']['max_batches'] = max_batches
             config._sections['net1']['learning_rate'] = 0.001
