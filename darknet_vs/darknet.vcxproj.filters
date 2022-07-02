@@ -249,6 +249,9 @@
     <ClCompile Include="..\modules\darknet\src\sam_layer.c">
       <Filter>lib</Filter>
     </ClCompile>
+    <ClCompile Include="..\modules\darknet\src\representation_layer.c">
+      <Filter>examples</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\modules\darknet\src\activation_layer.h">
@@ -400,6 +403,9 @@
     </ClInclude>
     <ClInclude Include="..\modules\darknet\src\gaussian_yolo_layer.h">
       <Filter>lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\modules\darknet\src\representation_layer.h">
+      <Filter>examples</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

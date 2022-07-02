@@ -145,6 +145,7 @@
     <ClCompile Include="..\modules\darknet\src\scale_channels_layer.c" />
     <ClCompile Include="..\modules\darknet\src\gaussian_yolo_layer.c" />
     <ClCompile Include="..\modules\darknet\src\sam_layer.c" />
+    <ClCompile Include="..\modules\darknet\src\representation_layer.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\modules\darknet\src\activations.h" />
@@ -199,6 +200,7 @@
     <ClInclude Include="..\modules\darknet\src\image_opencv.h" />
     <ClInclude Include="..\modules\darknet\include\darknet.h" />
     <ClInclude Include="..\modules\darknet\include\yolo_v2_class.hpp" />
+    <ClInclude Include="..\modules\darknet\src\representation_layer.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="cuda">

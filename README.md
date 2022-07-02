@@ -29,16 +29,16 @@ How to build from Visual Studio 2015
 Install NVIDIA SDK
 ----
 
-- Download [CUDA 10.0](https://developer.nvidia.com/cuda-downloads?target_os=Windows&target_arch=x86_64&target_version=10&target_type=exelocal)
-- Download [cuDNN v7.x] (https://developer.nvidia.com/rdp/cudnn-download)
+- Download [CUDA 11.x](https://developer.nvidia.com/cuda-downloads?target_os=Windows&target_arch=x86_64&target_version=10&target_type=exelocal)
+- Download [cuDNN v8.x] (https://developer.nvidia.com/rdp/cudnn-download)
 
     -  Extract to the same folder as CUDA SDK
-    -  e.g. `c:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\`
+    -  e.g. `c:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.7\`
 
 Install OpenCV
 ----
-- Latest OpenCV: e.g. https://github.com/opencv/opencv/releases/tag/4.1.1
-- Extract to `d:\opencv\`
+- Latest OpenCV: e.g. https://github.com/opencv/opencv/releases/
+- Extract to `C:\opencv\`
 
 Build it
 ----
