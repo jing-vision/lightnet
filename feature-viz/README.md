@@ -3,8 +3,8 @@ How to build
 
 - Execute `build.bat` in the root folder, make sure there is no error.
 - Download `premake` from https://premake.github.io/download.html
-- Enter `feature-viz` folder, execute `premake5 vs2015`
-- Open `feature-viz\vs2015\feature-viz.sln` and build
+- Enter `feature-viz` folder, execute `premake5 vs2022`
+- Open `feature-viz\vs2022\feature-viz.sln` and build
 - Read `feature-viz\README.md` for usages
 
 How to use

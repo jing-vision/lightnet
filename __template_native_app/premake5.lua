@@ -2,7 +2,7 @@
 
 local action = _ACTION or ""
 
-local OPENCV_PATH   = "d:/opencv/build"
+local OPENCV_PATH   = "C:/opencv/build"
 
 solution "native-app"
     location (action)
@@ -12,7 +12,7 @@ solution "native-app"
     kind "StaticLib"
 
     filter "system:windows"
-        defines { 
+        defines {
             "_CRT_SECURE_NO_WARNINGS",
             "WIN32",
             "_TIMESPEC_DEFINED",
@@ -61,7 +61,7 @@ solution "native-app"
             path.join("$(CUDA_PATH)", "include"),
             path.join(OPENCV_PATH, "include")
         }
-        files { 
+        files {
             "src/**",
             "../include/**",
             "../src/**",
