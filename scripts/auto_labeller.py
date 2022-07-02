@@ -93,10 +93,10 @@ def main():
     conv_reverse_id = 0
     for key in reversed(config._sections):
         if 'convolutional' in key:
-            if conv_reverse_id is 0:
+            if conv_reverse_id == 0:
                 # The last CONV layer specify filters numbers
                 config._sections[key]['filters'] = num_classes
-            elif conv_reverse_id is 1:
+            elif conv_reverse_id == 1:
                 # Freeze penultimate CONV layer for fine-tuning
                 # https://github.com/AlexeyAB/darknet/issues/1061#issuecomment-399083012
                 config._sections[key]['stopbackward'] = 1
