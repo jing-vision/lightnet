@@ -2,7 +2,7 @@
 
 local action = _ACTION or ""
 
-local OPENCV_PATH   = "d:/opencv/build"
+local OPENCV_PATH   = "C:/opencv/build"
 
 solution "feature-viz"
     location (action)
@@ -12,10 +12,10 @@ solution "feature-viz"
     kind "StaticLib"
 
     filter "system:windows"
-        defines { 
+        defines {
             "_CRT_SECURE_NO_WARNINGS",
             "WIN32",
-            
+
             "_TIMESPEC_DEFINED",
             "OPENCV",
             "GPU",
@@ -26,7 +26,7 @@ solution "feature-viz"
     configuration "x64"
         libdirs {
             "../bin",
-            path.join(OPENCV_PATH, "x64/vc14/lib")
+            path.join(OPENCV_PATH, "x64/vc15/lib")
         }
         targetdir ("../bin/")
 
@@ -65,7 +65,7 @@ solution "feature-viz"
             path.join(OPENCV_PATH, "include")
         }
         debugdir "../bin"
-        files { 
+        files {
             "../include/**",
             "../src/**",
             "../modules/minitrace/**",

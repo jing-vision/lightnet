@@ -30,10 +30,11 @@ Install NVIDIA SDK
 ----
 
 - Download [CUDA 11.x](https://developer.nvidia.com/cuda-downloads?target_os=Windows&target_arch=x86_64&target_version=10&target_type=exelocal)
-- Download [cuDNN v8.x] (https://developer.nvidia.com/rdp/cudnn-download)
+- Download [cuDNN v8.x](https://developer.nvidia.com/rdp/cudnn-download)
 
     -  Extract to the same folder as CUDA SDK
     -  e.g. `c:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.7\`
+- Download [zlib](http://www.winimage.com/zLibDll/zlib123dllx64.zip)
 
 Install OpenCV
 ----
