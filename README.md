@@ -62,6 +62,7 @@ cfg/yolov3.cfg|https://pjreddie.com/media/files/yolov3.weights|cfg/coco.names
 cfg/yolov3-openimages.cfg|https://pjreddie.com/media/files/yolov3-openimages.weights|data/openimages.names
 cfg/yolov3-tiny.cfg|https://pjreddie.com/media/files/yolov3-tiny.weights|cfg/coco.names
 [cfg/yolov2_shoe.cfg](https://raw.githubusercontent.com/B1SA/smbmkt/master/detector/yolo/cfg/)|[yolov2_shoe.weights](https://drive.google.com/file/d/1UDwKu1OSr0XkDLlO3K8Fv4KOLrTeS-ym/edit)|[obj.names](https://github.com/B1SA/smbmkt/blob/master/detector/yolo/cfg/custom.names)
+cfg/yolov4.cfg|https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optimal/yolov4.weights|cfg/coco.names
 
 Syntax for object detection
 ----
@@ -72,6 +73,12 @@ darknet.exe detector test <data> <cfg> <weights> <img_filename> -i <gpu_idx>
 ```
 
 Default launch device combination is `-i 0 -c 0`.
+
+Run yolov4 on camera #0
+----
+```
+darknet.exe detector demo cfg/coco.data cfg/yolov4.cfg yolov4.weights
+```
 
 Run yolov3 on camera #0
 ----
@@ -148,7 +155,7 @@ Object Detection - train yolo v3 network
 
   So for example, for 2 objects, your file `obj.cfg` should differ from `yolov3.cfg` in such lines in each of **3** [yolo]-layers:
 
-  ```
+```
   [convolutional]
   filters=21
 
@@ -210,7 +217,7 @@ https://github.com/AlexeyAB/darknet/issues/232#issuecomment-336955485
 How to fix `CUDA Error: no kernel image is available for execution on the device`?
 ----
 
-```
+  ```
 # Tesla V100
 # ARCH= -gencode arch=compute_70,code=[sm_70,compute_70]
 
